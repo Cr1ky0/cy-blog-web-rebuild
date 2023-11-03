@@ -1,5 +1,4 @@
 import React from 'react';
-import Cookies from 'universal-cookie';
 import { useNavigate } from 'react-router';
 
 // css
@@ -12,13 +11,14 @@ import type { MenuProps } from 'antd';
 // context
 import { useAvatar } from '@/components/ContextProvider/AvatarPrivider';
 import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
+import { useAppSelector } from '@/redux';
 
 const Avatar = () => {
   const message = useGlobalMessage();
   const navigate = useNavigate();
   const avatar = useAvatar();
-  const cookies = new Cookies();
-  const user = cookies.get('user');
+
+  const user = useAppSelector(state => state.user.user);
 
   const items: MenuProps['items'] = [
     {

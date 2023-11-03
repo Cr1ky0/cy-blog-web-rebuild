@@ -1,6 +1,6 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router';
-import Cookies from 'universal-cookie';
+
 // css
 import style from './index.module.scss';
 
@@ -23,20 +23,22 @@ import { BREAK_POINT } from '@/global';
 // redux
 import { useAppDispatch, useAppSelector } from '@/redux';
 import { setLoginFormOpen, setThemeMode } from '@/redux/slices/universal';
+import { setUser } from '@/redux/slices/user';
 
 const RightNav = () => {
   const message = useGlobalMessage();
-  const dispatch = useAppDispatch();
-  const themeMode = useAppSelector(state => state.universal.themeMode);
   const { width } = useViewport();
   const navigate = useNavigate();
-  const cookies = new Cookies();
-  const user = cookies.get('user');
+  const dispatch = useAppDispatch();
+
+  // state
+  const themeMode = useAppSelector(state => state.universal.themeMode);
+  const user = useAppSelector(state => state.user.user);
+
   // handle log out
   const handleLogout = useCallback(async () => {
     // await可以让按钮进入加载状态
-    cookies.remove('user');
-    cookies.remove('token');
+    dispatch(setUser(null));
     await message.loadingSuccessAsync('登出中...', '成功退出登录！');
     navigate(0);
   }, []);

@@ -25,7 +25,8 @@ const AvatarProvider: React.FC<avatarContextProps> = ({ children }) => {
         const imageUrl = URL.createObjectURL(blob);
         setAvatar(imageUrl);
       } catch (data: any) {
-        setAvatar(img); // 没登录用默认头像
+        // 没登录或没有设置头像则用默认头像
+        setAvatar(img);
       }
     };
     init();

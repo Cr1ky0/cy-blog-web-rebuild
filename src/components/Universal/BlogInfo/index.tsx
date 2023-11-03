@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import Cookies from 'universal-cookie';
+import React, { useState } from 'react';
 
 // css
 import style from './index.module.scss';
@@ -38,28 +37,31 @@ const BlogInfo: React.FC<BlogInfoProps> = ({ statistics, showCollect }) => {
   const { author, time, views, id, isCollected, likes } = statistics;
   const { width } = useViewport();
   const message = useGlobalMessage();
-  const menus = useAppSelector(state => state.blogMenu.menuList);
+  const dispatch = useAppDispatch();
   const icons = useIcons();
+  // state
+  const menus = useAppSelector(state => state.blogMenu.menuList);
   const themeMode = useAppSelector(state => state.universal.themeMode);
+  const user = useAppSelector(state => state.user.user);
   // 点赞状态（游客也可以点赞，用redux管理（与评论类似））
   const likeList = useAppSelector(state => state.blog.likeList);
-  const dispatch = useAppDispatch();
   // 收藏状态
   const [collected, setCollected] = useState(isCollected);
   const [likesNum, setLikesNum] = useState(likes);
-  const [grandMenu, setGrandMenu] = useState<BreadCrumbObj[]>([]);
-  const cookies = new Cookies();
-  const user = cookies.get('user');
+  const grandMenu: BreadCrumbObj[] = getBreadcrumbList(menus, id, icons) || [];
+  if (grandMenu) {
+    grandMenu.pop();
+  }
 
-  useEffect(() => {
-    const grand = getBreadcrumbList(menus, id, icons);
-    grand.pop();
-    setGrandMenu(grand);
-  }, [id]);
+  // const [grandMenu, setGrandMenu] = useState<BreadCrumbObj[]>([]);
+  // useEffect(() => {
+  //   const grand = getBreadcrumbList(menus, id, icons).pop();
+  //   setGrandMenu(grand);
+  // }, [id]);
 
-  useEffect(() => {
-    setCollected(isCollected);
-  }, [isCollected]);
+  // useEffect(() => {
+  //   setCollected(isCollected);
+  // }, [isCollected]);
 
   // 收藏
   const handleCollect = () => {

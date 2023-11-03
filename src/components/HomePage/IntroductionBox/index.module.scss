@@ -17,6 +17,7 @@
 
     .avatar {
       @include backgroundImgStyle;
+      display: block;
       outline: none;
       width: 150px;
       height: 150px;

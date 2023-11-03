@@ -8,7 +8,7 @@ import img from '@/assets/images/blog-icon.webp';
 import style from './index.module.scss';
 
 // ajax
-import { getUserInfo, getVerificationCode, login } from '@/apis/user';
+import { getVerificationCode, login } from '@/apis/user';
 
 // util
 import _ from 'lodash';
@@ -22,7 +22,7 @@ import { setLoginFormOpen } from '@/redux/slices/universal';
 
 // comp
 import Loading from '@/components/Universal/Loading';
-import { setMyUser } from '@/redux/slices/user';
+import { setMyUser, setUser } from '@/redux/slices/user';
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -89,7 +89,7 @@ const LoginForm = () => {
     if (!isLoading) {
       setIsLoading(true);
       try {
-        await login({
+        const res = await login({
           userinfo: userInfo,
           password: psw,
           verificationCode: code,
@@ -102,6 +102,14 @@ const LoginForm = () => {
           localStorage.setItem('login_info', userInfo);
           localStorage.setItem('login_psw', psw);
         }
+        // 开启定时器，在token到期后清除redux内user
+        const expireTime = res.data.expireTime;
+        setTimeout(() => {
+          dispatch(setUser(null));
+          message.error('用户登录信息过期，请重新登录！');
+          navigate(0);
+        }, expireTime - Date.now());
+        // 刷新
         navigate(0);
       } catch (data: any) {
         message.error(data.message);

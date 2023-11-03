@@ -1,5 +1,4 @@
 import React, { CSSProperties, useEffect, useState } from 'react';
-import Cookies from 'universal-cookie';
 
 // css
 import style from './index.module.scss';
@@ -14,14 +13,11 @@ import LinkIcon from './LinkIcon';
 import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
 import { useAvatar } from '@/components/ContextProvider/AvatarPrivider';
 
-// api
-import { avatarAjax, getMyInfo } from '@/api/user';
-import { UserObj } from '@/interface';
-
 // redux
 import { useAppDispatch, useAppSelector } from '@/redux';
 import { setTimeLine } from '@/redux/slices/blog';
 import { useNavigate } from 'react-router';
+import { getCriiky0Avatar, getCriiky0Info, UserInfo } from '@/apis/user';
 
 // interface
 export interface IntroductionBoxProps {
@@ -34,51 +30,57 @@ const IntroductionBox: React.FC<IntroductionBoxProps> = props => {
   const message = useGlobalMessage();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  // state
   const blogsNum = useAppSelector(state => state.blog.blogsNum);
   const menus = useAppSelector(state => state.blogMenu.menuList);
   const themeMode = useAppSelector(state => state.universal.themeMode);
-  const [user, setUser] = useState({} as UserObj);
-  const [avatar, setAvatar] = useState(useAvatar());
-  // cookie
-  const cookies = new Cookies();
-  const curUser = cookies.get('user');
-  // 用户登录后的头像
-  const userAvatar = useAvatar();
+  const loginUser = useAppSelector(state => state.user.user);
+
+  const [user, setUser] = useState({} as UserInfo['user']);
+  const [avatar, setAvatar] = useState<string>(useAvatar());
+
   const limit = 40;
+
   useEffect(() => {
     dispatch(setTimeLine());
   }, []);
+
   useEffect(() => {
-    if (!curUser) {
+    if (!loginUser) {
       // 没有登录用户就请求我的个人信息
       const getInfo = async () => {
-        const res = await getMyInfo();
-        const user = res.data.user;
-        delete user['_id'];
-        setUser(user);
-        await avatarAjax(user.avatar, response => {
-          const reader = new FileReader();
-          reader.onload = e => {
-            if (e.target) setAvatar(e.target.result as string);
-          };
-          reader.readAsDataURL(response);
-        });
+        try {
+          // 获取用户信息
+          const res = await getCriiky0Info();
+          setUser(res.data.user);
+          // 获取头像
+          const res1 = await getCriiky0Avatar();
+          const type = res1.headers['content-type'];
+          const blob = new Blob([res1.data], { type });
+          // img src
+          const imageUrl = URL.createObjectURL(blob);
+          setAvatar(imageUrl);
+        } catch (data: any) {
+          message.error(data.message);
+        }
       };
       getInfo().catch(err => {
         message.error(err.message);
       });
     } else {
-      setUser(curUser);
+      setUser(user);
     }
   }, []);
+
   return (
     <div
       className={`${style.wrapper} ${themeMode === 'dark' ? 'dark-2' : 'light'}`}
       style={isMobile ? Object.assign({ boxShadow: 'none' }, styles) : styles}
     >
       <div className={`${style.intro} clearfix`}>
-        <div className={style.avatar} style={{ backgroundImage: `url(${curUser ? userAvatar : avatar})` }}></div>
-        <div className={style.username}>{user.name ? user.name : undefined}</div>
+        <img className={style.avatar} src={avatar}></img>
+        <div className={style.username}>{user.nickname}</div>
         <div className={style.signature}>{user.brief ? getLimitString(limit, user.brief) : undefined}</div>
       </div>
       <div className={style.blogInfo}>

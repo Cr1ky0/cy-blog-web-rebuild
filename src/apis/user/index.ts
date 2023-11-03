@@ -2,17 +2,28 @@ import service, { client, Result } from '@/utils/request';
 import { RcFile } from 'antd/es/upload';
 
 // interface
+// request
 interface LoginForm {
   userinfo: string;
   verificationCode: string;
   password: string;
 }
 
+interface UpdateUserForm {
+  nickname: string;
+  brief: string;
+}
+
+// response
 interface CodeResult {
   img: string;
 }
 
-export interface UserInfo {
+interface LoginResult {
+  expireTime: number;
+}
+
+export interface User {
   userId: number;
   username: string;
   nickname: string;
@@ -22,8 +33,16 @@ export interface UserInfo {
   role: string;
 }
 
+export interface UserInfo {
+  user: User;
+}
+
+export interface UpdatedUser {
+  updatedUser: User;
+}
+
 export const login = async (data: LoginForm) => {
-  return client.post<void>('/api/user/login', data);
+  return client.post<Result<LoginResult>>('/api/user/login', data);
 };
 
 export const getAvatar = async () => {
@@ -42,4 +61,18 @@ export const getVerificationCode = async () => {
 
 export const getUserInfo = async () => {
   return client.get<Result<UserInfo>>('/api/user/info');
+};
+
+export const getCriiky0Info = async () => {
+  return client.get<Result<UserInfo>>('/api/user/criiky0');
+};
+
+export const getCriiky0Avatar = async () => {
+  return service.get('/api/user/criiky0/avatar', {
+    responseType: 'arraybuffer',
+  });
+};
+
+export const updateUser = async (data: UpdateUserForm) => {
+  return client.post<Result<UpdatedUser>>('/api/user/info', data);
 };

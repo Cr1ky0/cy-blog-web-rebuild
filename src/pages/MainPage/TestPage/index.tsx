@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getAvatar, login } from '@/apis/user';
 import UploadAvatar from '@/components/TopHeader/ChangeInfo/UploadAvatar';
 import LoginForm from '@/components/TopHeader/LoginForm';
+import IntroductionBox from '@/components/HomePage/IntroductionBox';
 
 const TestPage = () => {
   const [avatarUrl, setAvatarUrl] = useState<string>('');
@@ -47,7 +48,7 @@ const TestPage = () => {
       {/*    height: 500,*/}
       {/*  }}*/}
       {/*/>*/}
-      <LoginForm></LoginForm>
+      <IntroductionBox />
     </div>
   );
 };

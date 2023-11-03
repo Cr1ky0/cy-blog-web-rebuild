@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Cookies from 'universal-cookie';
 import moment from 'moment/moment';
 
 // antd
@@ -51,13 +50,10 @@ const SingleComment: React.FC<SingleReplyProps> = ({ reply, noLikes }) => {
   // 利用likeList判断当前评论的id是否在其中来记录点赞状态
   const likeList = useAppSelector(state => state.comments.likeList);
   const themeMode = useAppSelector(state => state.universal.themeMode);
+  const user = useAppSelector(state => state.user.user);
   const isChosen = isLike(likeList, id);
   const dispatch = useAppDispatch();
   const [avatar, setAvatar] = useState(img);
-  // cookies
-  const cookies = new Cookies();
-  const user = cookies.get('user');
-
   const handleDel = () => {
     modal.confirm({
       title: '提示',

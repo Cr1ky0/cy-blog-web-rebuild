@@ -1,13 +1,13 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { client, Result } from '@/utils/request';
-import { UserInfo } from '@/apis/user';
+import { User, UserInfo } from '@/apis/user';
 
 interface userInitObj {
-  user: UserInfo;
+  user: User;
 }
 
 const initialState: userInitObj = {
-  user: {} as UserInfo,
+  user: {} as User,
 };
 
 export const setMyUser = createAsyncThunk('user/setMyUser', async () => {
@@ -25,8 +25,7 @@ const userSlice = createSlice({
   },
   extraReducers(builder) {
     builder.addCase(setMyUser.fulfilled, (state, action) => {
-      console.log(action.payload.data);
-      state.user = action.payload.data;
+      state.user = action.payload.data.user;
     });
   },
 });

@@ -1,5 +1,4 @@
 import React, { MouseEventHandler, useCallback, useRef, useState } from 'react';
-import Cookies from 'universal-cookie';
 
 // antd
 import { Button, Popover, Input, InputRef } from 'antd';
@@ -32,19 +31,21 @@ interface WriteCommentProps {
 
 const WriteComment: React.FC<WriteCommentProps> = ({ belongingComment }) => {
   const message = useGlobalMessage();
+  const dispatch = useAppDispatch();
   const { width } = useViewport();
   const commentRef = useRef<HTMLTextAreaElement>(null);
   const userNameRef = useRef<InputRef>(null);
   const userBriefRef = useRef<InputRef>(null);
+
+  // state
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading1] = useState(false);
-  const cookies = new Cookies();
-  const user = cookies.get('user');
   const selectedId = useAppSelector(state => state.blogMenu.selectedId);
   const curPage = useAppSelector(state => state.comments.curPage);
   const sort = useAppSelector(state => state.comments.sort);
   const themeMode = useAppSelector(state => state.universal.themeMode);
-  const dispatch = useAppDispatch();
+  const user = useAppSelector(state => state.user.user);
+
   // 向文本框内部添加表情
   const addEmoji: MouseEventHandler<HTMLLIElement> = useCallback(event => {
     const commentNode = commentRef.current as HTMLTextAreaElement;
@@ -75,9 +76,9 @@ const WriteComment: React.FC<WriteCommentProps> = ({ belongingComment }) => {
           {
             belongingComment,
             contents: comment.value,
-            userId: user ? user.id : undefined,
+            userId: user ? user.userId : undefined,
             brief: user ? user.brief : brief.value ? brief.value : undefined,
-            username: user ? user.name : username.value ? username.value : '匿名',
+            username: user ? user.username : username.value ? username.value : '匿名',
             userRole: user ? user.role : 'visitor',
           },
           async data => {
@@ -100,9 +101,9 @@ const WriteComment: React.FC<WriteCommentProps> = ({ belongingComment }) => {
           {
             belongingBlog: selectedId,
             contents: comment.value,
-            userId: user ? user.id : undefined,
+            userId: user ? user.userId : undefined,
             brief: user ? user.brief : brief.value ? brief.value : undefined,
-            username: user ? user.name : username.value ? username.value : '匿名',
+            username: user ? user.username : username.value ? username.value : '匿名',
             userRole: user ? user.role : 'visitor',
           },
           async () => {

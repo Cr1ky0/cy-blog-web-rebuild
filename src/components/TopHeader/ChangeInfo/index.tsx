@@ -1,6 +1,5 @@
 import React, { RefObject, useCallback, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
-import Cookies from 'universal-cookie';
 
 // css
 import style from './index.module.scss';
@@ -16,12 +15,12 @@ import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
 // api
 import { sendCodeAjax, updateEmailAjax, updateLoginState, updateMeAjax, updateMyPswAjax } from '@/api/user';
 import isEmail from 'validator/lib/isEmail';
+import { useAppSelector } from '@/redux';
 
 const ChangeInfo = () => {
   const [isOpen, setIsOpen] = useState([false, false, false, false]);
   const [isLoading, setIsLoading] = useState(false);
-  const cookies = new Cookies();
-  const user = cookies.get('user');
+  const user = useAppSelector(state => state.user.user);
   const message = useGlobalMessage();
   const navigate = useNavigate();
   // ref
@@ -83,8 +82,6 @@ const ChangeInfo = () => {
       async () => {
         await message.loadingSuccessAsync('修改中...', '修改成功, 请重新登录!');
         setIsLoading(false);
-        cookies.remove('token');
-        cookies.remove('user');
         navigate(0);
       },
       content => {
@@ -219,7 +216,7 @@ const ChangeInfo = () => {
             </div>
             <ChangeFormBox
               title="昵称"
-              placeHolder={user.name}
+              placeHolder={user.nickname}
               isOpen={isOpen}
               handleClose={openForm}
               ref={usernameRef}

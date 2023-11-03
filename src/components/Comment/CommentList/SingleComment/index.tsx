@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Cookies from 'universal-cookie';
 
 // antd
 import { Tag } from 'antd';
@@ -49,9 +48,7 @@ const SingleComment: React.FC<SingleCommentProps> = props => {
   const isChosen = isLike(likeList, id);
   const dispatch = useAppDispatch();
   const [avatar, setAvatar] = useState(img);
-  // cookies
-  const cookies = new Cookies();
-  const user = cookies.get('user');
+  const user = useAppSelector(state => state.user.user);
 
   const [replyOpen, setReplyOpen] = useState(false);
 

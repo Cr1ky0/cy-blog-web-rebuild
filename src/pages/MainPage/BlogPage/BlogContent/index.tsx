@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import moment from 'moment';
-import Cookies from 'universal-cookie';
 
 // comp
 import BlogInfo from '@/components/Universal/BlogInfo';
@@ -47,11 +46,9 @@ const BlogContent = () => {
   const dispatch = useAppDispatch();
   const menus = useAppSelector(state => state.blogMenu.menuList);
   const selectedId = useAppSelector(state => state.blogMenu.selectedId);
+  const user = useAppSelector(state => state.user.user);
   // 获取面包屑列表
   const breadcrumbList = selectedId ? getBreadcrumbList(menus, selectedId, icons) : [];
-  // cookie
-  const cookies = new Cookies();
-  const user = cookies.get('user');
 
   // curBlog
   const [curBlog, setCurBlog] = useState<BlogObj>({
