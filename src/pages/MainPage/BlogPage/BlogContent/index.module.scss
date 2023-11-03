@@ -1,0 +1,203 @@
+@import '@/assets/css/index.scss';
+@import "@/pages/MainPage/mixin.scss";
+
+@include setContent();
+
+@mixin universal() {
+  .main {
+    width: 100%;
+    overflow: hidden;
+
+    .blog {
+      width: 100%;
+      min-height: 100vh;
+      margin: {
+        right: 20px;
+      }
+
+      .breadCrumb {
+        @include unSelectable;
+
+        li:not(:last-child) {
+          span {
+            color: $THEME_COLOR;
+          }
+        }
+      }
+
+      .info {
+
+        .title {
+          font-weight: 450;
+          padding: 10px 0;
+
+          > span {
+            @include unSelectable;
+            color: $THEME_COLOR;
+            padding-right: 10px;
+          }
+        }
+
+      }
+
+      .blogEdit {
+        padding: 40px 0;
+
+        // 左边编辑和删除
+        > div:first-child {
+          color: $THEME_COLOR;
+          float: left;
+
+          > div {
+            cursor: pointer;
+            padding: 3px 0;
+            font: {
+              size: 14px;
+            }
+
+            .editPageBtn {
+              font-size: 12px;
+              padding-left: 3px;
+            }
+
+            .delPageBtn {
+              font-size: 15px;
+            }
+          }
+
+          > div:last-child > span:last-child {
+            padding-left: 2px;
+          }
+        }
+
+        // 右边信息
+        > div:last-child {
+          color: #526e89;
+          float: right;
+
+          > div {
+            text-align: end;
+            font: {
+              size: 14px;
+            }
+            padding: 3px 0;
+
+            span {
+              color: $FONT_COLOR;
+            }
+          }
+        }
+      }
+
+      .partLine {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+
+        > div {
+          background-color: rgba(0, 0, 0, .02);
+          width: 100%;
+          height: 1px;
+        }
+      }
+
+      .comment {
+        padding: 5vh 2vw;
+      }
+    }
+  }
+}
+
+// 媒体查询
+// >1000
+@media (min-width: 1000px) {
+  @include universal;
+  .main {
+    > div {
+      > div {
+        float: left;
+      }
+    }
+
+    .breadCrumb {
+      padding: 20px 0;
+
+      .crumbIcon {
+        > span {
+          font-size: 14px !important;
+        }
+      }
+
+      .crumbTitle {
+        font-size: 14px;
+      }
+    }
+
+
+    .info {
+      padding-bottom: 30px;
+    }
+
+    .title {
+      font-size: 25px;
+
+      > span {
+        font-size: 25px;
+      }
+    }
+
+    .partLine {
+      > div {
+        margin: 40px 0;
+      }
+    }
+  }
+
+}
+
+@media (max-width: 1000px) {
+  @include universal;
+  .main {
+    width: 100%;
+
+    .breadCrumb {
+      padding: 10px 0;
+
+      .crumbIcon {
+        > span {
+          font-size: 12px !important;
+        }
+      }
+
+      .crumbTitle {
+        font-size: 12px;
+      }
+    }
+
+    .blog {
+      padding: 0 2vw;
+
+      .info {
+        padding: {
+          bottom: 20px;
+        }
+
+        .title {
+          font-size: 18px;
+
+          > span {
+            font-size: 18px;
+          }
+        }
+      }
+
+    }
+
+    .partLine {
+      > div {
+        margin: 15px 0;
+      }
+    }
+  }
+}
+

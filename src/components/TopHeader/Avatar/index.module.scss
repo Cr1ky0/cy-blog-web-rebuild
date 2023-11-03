@@ -1,0 +1,13 @@
+@import "@/assets/css/index.scss";
+
+.rightNavAvatar {
+  @include backgroundImgStyle;
+  display: block;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(0, 0, 0, .1);
+  cursor: pointer;
+  margin: {
+    right: 10px;
+  }
+}

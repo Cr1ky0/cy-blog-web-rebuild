@@ -1,0 +1,39 @@
+// 调整wrapper大小
+.w-md-editor {
+  height: 100% !important;
+}
+
+// 取消其他所有按钮
+.w-md-editor-toolbar {
+  > ul:last-child {
+    > li:not(:last-child) {
+      display: none;
+    }
+  }
+}
+
+// 编辑文本框
+.w-md-editor-bar {
+  display: none;
+}
+
+
+.w-md-editor-text {
+  .wmde-markdown-color {
+    > pre {
+      display: none !important;
+    }
+  }
+
+  .w-md-editor-text-input {
+    //-webkit-text-fill-color: rgba(0, 0, 0, .7);
+    //-webkit-text-fill-color: rgba(0, 0, 0, .7);
+    font-size: 20px !important;
+    line-height: 24px !important;
+    height: 100% !important;
+    overflow-y: auto;
+  }
+
+  height: 100% !important;
+}
+

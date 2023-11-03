@@ -1,0 +1,157 @@
+@import '@/assets/css/index.scss';
+@import "@/components/Comment/var.scss";
+
+// comment
+
+.commentDark {
+  * {
+    border-color: $BORDER_COLOR_DARK !important;
+  }
+}
+
+.commentLight {
+  * {
+    border-color: $BORDER_COLOR_LIGHT !important;
+  }
+}
+
+@mixin universal() {
+  .wrapper {
+    display: block;
+    width: 100%;
+
+    ::-webkit-scrollbar {
+      width: 0;
+    }
+
+    .infoInput {
+      @include bord;
+      width: 100%;
+      display: flex;
+      justify-content: space-evenly;
+      border: {
+        bottom: 1px dashed;
+        radius: 5px 5px 0 0;
+      }
+
+      > div {
+        width: 50%;
+
+        .input {
+          border: none;
+          box-shadow: none;
+        }
+      }
+    }
+
+    .content {
+      outline: none;
+      box-sizing: border-box;
+      width: 100%;
+      font-size: 16px;
+      line-height: 20px;
+      border: 1px solid;
+      border-bottom: none;
+      padding: 2vh;
+      resize: none;
+      border-top: none;
+    }
+
+
+    // 下面功能栏
+    .funcBar {
+      border: 1px solid;
+      width: 100%;
+      box-sizing: border-box;
+      margin: {
+        top: -2px;
+      }
+      border: {
+        radius: 0 0 1vh 1vh;
+        top: 1px dashed;
+      };
+
+      .emoji {
+        @include unSelectable;
+        float: left;
+        cursor: pointer;
+
+        &:hover {
+          color: $THEME_COLOR;
+        }
+      }
+
+      .submit {
+        float: right;
+      }
+    }
+  }
+}
+
+@media (min-width: $BREAK_POINT) {
+  @include universal;
+  .wrapper {
+    .infoInput {
+      > div {
+        height: 35px;
+
+        .input {
+          height: 35px;
+        }
+      }
+    }
+
+    .content {
+      min-height: $COMMENT_H;
+    }
+
+    .emoji {
+
+    }
+
+    .funcBar {
+      padding: 5px;
+      margin: {
+        top: -2px;
+      }
+
+      .emoji {
+        > span {
+          font-size: 32px;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: $BREAK_POINT) {
+  @include universal;
+  .wrapper {
+    .infoInput {
+      > div {
+        height: 25px;
+
+        .input {
+          height: 25px;
+        }
+      }
+    }
+
+    .content {
+      min-height: 100px;
+    }
+
+    .funcBar {
+      padding: 1px;
+
+      .emoji {
+        > span {
+          font-size: 24px;
+        }
+      }
+    }
+  }
+}
+
+
+

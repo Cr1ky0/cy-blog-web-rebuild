@@ -1,0 +1,227 @@
+@import "@/assets/css/index.scss";
+@import "@/components/Comment/var.scss";
+
+@mixin likesUni {
+  @include unSelectable;
+  height: 100%;
+  cursor: pointer;
+  float: left;
+  margin: {
+    right: 2px;
+  }
+}
+
+// infoWrapper dark mode
+.infoWrapperLight {
+  .time {
+    color: $FONT_COLOR_2;
+  }
+
+  .signature {
+    color: $FONT_COLOR_2;
+  }
+}
+
+.infoWrapperDark {
+  .time {
+    color: $FONT_COLOR_DARK;
+  }
+
+  .signature {
+    color: $FONT_COLOR_DARK;
+  }
+}
+
+.wrapper {
+  @include setScrollBar(0);
+  list-style: none;
+  margin-left: 55px;
+  position: relative;
+  border-left: 1px solid rgba(0, 0, 0, .03);
+  padding: {
+    left: 5px;
+    top: 20px;
+    bottom: 20px;
+  }
+
+  .infoWrapper {
+    .avatar {
+      @include backgroundImgStyle;
+      float: left;
+      width: 50px;
+      height: 50px;
+      border: 1px solid rgba(0, 0, 0, .1);
+      margin: {
+        right: 10px;
+      }
+    }
+
+    .info {
+      display: flex;
+      justify-content: space-between;
+
+      // 左边info
+      .infoBox {
+        .username {
+          color: $THEME_COLOR;
+          float: left;
+          font: {
+            size: 20px;
+            weight: bold;
+          }
+          margin: {
+            right: 5px;
+          }
+        }
+
+        .tags {
+          float: left;
+          margin: {
+            top: 1px;
+          }
+        }
+
+        .time {
+          float: left;
+          line-height: 22px;
+          font-size: 14px;
+        }
+      }
+
+      // 右边功能区
+      .rightFuncBox {
+        @include unSelectable;
+        display: flex;
+        justify-content: center;
+
+        .likesWrapper {
+          display: flex;
+          flex-wrap: nowrap;
+          height: 100%;
+
+          .likes {
+            @include likesUni;
+
+            &:hover {
+              color: $THEME_COLOR;
+            }
+          }
+
+          .likesOnChosen {
+            @include likesUni;
+            color: #ff0000;
+          }
+
+          .likesNum {
+            float: left;
+            margin: {
+              right: 2px;
+            }
+          }
+        }
+
+        .delComment {
+          margin-right: 2px;
+          cursor: pointer;
+
+          &:hover {
+            color: $THEME_COLOR;
+          }
+        }
+      }
+
+
+    }
+
+    .signature {
+      display: flex;
+      line-height: 20px;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+  }
+
+  .comment {
+    @include setScrollBar(0);
+    width: 80%;
+    //max-height: $COMMENT_H;
+    //overflow-y: auto;
+    word-break: break-all;
+    font: {
+      size: 16px;
+    }
+    line-height: 20px;
+    margin: {
+      top: 20px;
+    }
+    margin: {
+      left: 60px;
+    }
+  }
+}
+
+@media (width > $BREAK_POINT) {
+
+  .likesWrapper {
+
+    .likes {
+      font-size: 19px;
+      line-height: 23px;
+    }
+
+    .likesOnChosen {
+      font-size: 20px;
+    }
+
+    .likesNum {
+      font: {
+        size: 20px;
+      }
+    }
+  }
+
+  .delComment {
+    line-height: 22px;
+    font-size: 17px;
+  }
+
+  .replyComment {
+    line-height: 21px !important;
+    font-size: 19px !important;
+  }
+
+}
+
+@media (width <= $BREAK_POINT) {
+
+
+  .delComment {
+    line-height: 22px;
+    font-size: 16px;
+  }
+
+  .likesWrapper {
+    line-height: 21px;
+
+    .likes {
+      font-size: 18px;
+    }
+
+    .likesOnChosen {
+      font-size: 18px;
+    }
+
+    .likesNum {
+      font: {
+        size: 18px;
+      }
+    }
+  }
+
+
+  .replyComment {
+    line-height: 21px !important;
+    font-size: 18px !important;
+  }
+
+}

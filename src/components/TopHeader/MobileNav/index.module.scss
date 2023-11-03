@@ -1,0 +1,195 @@
+@import '@/assets/css/index.scss';
+
+@mixin setBarWrapper {
+  position: relative;
+  float: right;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  align-items: flex-end;
+  cursor: pointer;
+  height: 15px;
+  width: 15px;
+  margin: {
+    left: 20px;
+  }
+  > div {
+    height: 12%;
+    background-color: #666666;
+    transition: width .2s;
+    animation-duration: 0.2s;
+    animation-iteration-count: 1;
+  }
+}
+
+@mixin setNotActiveBar {
+  > div:first-child {
+    width: 100%;
+  }
+  > div:nth-child(2) {
+    width: 50%;
+  }
+  > div:last-child {
+    width: 75%;
+  }
+  &:hover {
+    > div:first-child {
+      width: 75%;
+    }
+
+    > div:nth-child(2) {
+      width: 100%;
+    }
+
+    > div:last-child {
+      width: 50%;
+    }
+  }
+}
+
+
+.leftNavWrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  
+  .themeMode {
+    margin: 0 10px;
+    cursor: pointer;
+
+    > span {
+      transition: color .3s;
+    }
+
+    > span:hover {
+      color: $THEME_COLOR;
+    }
+  }
+
+  .leftNavActive {
+    @include setBarWrapper;
+
+    > div {
+      animation-fill-mode: forwards;
+    }
+
+    &:hover > div {
+      background-color: $THEME_COLOR;
+    }
+
+    > div:first-child {
+      width: 75%;
+      animation-name: barAnimation1;
+    }
+
+    > div:nth-child(2) {
+      width: 100%;
+      animation-name: barAnimation2;
+    }
+
+    > div:last-child {
+      width: 50%;
+      animation-name: barAnimation3;
+    }
+  }
+
+  .leftNavNotActive {
+    @include setBarWrapper;
+    @include setNotActiveBar;
+
+    > div:first-child {
+      animation-name: barAnimation4;
+    }
+
+    > div:nth-child(2) {
+      animation-name: barAnimation5;
+    }
+
+    > div:last-child {
+      animation-name: barAnimation6;
+    }
+  }
+
+  .leftNavInit {
+    @include setBarWrapper;
+    @include setNotActiveBar;
+  }
+}
+
+.middle {
+  text-align: center;
+  font: {
+    size: 16px;
+    weight: bolder;
+  }
+}
+
+
+$TOP: 7px;
+@keyframes barAnimation1 {
+  to {
+    width: 100%;
+    position: absolute;
+    top: $TOP;
+    transform: rotateZ(225deg);
+  }
+}
+
+@keyframes barAnimation2 {
+  to {
+    width: 0;
+    position: absolute;
+    top: $TOP;
+  }
+}
+
+@keyframes barAnimation3 {
+  to {
+    width: 100%;
+    position: absolute;
+    top: $TOP;
+    transform: rotateZ(315deg);
+  }
+}
+
+@keyframes barAnimation4 {
+  from {
+    position: absolute;
+    top: $TOP;
+    transform: rotateZ(225deg);
+  }
+  to {
+  }
+}
+
+@keyframes barAnimation5 {
+  from {
+    width: 0;
+  }
+  to {
+  }
+}
+
+@keyframes barAnimation6 {
+  from {
+    width: 100%;
+    position: absolute;
+    top: $TOP;
+    transform: rotateZ(315deg);
+  }
+  to {
+  }
+}
+
+
+@media (width <= $BREAK_POINT) {
+  .themeMode {
+    font-size: 22px;
+  }
+}
+
+@media (width > $BREAK_POINT) {
+  .themeMode {
+    font-size: 24px;
+  }
+}

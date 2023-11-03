@@ -1,0 +1,45 @@
+@import "@/assets/css/index.scss";
+
+.rightNav {
+  min-width: 110px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .es {
+    margin-right: 10px;
+  }
+
+  .themeMode {
+    cursor: pointer;
+
+    > span {
+      transition: color .3s;
+    }
+
+    > span:hover {
+      color: $THEME_COLOR;
+    }
+  }
+
+  .logOut {
+    color: $THEME_COLOR;
+    margin: 0 10px;
+  }
+
+  .signWrapper {
+    margin: 0 10px;
+  }
+}
+
+@media (width <= $BREAK_POINT) {
+  .themeMode {
+    font-size: 22px;
+  }
+}
+
+@media (width > $BREAK_POINT) {
+  .themeMode {
+    font-size: 24px;
+  }
+}

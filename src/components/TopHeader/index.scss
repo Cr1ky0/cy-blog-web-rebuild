@@ -1,0 +1,21 @@
+@import '@/assets/css/index.scss';
+
+#top-header {
+  width: 100%;
+  height: $TOP_HEADER_H;
+  position: fixed;
+  z-index: $GRADE_TOP;
+  top: 2px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 5px 0 10px rgba(0, 0, 0, .2);
+  // 字体不可选中
+  @include unSelectable;
+  transition: background-color .3s;
+
+  // 亚克力（注意backdrop-filter只作用于其后的内容）
+  backdrop-filter: saturate(2) blur(8px); /* 背景模糊效果，需要浏览器支持 */
+  -webkit-backdrop-filter: saturate(2) blur(8px); /* WebKit 浏览器兼容性 */
+  background-color: rgba(255, 255, 255, .8);
+}

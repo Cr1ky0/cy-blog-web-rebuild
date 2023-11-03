@@ -1,0 +1,115 @@
+@import '@/assets/css/index.scss';
+
+$LINE_COLOR: rgba(0, 0, 0, 0.2);
+
+
+@mixin universal() {
+  .wrapper {
+    @include boxShadow;
+    @include transWithBoxShadow;
+    box-sizing: content-box;
+    padding: 1vw;
+    position: relative;
+
+    border: {
+      radius: 7px;
+    }
+
+    .titleWrapper {
+      display: flex;
+      justify-content: space-between;
+
+      .title {
+        max-width: 280px;
+        @include animationBar();
+        font-family: $FONT_FAMILY_TITLE;
+        cursor: pointer;
+        // 限制单行加...
+        word-break: break-all;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+
+      .pin {
+        @include unSelectable;
+        font-size: 20px;
+        position: absolute;
+        right: 3px;
+        top: 3px;
+        color: $THEME_COLOR;
+      }
+    }
+
+    .text {
+      word-break: break-all;
+      overflow: hidden;
+      cursor: default;
+      font-family: $FONT_FAMILY_CONTENT;
+    }
+
+    .line {
+      margin: 5px;
+      height: 1px;
+      background-color: $LINE_COLOR;
+    }
+
+    .statistics {
+      padding-top: 3px;
+      @include unSelectable;
+    }
+  }
+}
+
+.tagLight {
+  background-color: rgb(254, 254, 254);
+}
+
+.tagDark {
+  background-color: $BACKGROUND_COLOR_DARK_2;
+  color: $FONT_COLOR_DARK;
+}
+
+
+@media (width <= $BREAK_POINT) {
+  @include universal;
+  .titleWrapper {
+    padding: {
+      bottom: 0;
+      top: 5px;
+      left: 5px;
+      right: 5px;
+    }
+
+    .title {
+      font-size: 16px;
+    }
+  }
+  .text {
+    font-size: 12px;
+    line-height: 16px;
+    padding: {
+      top: 0;
+      left: 5px;
+      right: 5px;
+      bottom: 5px;
+    }
+  }
+}
+
+@media (width > $BREAK_POINT) {
+  @include universal;
+  .titleWrapper {
+    padding: 0 5px;
+
+    .title {
+      font-size: 21px;
+    }
+  }
+
+  .text {
+    padding: 5px;
+    font-size: 16px;
+    line-height: 24px;
+  }
+}

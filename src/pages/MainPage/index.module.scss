@@ -1,0 +1,29 @@
+@import "@/assets/css/index.scss";
+
+.backWhite {
+  width: 100%;
+  height: $TOP_HEADER_H + 2px;
+
+}
+
+.progress {
+  width: 100%;
+  position: fixed;
+  z-index: $GRADE_TOP;
+  top: 0;
+  height: 2px;
+
+  transition: background-color .3s;
+  // 亚克力
+  backdrop-filter: blur(8px); /* 背景模糊效果，需要浏览器支持 */
+  -webkit-backdrop-filter: blur(8px); /* WebKit 浏览器兼容性 */
+  background-color: rgba(255, 255, 255, .7);
+}
+
+.dark {
+  background-color: $BACKGROUND_COLOR_DARK_3;
+}
+
+.light {
+  background-color: $BACKGROUND_COLOR;
+}

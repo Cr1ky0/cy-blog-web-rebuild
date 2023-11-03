@@ -1,0 +1,56 @@
+@import "@/assets/css/index.scss";
+
+@mixin mobileMenu($width,$height) {
+  position: fixed;
+  bottom: 180px;
+  right: 50px;
+  width: $width;
+  height: $height;
+  box-shadow: 0 0 5px rgba(0, 0, 0, .2);
+  border: {
+    radius: 50%;
+  };
+
+  > div:first-child {
+    position: absolute;
+    left: 11px;
+    top: 11px;
+    font-size: 24px;
+  }
+}
+
+@mixin setSider() {
+  .sider {
+    //box-shadow: 0 2px 5px rgba(0, 0, 0, .2);
+    //z-index: $GRADE_MIDDLE;
+    height: 100%;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+      width: 0;
+    }
+  }
+}
+
+@mixin setContent() {
+  .content {
+    box-sizing: border-box;
+  }
+}
+
+@mixin setTop() {
+  .backWhite {
+    width: 100%;
+    height: $TOP_HEADER_H;
+    background-color: #FFF;
+  }
+}
+
+@keyframes anime {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

@@ -1,0 +1,98 @@
+@import "@/assets/css/index.scss";
+
+// 黑暗模式
+.wrapperDark {
+  @include trans();
+  transition-property: background-color, fill;
+  background-color: rgba(75, 75, 75, .4);
+  fill: rgba(75, 75, 75, .4);
+}
+
+.wrapperLight {
+  @include trans();
+  transition-property: background-color, fill;
+  background-color: rgba(255, 255, 255, .4);
+  fill: rgba(255, 255, 255, .4);
+}
+
+@mixin universal() {
+  .wrapper {
+    position: fixed;
+    background: transparent;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .3s;
+    z-index: $GRADE_MIDDLE;
+    border-radius: 50%;
+
+    // 背景模糊
+    backdrop-filter: saturate(2) blur(4px); /* 背景模糊效果，需要浏览器支持 */
+    -webkit-backdrop-filter: saturate(2) blur(4px); /* WebKit 浏览器兼容性 */
+    > svg {
+      box-shadow: 0 0 10px rgba(0, 0, 0, .2);
+      border: {
+        radius: 50%;
+      };
+
+      // 背景模糊
+      backdrop-filter: saturate(2) blur(8px); /* 背景模糊效果，需要浏览器支持 */
+      -webkit-backdrop-filter: saturate(2) blur(8px); /* WebKit 浏览器兼容性 */
+    }
+
+    .circle {
+      fill: transparent;
+      transition: stroke-dasharray .3s;
+      transform: rotateZ(-90deg);
+    }
+
+
+    .icon {
+      @include unSelectable;
+      position: absolute;
+      color: $THEME_COLOR;
+    }
+  }
+}
+
+
+@media (min-width: $BREAK_POINT) {
+  @include universal;
+  .wrapper {
+
+    .circle {
+      transform-origin: 30px 30px;
+    }
+
+    .icon {
+      top: 13px;
+      left: 12px;
+      font-size: 35px;
+    }
+
+    bottom: 100px;
+    right: 50px;
+  }
+}
+
+@media (max-width: $BREAK_POINT) {
+  @include universal;
+  .wrapper {
+
+    .circle {
+      transform-origin: 22.5px 22.5px;
+    }
+
+    .icon {
+      top: 10px;
+      left: 10.5px;
+      font-size: 25px;
+    }
+
+    bottom: 120px;
+    right: 50px;
+
+  }
+}
+
+

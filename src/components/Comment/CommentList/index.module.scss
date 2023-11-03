@@ -1,0 +1,72 @@
+@import "@/components/Comment/var.scss";
+@import "@/assets/css/index.scss";
+
+.wrapper {
+  width: 100%;
+
+  .statistics {
+    margin: {
+      top: 4vh;
+    }
+
+    .counts {
+      float: left;
+      margin: {
+        top: 20px;
+        bottom: 20px;
+        left: 5px;
+      }
+      font: {
+        weight: bold;
+        size: 20px;
+      };
+    }
+
+    .sortMenu {
+      float: right;
+      border-bottom: none;
+
+      > li {
+        padding: {
+          left: 5px;
+          right: 5px;
+        }
+      }
+    }
+  }
+
+  .comments {
+    > div:not(:last-child)::after {
+      content: " ";
+      display: block;
+      height: 1px;
+      width: 80%;
+      margin: 30px auto;
+      background-color: rgba(0, 0, 0, .03);
+    }
+
+    .noComments {
+      width: 100%;
+      padding: 50px;
+      text-align: center;
+    }
+  }
+
+  .paginate {
+    display: flex;
+    justify-content: center;
+    padding-top: 5vh;
+  }
+}
+
+@media (width> $BREAK_POINT) {
+  .noComments {
+    font-size: 18px;
+  }
+}
+
+@media (width<=$BREAK_POINT) {
+  .noComments {
+    font-size: 14px;
+  }
+}

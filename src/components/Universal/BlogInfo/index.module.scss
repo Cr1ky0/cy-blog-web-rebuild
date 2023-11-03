@@ -1,0 +1,147 @@
+@import "@/assets/css/index.scss";
+
+.wrapper {
+  @include unSelectable;
+  background-color: transparent;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .leftWrapper, .rightWrapper {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .leftWrapper {
+    > div {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: center;
+    }
+
+    .tag {
+      font-weight: 600;
+    }
+  }
+
+  .rightWrapper {
+    > div {
+      cursor: pointer;
+
+      > span {
+        display: block;
+        float: left;
+      }
+    }
+  }
+
+  .tag {
+    padding: 0 3px;
+  }
+}
+
+.dark {
+  @include trans();
+  color: $FONT_COLOR_DARK;
+}
+
+.light {
+  @include trans();
+  color: #666;
+}
+
+
+@media (width > $BREAK_POINT) {
+  .leftWrapper {
+    > div {
+      font-size: 16px;
+      line-height: 18px;
+      padding: 0 3px;
+
+      > span {
+        height: 18px;
+        line-height: 18px;
+        font-size: 14px;
+        padding-right: 5px;
+      }
+    }
+
+    .time {
+      > span {
+        font-size: 16px;
+      }
+    }
+  }
+
+
+  .rightWrapper {
+    > div {
+      > span {
+        padding: 0 2px;
+        height: 18px;
+        line-height: 18px;
+      }
+
+      > span:first-child {
+        font-size: 16px;
+      }
+    }
+
+    .collection {
+      > span:last-child {
+        font-size: 13px;
+      }
+    }
+  }
+}
+
+@media (width <= $BREAK_POINT) {
+  .leftWrapper {
+    > div {
+      font-size: 12px;
+      line-height: 14px;
+      padding: 0 2px;
+
+      > span {
+        height: 14px;
+        line-height: 14px;
+        font-size: 12px;
+        padding-right: 2px;
+      }
+
+      > span:nth-child(2) {
+        font-size: 12px;
+        height: 16px;
+      }
+    }
+
+    .time {
+      > span {
+        font-size: 13px;
+      }
+    }
+  }
+
+  .rightWrapper {
+    > div {
+      > span {
+        padding: 0 2px;
+        height: 14px;
+        line-height: 14px;
+      }
+
+      > span:first-child {
+        font-size: 13px;
+      }
+    }
+
+    .collection {
+      > span:last-child {
+        font-size: 12px;
+      }
+    }
+  }
+}

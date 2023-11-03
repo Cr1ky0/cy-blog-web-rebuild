@@ -1,0 +1,90 @@
+@import '@/assets/css/index.scss';
+
+.wrapper {
+  @include boxShadow;
+  @include transWithBoxShadow;
+  box-sizing: border-box;
+  width: 100%;
+
+  padding: 3%;
+  border: {
+    radius: 0.5vw;
+  }
+
+  .intro {
+    width: 100%;
+    max-height: 70%;
+
+    .avatar {
+      @include backgroundImgStyle;
+      outline: none;
+      width: 150px;
+      height: 150px;
+      margin: {
+        bottom: 30px;
+        left: auto;
+        right: auto;
+      }
+    }
+
+    .username {
+      text-align: center;
+      height: 10%;
+      width: 55%;
+      margin: 0 auto;
+      font: {
+        size: 28px;
+        weight: bold;
+        family: cursive;
+      }
+    }
+
+    .signature {
+      font-size: 16px;
+      text-align: center;
+      margin: 20px auto;
+      width: 100%;
+      line-height: 20px;
+      max-height: 17%;
+      overflow: hidden;
+    }
+  }
+
+  .blogInfo {
+    width: 100%;
+    height: 12%;
+    margin-top: 5px;
+    display: flex;
+    justify-content: center;
+
+    > div {
+      width: 20%;
+      height: 100%;
+      text-align: center;
+      @include changeColor;
+
+      > div:first-child {
+        font: {
+          size: 24px;
+        }
+      }
+
+      > div:last-child {
+        font: {
+          size: 12px;
+        }
+        margin: {
+          top: 5px;
+        }
+      }
+    }
+  }
+
+  .linkBox {
+    margin: 25px 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}

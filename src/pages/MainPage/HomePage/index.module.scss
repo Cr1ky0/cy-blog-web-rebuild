@@ -1,0 +1,133 @@
+@import "@/assets/css/index.scss";
+@import "../mixin.scss";
+
+@mixin universal() {
+  .wrapper {
+    @include setTop();
+    //overflow: hidden;
+
+    .backgroundPhoto {
+      width: 100%;
+      position: relative;
+      @include backgroundImgStyle(0);
+      overflow: hidden;
+
+      .homeTagWrapper {
+        //color: #D3F9FE;
+        color: #EFF9FA;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font: {
+          family: $FONT_FAMILY_TITLE;
+        }
+
+        .homeTag {
+          margin: 10px 0;
+          font: {
+            size: 2.2vw;
+            weight: bolder;
+          }
+        }
+
+        > div:last-child {
+          font-size: 1.8vw;
+        }
+      }
+
+    }
+
+    .main {
+      display: flex;
+      justify-content: center;
+
+      > div {
+        padding: 5vh 0;
+      }
+
+      .content {
+        margin: 0 20px;
+        width: 800px;
+
+        .paginate {
+          display: flex;
+          justify-content: space-around;
+        }
+      }
+
+      .sider {
+        width: 320px;
+        position: relative;
+
+        > div {
+          position: sticky;
+          top: 10vh;
+
+          > div:last-child {
+            margin-top: 2vh;
+          }
+        }
+      }
+    }
+  }
+}
+
+.mobileMenuDark {
+  background-color: $BACKGROUND_COLOR_DARK_2;
+  color: $FONT_COLOR_DARK;;
+}
+
+.mobileMenuLight {
+  background-color: $BACKGROUND_COLOR;
+  color: $FONT_COLOR;;
+}
+
+.wrapperLight {
+  @include trans();
+  background-color: #f5f5f5;
+}
+
+@media (width <= $BREAK_POINT) {
+  @include universal;
+  .backgroundPhoto {
+    height: 200px;
+
+    .homeTagWrapper {
+      .homeTagIcon {
+        margin-top: 5vh;
+        width: 50px;
+        height: 50px;
+        @include backgroundImgStyle(0);
+      }
+    }
+  }
+
+  .mobileMenu {
+    @include mobileMenu(45px, 45px);
+  }
+}
+
+@media (width > $BREAK_POINT) {
+  @include universal;
+  .backgroundPhoto {
+    height: 95vh;
+
+    .homeTagWrapper {
+      .homeTagIcon {
+        margin-top: 25vh;
+        width: 10vw;
+        height: 10vw;
+        @include backgroundImgStyle(0);
+      }
+    }
+  }
+
+  .mobileMenu {
+    display: none;
+  }
+}
+
+
+
+

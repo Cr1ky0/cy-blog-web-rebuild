@@ -1,0 +1,21 @@
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  border: 1px solid rgba(0, 0, 0, .2);
+  border: {
+    radius: 5px;
+  }
+  padding: 10px;
+  margin: 10px;
+
+  .uploadBox {
+    width: 110px;
+    height: 110px;
+  }
+
+  .btn {
+    margin-bottom: 10px;
+  }
+
+}

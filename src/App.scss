@@ -1,0 +1,77 @@
+@import '@/assets/css/index.scss';
+
+// 滚动条
+::-webkit-scrollbar {
+  //width: 5px;
+  width: 0;
+  height: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: $THEME_COLOR;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #ddd;
+}
+
+// clearfix
+.clearfix::before,
+.clearfix::after {
+  content: '';
+  display: table;
+  clear: both;
+}
+
+/***************** antd *******************/
+
+// 修改antd,transition时间
+.ant-timeline-item-head, .ant-pagination-item,
+.ant-pagination-options-quick-jumper > input,
+.ant-scroll-number, .ant-tag, .ant-input {
+  @include transOnForce();
+}
+
+// Menu
+.ant-menu-submenu-title, .ant-menu-item {
+  height: 33px !important;
+  margin: 2px !important;
+
+  //> span:first-child {
+  // line-height: 33px;
+  // font-size: 14px !important;
+  //}
+}
+
+.ant-dropdown-menu-item {
+  padding: 0 !important;
+}
+
+// Information&ChangeInfo
+.ant-drawer {
+  border: none;
+  outline: none;
+}
+
+// LoginForm
+.login-form-forgot {
+  float: right;
+}
+
+.ant-col-rtl .login-form-forgot {
+  float: left;
+}
+
+.login-form-button {
+  width: 100%;
+}
+
+// Table
+.ant-table-expanded-row {
+  .ant-table-cell {
+    background-color: transparent !important;
+  }
+}
+
+
+

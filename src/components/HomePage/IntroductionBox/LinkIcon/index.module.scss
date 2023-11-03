@@ -1,0 +1,30 @@
+@import "@/assets/css/index.scss";
+
+.wrapper {
+  @include unSelectable;
+  display: block;
+  position: relative;
+  color: $FONT_COLOR;
+  background-color: #FFF;
+  margin: 0 5px;
+  border-radius: 100%;
+  width: 28px;
+  height: 28px;
+  perspective: 800px;
+
+  > div {
+    cursor: pointer;
+    position: absolute;
+    top: -0.5px;
+    left: -0.5px;
+    transition: transform 0.3s .1s;
+    font: {
+      size: 30px;
+    }
+
+    &:hover {
+      transform: translateZ(120px);
+    }
+
+  }
+}

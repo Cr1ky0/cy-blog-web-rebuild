@@ -1,0 +1,361 @@
+@import "@/assets/css/index.scss";
+
+
+@mixin universal() {
+  .wrapper {
+    cursor: pointer;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    outline: 2px solid transparent;
+
+    &:hover {
+      outline-color: $THEME_COLOR;
+    }
+
+    .icon {
+      font-weight: bold;
+    }
+
+    .title {
+      color: $FONT_COLOR_DARK;
+    }
+  }
+
+  .searcher {
+    background-color: rgba(0, 0, 0, .5); // 这个color不变
+    position: fixed; /* 使用绝对布局，让div可以覆盖全屏 */
+    z-index: $GRADE_GOD;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+
+    .searchBox {
+      position: fixed;
+      z-index: calc($GRADE_GOD + 1);
+      left: 0;
+      right: 0;
+      margin: 0 auto;
+
+      .input {
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        position: relative;
+
+        > div:first-child {
+          height: 100%;
+          display: flex;
+          align-items: center;
+          border: 2px solid $THEME_COLOR;
+          border-right: none;
+
+          > div {
+            color: $THEME_COLOR;
+          }
+        }
+
+        > div:last-child {
+          position: absolute;
+          cursor: pointer;
+        }
+
+        > input {
+          outline: none;
+          border: 2px solid $THEME_COLOR;
+          border-left: none;
+          width: 100%;
+          height: 100%;
+        }
+      }
+
+      .content {
+        width: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+
+        .noContent {
+          text-align: center;
+        }
+
+        .noResult {
+          text-align: center;
+        }
+      }
+
+      .footer {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+
+
+        > div:first-child {
+          color: $FONT_COLOR_DARK;
+        }
+
+        > div:last-child {
+          color: $THEME_COLOR;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
+
+
+@media (width > $BREAK_POINT) {
+  @include universal;
+
+  .wrapper {
+    width: 133px;
+    height: 36px;
+    border-radius: 18px;
+
+
+    .icon {
+      margin: 0 5px;
+      font-size: 20px;
+    }
+
+    .title {
+      font-size: 16px;
+    }
+  }
+
+  .searcher {
+    .searchBox {
+      width: 560px;
+      border-radius: 3px;
+      top: calc($TOP_HEADER_H + 20px);
+
+      .input {
+        height: 68px;
+        padding: {
+          top: 12px;
+          right: 12px;
+          left: 12px;
+        }
+
+        > div:first-child {
+          padding: 0 10px;
+          border-radius: 3px 0 0 3px;
+
+          > div {
+            font-size: 24px;
+          }
+        }
+
+        > div:last-child {
+          right: 20px;
+          top: 31px;
+        }
+
+        > input {
+          border-radius: 0 3px 3px 0;
+          font-size: 22px;
+        }
+      }
+
+      .content {
+        max-height: 488px;
+        padding: {
+          left: 12px;
+          right: 12px;
+        }
+
+        .noContent {
+          padding: 60px;
+        }
+
+        .noResult {
+          padding: 48px;
+          font-size: 20px;
+
+          > div {
+            padding: {
+              top: 40px;
+              bottom: 20px;
+            }
+          }
+        }
+      }
+
+      .footer {
+        height: 44px;
+        padding: 0 12px;
+        box-shadow: 0 2px 7px rgba(0, 0, 0, 0.3);
+
+        > div {
+          margin: 0 5px;
+        }
+
+      }
+    }
+  }
+}
+
+@media (width <= $BREAK_POINT) {
+  @include universal;
+
+  .wrapper {
+    width: 123px;
+    height: 32px;
+    border-radius: 16px;
+
+
+    .icon {
+      margin: 0 5px;
+      font-size: 16px;
+    }
+
+    .title {
+      font-size: 13px;
+    }
+  }
+
+  .searcher {
+    .searchBox {
+      width: 70vw;
+      border-radius: 4px;
+      top: calc($TOP_HEADER_H + 10px);
+
+      .input {
+        height: 50px;
+        padding: {
+          top: 9px;
+          right: 9px;
+          left: 9px;
+        }
+
+        > div:first-child {
+          padding: 0 7px;
+          border-radius: 3px 0 0 3px;
+
+          > div {
+            font-size: 18px;
+          }
+        }
+
+        > div:last-child {
+          right: 20px;
+          top: 22px;
+        }
+
+        > input {
+          border-radius: 0 3px 3px 0;
+          font-size: 16px;
+        }
+      }
+
+      .content {
+        max-height: 300px;
+        padding: {
+          left: 9px;
+          right: 9px;
+        }
+
+        .noContent {
+          padding: 45px;
+        }
+
+        .noResult {
+          padding: 30px;
+          font-size: 16px;
+
+          > div {
+            padding: {
+              top: 30px;
+            }
+          }
+        }
+      }
+
+      .footer {
+        height: 40px;
+        padding: 0 9px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+
+        > div {
+          margin: 0 5px;
+        }
+
+      }
+    }
+  }
+}
+
+// 黑暗模式
+.dark {
+  background-color: $BACKGROUND_COLOR_DARK_2;
+  color: $FONT_COLOR_DARK;
+}
+
+.light {
+  background-color: rgba(0, 0, 0, .03);
+  color: $FONT_COLOR;
+
+  &:hover {
+    background-color: #FFF;
+
+    .title {
+      color: $FONT_COLOR;
+    }
+  }
+}
+
+.darkSearcher {
+  background-color: $BACKGROUND_COLOR_DARK_2;
+}
+
+.lightSearcher {
+  background-color: $BACKGROUND_COLOR;
+}
+
+.inputDark {
+  > input {
+    background-color: $BACKGROUND_COLOR_DARK_2;
+    color: $FONT_COLOR_DARK;
+  }
+}
+
+.inputLight {
+  > input {
+    background-color: $BACKGROUND_COLOR;
+    color: $FONT_COLOR;
+  }
+}
+
+.darkFont {
+  @include trans();
+  color: $FONT_COLOR_DARK;
+}
+
+.lightFont {
+  @include trans();
+  color: rgba(0, 0, 0, .4);
+}
+
+.open {
+  display: block;
+}
+
+.close {
+  display: none;
+}
+
+.rotate {
+  animation: rotate 1s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotateZ(0);
+  }
+  to {
+    transform: rotateZ(360deg);
+  }
+}

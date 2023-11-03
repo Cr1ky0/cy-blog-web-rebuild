@@ -1,0 +1,65 @@
+@import "@/assets/css/index.scss";
+
+.wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin: 3vh .5vw;
+
+  .editor {
+    width: 95%;
+    height: 100%;
+    margin-right: 3vw;
+  }
+
+  .preview {
+    box-sizing: border-box;
+    overflow: auto;
+    padding: 0 2vw;
+    width: 45%;
+    height: 100%;
+    border: {
+      radius: 5px;
+    };
+    @include boxShadow;
+
+    .previewTips {
+      font-size: 1.5vw;
+      padding: 2vh 0;
+      margin-bottom: 2vh;
+      border-bottom: 1px solid rgba(0, 0, 0, .2);
+    }
+  }
+}
+
+// 黑暗模式
+.textDark {
+  -webkit-text-fill-color: $FONT_COLOR_DARK !important;
+}
+
+.textLight {
+  -webkit-text-fill-color: $FONT_COLOR !important;
+}
+
+.toolbarDark {
+  background-color: $BACKGROUND_COLOR_DARK !important;
+
+  svg {
+    color: $FONT_COLOR_DARK !important;
+  }
+
+}
+
+.toolbarLight {
+  background-color: $BACKGROUND_COLOR !important;
+}
+
+
+.dark {
+  background-color: $BACKGROUND_COLOR_DARK !important;
+}
+
+.light {
+  background-color: $BACKGROUND_COLOR !important;
+}

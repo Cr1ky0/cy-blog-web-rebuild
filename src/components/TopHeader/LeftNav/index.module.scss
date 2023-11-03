@@ -1,0 +1,44 @@
+@import '@/assets/css/index.scss';
+
+
+.leftNav {
+  min-width: 150px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+
+  &:hover {
+    .leftNavInfo {
+      color: $THEME_COLOR;
+    }
+  }
+
+  // 图片
+  .leftNavIcon {
+    width: 35px;
+    height: 35px;
+    margin: {
+      left: 20px;
+      right: 10px;
+    }
+    border: {
+      radius: 50%;
+    }
+    background: {
+      image: url('../../../assets/images/blog-icon.webp');
+      repeat: no-repeat;
+      size: cover;
+      clip: content-box;
+    }
+  }
+
+  .leftNavInfo {
+    text-align: center;
+    font: {
+      size: 22px;
+      weight: 500;
+    }
+  }
+}
+
