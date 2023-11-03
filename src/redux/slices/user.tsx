@@ -1,18 +1,18 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { UserObj } from '@/interface';
-import service from '@/utils/request';
+import { client, Result } from '@/utils/request';
+import { UserInfo } from '@/apis/user';
 
 interface userInitObj {
-  user: UserObj;
+  user: UserInfo;
 }
 
 const initialState: userInitObj = {
-  user: {} as UserObj,
+  user: {} as UserInfo,
 };
 
 export const setMyUser = createAsyncThunk('user/setMyUser', async () => {
-  const response = await service.get('/api/users/info');
-  return Promise.resolve(response.data);
+  const response = await client.get<Result<UserInfo>>('/api/users/info');
+  return Promise.resolve(response);
 });
 
 const userSlice = createSlice({
@@ -25,9 +25,8 @@ const userSlice = createSlice({
   },
   extraReducers(builder) {
     builder.addCase(setMyUser.fulfilled, (state, action) => {
-      const user = action.payload.data.user;
-      delete user['_id'];
-      state.user = user;
+      console.log(action.payload.data);
+      state.user = action.payload.data;
     });
   },
 });

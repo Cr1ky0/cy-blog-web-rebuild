@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
-import Cookies from 'universal-cookie';
 
 // img
 import img from '@/assets/images/blog-icon.webp';
@@ -9,7 +8,10 @@ import img from '@/assets/images/blog-icon.webp';
 import style from './index.module.scss';
 
 // ajax
-import { loginAjax, sendCaptcha } from '@/api/user';
+import { getUserInfo, getVerificationCode, login } from '@/apis/user';
+
+// util
+import _ from 'lodash';
 
 // context
 import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
@@ -17,11 +19,10 @@ import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
 // redux
 import { useAppDispatch } from '@/redux';
 import { setLoginFormOpen } from '@/redux/slices/universal';
-import { setUser } from '@/redux/slices/user';
 
 // comp
 import Loading from '@/components/Universal/Loading';
-import { trottle } from '@/utils';
+import { setMyUser } from '@/redux/slices/user';
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -29,11 +30,11 @@ const LoginForm = () => {
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [showPsw, setShowPsw] = useState(false);
-  const [captchaSvg, setCaptchaSvg] = useState<TrustedHTML>();
+  const [codeImg, setCodeImg] = useState<string>('');
   const [checked, setChecked] = useState(false);
 
   // value
-  const [email, setEmail] = useState(localStorage.getItem('login_email') || '');
+  const [userInfo, setUserInfo] = useState(localStorage.getItem('login_info') || '');
   const [psw, setPsw] = useState(localStorage.getItem('login_psw') || '');
   const [code, setCode] = useState('');
 
@@ -45,8 +46,6 @@ const LoginForm = () => {
   const ref4 = useRef<HTMLDivElement>(null);
   const ref5 = useRef<HTMLDivElement>(null);
   const ref6 = useRef<HTMLDivElement>(null);
-
-  const cookies = new Cookies();
 
   const onFocus = (ref1: React.RefObject<HTMLDivElement>, ref2: React.RefObject<HTMLDivElement>) => {
     const div = ref1.current as HTMLDivElement;
@@ -73,57 +72,53 @@ const LoginForm = () => {
     div.classList.add(style.blurColor);
   };
 
-  const login = trottle(() => {
+  // 验证码
+  const getCode = useCallback(async () => {
+    try {
+      const res = await getVerificationCode();
+      setCodeImg(res.data.img);
+    } catch (data: any) {
+      message.error(data.message);
+    }
+  }, []);
+
+  const getCodeThrottle = _.throttle(getCode, 300);
+
+  // 登录
+  const handleLogin = async () => {
     if (!isLoading) {
       setIsLoading(true);
-      setTimeout(() => {
-        loginAjax(
-          { email, password: psw, captcha: code },
-          async data => {
-            const { data: aData, token } = data;
-            // 设置token
-            delete aData.user['_id'];
-            await message.loadingSuccessAsync('登录中...', '登录成功');
-            await dispatch(setLoginFormOpen(false));
-            // 设置cookie持续时间90天
-            const expires = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
-            cookies.set('user', aData.user, { path: '/', expires });
-            cookies.set('token', token, { path: '/', expires });
-            dispatch(setUser(aData.user));
-            // 如果checked则保存一下账号密码到localStorage
-            if (checked) {
-              localStorage.setItem('login_email', email);
-              localStorage.setItem('login_psw', psw);
-            }
-            navigate(0);
-          },
-          content => {
-            message.error(content);
-          },
-          () => {
-            setIsLoading(false);
-          }
-        );
-      }, 300);
+      try {
+        await login({
+          userinfo: userInfo,
+          password: psw,
+          verificationCode: code,
+        });
+        // 获取用户信息存入redux
+        dispatch(setMyUser());
+        await message.loadingSuccessAsync('登录中...', '登录成功');
+        // 如果checked则保存一下账号密码到localStorage
+        if (checked) {
+          localStorage.setItem('login_info', userInfo);
+          localStorage.setItem('login_psw', psw);
+        }
+        navigate(0);
+      } catch (data: any) {
+        message.error(data.message);
+      } finally {
+        setIsLoading(false);
+      }
     }
-  }, 1000);
+  };
 
   // 先请求一个code
   useEffect(() => {
-    sendCaptcha(
-      '',
-      res => {
-        setCaptchaSvg(res);
-      },
-      err => {
-        message.error(err);
-      }
-    );
+    getCode();
   }, []);
 
   // 如果设置了记录密码，则把样式定为有值
   useEffect(() => {
-    if (email) {
+    if (userInfo) {
       setChecked(true);
       const div1 = ref1.current as HTMLDivElement;
       const div2 = ref2.current as HTMLDivElement;
@@ -136,44 +131,21 @@ const LoginForm = () => {
 
   // 监听回车和ESC
   useEffect(() => {
-    const trottle = () => {
-      let valid = true;
-      return (e: globalThis.KeyboardEvent) => {
-        if (valid) {
-          valid = false;
-          if (e.key.toUpperCase() === 'ENTER') {
-            login();
-          }
-          if (e.key.toUpperCase() === 'ESCAPE') {
-            dispatch(setLoginFormOpen(false));
-          }
-          // 每500ms执行一次
-          setTimeout(() => {
-            valid = true;
-          }, 500);
-        }
-      };
-    };
-
-    const listener = trottle();
+    const listener = _.throttle(e => {
+      if (e.key.toUpperCase() === 'ENTER' && !isLoading) {
+        handleLogin();
+      }
+      if (e.key.toUpperCase() === 'ESCAPE') {
+        dispatch(setLoginFormOpen(false));
+      }
+    }, 500);
 
     document.addEventListener('keydown', listener);
     return () => {
       document.removeEventListener('keydown', listener);
     };
-  }, [login]);
+  }, [handleLogin]);
 
-  const captcha = () => {
-    sendCaptcha(
-      '',
-      res => {
-        setCaptchaSvg(res);
-      },
-      err => {
-        message.error(err);
-      }
-    );
-  };
   return (
     <div className={style.mask}>
       <div className={`${style.wrapper} animate__animated animate__zoomIn `}>
@@ -195,7 +167,7 @@ const LoginForm = () => {
         <form className={style.form}>
           <div className={style.input}>
             <input
-              value={email}
+              value={userInfo}
               type="text"
               onFocus={() => {
                 onFocus(ref1, ref4);
@@ -205,11 +177,11 @@ const LoginForm = () => {
                 onBlur2(ref1, ref4);
               }}
               onChange={e => {
-                setEmail(e.target.value);
+                setUserInfo(e.target.value);
               }}
             />
             <div className={style.placeHolder} ref={ref1}>
-              用户邮箱
+              用户名/邮箱
             </div>
             <div ref={ref4}></div>
           </div>
@@ -243,7 +215,7 @@ const LoginForm = () => {
           </div>
           <div className={style.input}>
             <input
-              maxLength={5}
+              maxLength={6}
               type="text"
               onFocus={() => {
                 onFocus(ref3, ref6);
@@ -259,7 +231,9 @@ const LoginForm = () => {
             <div className={style.placeHolder} ref={ref3}>
               图形验证码
             </div>
-            <div className={style.captcha} onClick={captcha} dangerouslySetInnerHTML={{ __html: captchaSvg! }}></div>
+            <div className={style.captcha} onClick={getCodeThrottle}>
+              <img src={codeImg} alt="code" />
+            </div>
             <div ref={ref6}></div>
           </div>
           <div className={style.func}>
@@ -275,7 +249,7 @@ const LoginForm = () => {
               <div>记住密码</div>
             </label>
           </div>
-          <div className={style.submit} onClick={login}>
+          <div className={style.submit} onClick={handleLogin}>
             <div className="iconfont">{isLoading ? <Loading></Loading> : <>&#xe73c;&nbsp;登录</>}</div>
           </div>
         </form>

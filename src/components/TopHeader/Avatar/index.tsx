@@ -131,7 +131,7 @@ const Avatar = () => {
       {user ? (
         <>
           <Dropdown menu={{ items }} trigger={['click']}>
-            <div className={style.rightNavAvatar} style={{ backgroundImage: `url(${avatar})` }}></div>
+            <img className={style.rightNavAvatar} src={avatar} alt="avatar"></img>
           </Dropdown>
         </>
       ) : (
