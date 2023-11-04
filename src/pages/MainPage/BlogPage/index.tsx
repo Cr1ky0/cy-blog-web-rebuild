@@ -14,7 +14,6 @@ import { setChosenList } from '@/redux/slices/chosenList';
 import { useAppDispatch, useAppSelector } from '@/redux';
 import { setFadeOut, setIsLoading } from '@/redux/slices/progressbar';
 import { setJumpFlag, setMobileMenuOpen } from '@/redux/slices/universal';
-import { setSelectedId } from '@/redux/slices/blogMenu';
 
 // context
 import { useViewport } from '@/components/ContextProvider/ViewportProvider';
@@ -22,45 +21,25 @@ import { useViewport } from '@/components/ContextProvider/ViewportProvider';
 // global
 import { ANIME_HIDE_TIME, BACKGROUND_COLOR_DARK } from '@/global';
 
-// utils
-import { getOneBlogId, hasBlogOfId } from '@/utils';
-
 const BlogPage = () => {
   const { width } = useViewport();
   const dispatch = useAppDispatch();
   const selectedId = useAppSelector(state => state.blogMenu.selectedId);
   const curBlogContent = useAppSelector(state => state.blog.curBlogContent);
-  const menus = useAppSelector(state => state.blogMenu.menuList);
   const fadeOut = useAppSelector(state => state.progressbar.fadeOut);
   const themeMode = useAppSelector(state => state.universal.themeMode);
   const jumpFlag = useAppSelector(state => state.universal.jumpFlag);
 
-  // 重置mobile open
   useEffect(() => {
+    // 重置mobile open
     dispatch(setMobileMenuOpen(false));
-  }, []);
-
-  // 如果当前select不存在则重新选择
-  useEffect(() => {
-    if (!hasBlogOfId(menus, selectedId)) {
-      dispatch(setSelectedId(getOneBlogId(menus)));
-    }
-  }, []);
-
-  useEffect(() => {
+    // 导航栏
+    dispatch(setChosenList([false, true, false, false]));
+    // 回滚
     window.scrollTo({
       top: 0,
       behavior: 'smooth',
     });
-  }, []);
-
-  // 导航按钮变色
-  useEffect(() => {
-    dispatch(setChosenList([false, true, false, false]));
-  }, []);
-
-  // 打开滚动条
-  useEffect(() => {
     // 如果先前打开了滚动条要先关闭
     dispatch(setIsLoading(false));
     setTimeout(() => {
@@ -68,6 +47,14 @@ const BlogPage = () => {
     }, 50);
   }, []);
 
+  // TODO:如果当前select不存在则放一个提示不存在
+  // useEffect(() => {
+  //   if (!hasBlogOfId(menus, selectedId)) {
+  //     dispatch(setSelectedId(getOneBlogId(menus)));
+  //   }
+  // }, []);
+
+  // 打开滚动条
   useEffect(() => {
     if (jumpFlag) {
       // 重置jumpFLag标志

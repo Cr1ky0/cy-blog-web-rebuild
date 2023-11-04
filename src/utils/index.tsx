@@ -14,6 +14,7 @@ import {
 
 // antd
 import type { DataNode } from 'antd/es/tree';
+import { Menu } from '@/apis/menu';
 
 // 获取某个博客的父菜单链条
 export const getParentListOfBlog: (menus: SideMenuItem[], icons: AntdIcon[], id: string) => string[] = (
@@ -164,7 +165,7 @@ export const getAllKeyOfSideMenu: (menus: SideMenuItem[]) => string[] = menus =>
 
 // 根据blog id获取其parent链
 export const getBreadcrumbList: (
-  menus: SideMenuItem[],
+  menus: Menu[],
   id: string,
   icons: AntdIcon[],
   list?: BreadCrumbObj[]
@@ -434,7 +435,7 @@ function getTreeSelectItem(
   } as TreeSelectItem;
 }
 
-export const getTreeSelectList: (menus: SideMenuItem[], icons: AntdIcon[], onlyParent?: boolean) => TreeSelectItem[] = (
+export const getTreeSelectList: (menus: Menu[], icons: AntdIcon[], onlyParent?: boolean) => TreeSelectItem[] = (
   menus,
   icons,
   onlyParent = false
@@ -444,19 +445,19 @@ export const getTreeSelectList: (menus: SideMenuItem[], icons: AntdIcon[], onlyP
     // 从iconsContext中提取出对应icon Node
     const icon = icons.filter(icon => icon.name === menu.icon);
     return getTreeSelectItem(
-      menu.id,
+      menu.menuId,
       menu.title,
       icon[0] ? icon[0].icon : undefined,
-      menu.children
-        ? onlyParent && menu.grade === 3
+      menu.subMenu
+        ? onlyParent && menu.level === 3
           ? undefined
-          : getTreeSelectList(menu.children, icons, onlyParent)
+          : getTreeSelectList(menu.subMenu, icons, onlyParent)
         : undefined
     );
   });
 };
 
-export const getEditBelongMenuTree = (menus: TreeSelectItem[], selfId: string) => {
+export const getEditBelongMenuTree = (menus: TreeSelectItem[], selfId: number) => {
   return menus.filter(menu => {
     menu.children = menu.children?.filter(child => {
       child.children = [];

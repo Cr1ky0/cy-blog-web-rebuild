@@ -16,19 +16,8 @@ import { Tag, Tooltip, Input, Select, TreeSelect, Modal, Button } from 'antd';
 import style from './index.module.scss';
 
 // api
-import {
-  addMenuAjax,
-  changeSort,
-  deleteMenuAjax,
-  getMenuAjax,
-  getSelfMenu,
-  updateBelong,
-  updateMenuAjax,
-} from '@/api/menu';
-import { changeSortOfBlog, deleteBlogAjax, deleteBlogOfMenuAjax, getCurBlog, updateBelongOfBlogAjax } from '@/api/blog';
-
-//interface
-import { SideMenuItem, BlogObj } from '@/interface';
+import { changeSort } from '@/api/menu';
+import { changeSortOfBlog } from '@/api/blog';
 
 // provider
 import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
@@ -39,88 +28,52 @@ import { useIcons } from '@/components/ContextProvider/IconStore';
 import { useAppDispatch, useAppSelector } from '@/redux';
 import { setSelectKey } from '@/redux/slices/backstage';
 import { setAllContent, setCurEditId, setIsEdit } from '@/redux/slices/blog';
-import { deleteMenu, setDeleteKey, setDelKind, setSelectedId } from '@/redux/slices/blogMenu';
+import { setDeleteKey, setDelKind, setMenuList } from '@/redux/slices/blogMenu';
 
 // utils
-import {
-  filterLT,
-  getAntdIcon,
-  getAntdMenus,
-  getEditBelongMenuTree,
-  getOneBlogId,
-  getSideMenuItem,
-  getTreeSelectList,
-} from '@/utils';
+import { filterLT, getAntdIcon, getEditBelongMenuTree, getTreeSelectList } from '@/utils';
 
 // global
 import { colorChoseList } from '@/global';
-
-interface MenuType {
-  key: string;
-  title: string;
-  grade: number;
-  color: string;
-  sort: number;
-  icon: string;
-  child: SideMenuItem[];
-  blogs: BlogObj[];
-}
-
-interface BlogType {
-  key: string;
-  title: string;
-  sort: number;
-  menuTitle: string;
-  menuIcon: string;
-}
+import { addMenu, deleteMenu, getMenu, Menu, sortMenu, updateMenu } from '@/apis/menu';
+import { delBlog, getBlog, MenuBlog, sortBlog, updateBlog } from '@/apis/blog';
 
 interface MenuRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
-  data: MenuType;
+  data: Menu;
   parentIcon?: string;
   parentTitle?: string;
-  parentId?: string;
+  parentId?: number;
 }
 
 interface BlogRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
-  data: BlogType;
+  data: MenuBlog;
+  parentTitle: string;
+  parentIcon: string;
 }
 
-const generateMenuData = (data: SideMenuItem) => {
-  return {
-    key: data.id,
-    title: data.title,
-    grade: data.grade,
-    color: data.color,
-    sort: data.sort,
-    icon: data.icon,
-    child: data.children,
-    blogs: data.blogs,
-  } as MenuType;
-};
-
-const generateBlogData = (data: BlogObj, menuIcon: string, menuTitle: string) => {
-  return { key: data.id, title: data.title, sort: data.sort, menuIcon, menuTitle } as BlogType;
-};
-
+// ***********************************************************
 // 单个博客行
-const BlogRow: React.FC<BlogRowProps> = ({ data }) => {
-  const { key, title, sort, menuTitle: mt, menuIcon: mi } = data;
+// ***********************************************************
+const BlogRow: React.FC<BlogRowProps> = ({ data, parentTitle, parentIcon }) => {
+  const { blogId, title, sort } = data;
   const navigate = useNavigate();
   const modal = useGlobalModal();
   const message = useGlobalMessage();
   const dispatch = useAppDispatch();
   const icons = useIcons();
+
   const menus = useAppSelector(state => state.blogMenu.menuList);
   const themeMode = useAppSelector(state => state.universal.themeMode);
-  const [menuIcon, setMenuIcon] = useState(mi);
-  const [menuTitle, setMenuTitle] = useState(mt);
+
+  const [menuIcon, setMenuIcon] = useState(parentIcon);
+  const [menuTitle, setMenuTitle] = useState(parentTitle);
   const antdMenus = getTreeSelectList(menus, icons, true);
   // flag
   const [showEdit, setShowEdit] = useState(false);
 
   // dnd
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: key,
+    id: blogId,
   });
   const styles: React.CSSProperties = {
     transform: CSS.Transform.toString(transform && { ...transform, scaleY: 1 }),
@@ -130,50 +83,54 @@ const BlogRow: React.FC<BlogRowProps> = ({ data }) => {
   };
 
   // handler
-  const handleEdit = () => {
-    dispatch(setCurEditId(key));
-    getCurBlog(key).then(
-      response => {
-        const blog = response.data.blog;
-        const { belongingMenu, contents, title } = blog;
-        const menu = getSideMenuItem(menus, belongingMenu) as SideMenuItem;
-        dispatch(
-          setAllContent({
-            title,
-            menuId: menu.id,
-            menuTitle: menu.title,
-            content: filterLT(contents),
-          })
-        );
-        navigate('/backstage/blog');
-        dispatch(setIsEdit(true));
-      },
-      err => {
-        message.error(err.message);
-      }
-    );
+  const handleEdit = async () => {
+    dispatch(setCurEditId(blogId));
+    try {
+      const res1 = await getBlog(blogId);
+      const blog = res1.data.blog;
+      const res2 = await getMenu(blog.menuId);
+      const menu = res2.data.menu;
+      dispatch(
+        setAllContent({
+          title,
+          menuId: menu.menuId,
+          menuTitle: menu.title,
+          content: filterLT(blog.content),
+        })
+      );
+      navigate('/backstage/blog');
+      dispatch(setIsEdit(true));
+    } catch (data: any) {
+      message.error(data.message);
+    }
   };
+
   const handleDelete = async () => {
-    await deleteBlogAjax(
-      key,
-      async () => {
-        await message.loadingSuccessAsync('删除中...', '删除成功');
-        // 删除后重新设置selectedId以外的ID（先更新selectedId的话下面的代码的selectedId仍是原来的Id，没做更新）
-        const id = getOneBlogId(menus, key);
-        dispatch(setSelectedId(id || ''));
+    try {
+      await delBlog(blogId);
+      // 设置删除信息
+      dispatch(setDelKind('blog'));
+      dispatch(setDeleteKey(blogId));
+    } catch (data: any) {
+      message.error(data.message);
+    }
+  };
 
-        // 设置删除信息
-        dispatch(setDelKind('blog'));
-        dispatch(setDeleteKey(key));
-
-        // 删除id
-        dispatch(deleteMenu(key));
-        // navigate(0);
-      },
-      msg => {
-        message.error(msg);
-      }
-    );
+  const handleUpdateBelong = async (id: number) => {
+    try {
+      const res1 = await updateBlog({
+        blogId,
+        menuId: id,
+      });
+      const blog = res1.data.updatedBlog;
+      const res = await getMenu(blog.menuId);
+      const menu = res.data.menu;
+      setMenuIcon(menu.icon);
+      setMenuTitle(menu.title);
+      message.success('更新成功');
+    } catch (data: any) {
+      message.error(data.message);
+    }
   };
 
   // main
@@ -196,19 +153,8 @@ const BlogRow: React.FC<BlogRowProps> = ({ data }) => {
             placeholder="请选择分类"
             treeLine={true}
             treeData={antdMenus}
-            value={menuTitle}
-            onChange={id => {
-              updateBelongOfBlogAjax(key, id)
-                .then(res => {
-                  message.success('修改成功，刷新后重置菜单！');
-                  const menu = getSideMenuItem(menus, res.data.updatedBlog.belongingMenu) as SideMenuItem;
-                  setMenuIcon(menu.icon!);
-                  setMenuTitle(menu.title);
-                })
-                .catch(err => {
-                  message.error(err.data.message);
-                });
-            }}
+            value={blogId}
+            onChange={handleUpdateBelong}
             onBlur={() => {
               setShowEdit(false);
             }}
@@ -269,31 +215,24 @@ const BlogRow: React.FC<BlogRowProps> = ({ data }) => {
   );
 };
 
+// ***********************************************************
 // 单个菜单行
+// ***********************************************************
 const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle, parentId, parentIcon }) => {
   const icons = useIcons();
   const msg = useGlobalMessage();
   const modal = useGlobalModal();
-  const { key, title, grade, color, icon, child, blogs } = data;
+  const { menuId, title, level, color, icon, subMenu, blogs } = data;
   const dispatch = useAppDispatch();
   const deleteKey = useAppSelector(state => state.blogMenu.deleteKey);
   const delKind = useAppSelector(state => state.blogMenu.delKind);
-  const selectedId = useAppSelector(state => state.blogMenu.selectedId);
   const menus = useAppSelector(state => state.blogMenu.menuList);
   const themeMode = useAppSelector(state => state.universal.themeMode);
-  const [pTitle, setPTitle] = useState(parentTitle);
-  const [pIcon, setPIcon] = useState(parentIcon);
-  const [pId, setPId] = useState(parentId);
-  const [menuData, setMenuData] = useState<MenuType[]>(
-    child.map(item => {
-      return generateMenuData(item);
-    }) || []
-  );
-  const [blogData, setBlogData] = useState<BlogType[]>(
-    blogs.map((blog: BlogObj) => {
-      return generateBlogData(blog, icon, title);
-    }) || []
-  );
+  const [pTitle, setPTitle] = useState(parentTitle || undefined);
+  const [pIcon, setPIcon] = useState(parentIcon || undefined);
+  const [pId, setPId] = useState(parentId || undefined);
+  const [menuData, setMenuData] = useState<Menu[]>(subMenu || []);
+  const [blogData, setBlogData] = useState<MenuBlog[]>(blogs || []);
 
   // 选择图标的下拉菜单列表
   const selectIconList = useState(
@@ -326,19 +265,19 @@ const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle, parentId, parentIc
   const [beforeTitle, setBeforeTitle] = useState<string>(title);
   const [titleValue, setTitleValue] = useState<string>(title);
 
-  const onTitleInputBlur = () => {
+  const onTitleInputBlur = async () => {
     if (titleValue !== beforeTitle) {
-      updateMenuAjax(
-        { id: key, title: titleValue },
-        () => {
-          msg.success('修改成功！');
-          setBeforeTitle(titleValue);
-        },
-        content => {
-          setTitleValue(beforeTitle);
-          msg.error(content);
-        }
-      );
+      try {
+        await updateMenu({
+          menuId,
+          title: titleValue,
+        });
+        msg.success('修改成功！');
+        setBeforeTitle(titleValue);
+      } catch (data: any) {
+        setTitleValue(beforeTitle);
+        msg.error(data.message);
+      }
     }
     setShowTitleEdit(false);
   };
@@ -348,19 +287,19 @@ const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle, parentId, parentIc
   const [beforeColor, setBeforeColor] = useState<string>(color);
   const [colorValue, setColorValue] = useState<string>(color);
 
-  const onColorSelectBlur = () => {
+  const onColorSelectBlur = async () => {
     if (colorValue !== beforeColor) {
-      updateMenuAjax(
-        { id: key, color: colorValue },
-        () => {
-          msg.success('修改成功！');
-          setBeforeColor(colorValue);
-        },
-        content => {
-          setColorValue(beforeColor);
-          msg.error(content);
-        }
-      );
+      try {
+        await updateMenu({
+          menuId,
+          color: colorValue,
+        });
+        msg.success('修改成功！');
+        setBeforeColor(colorValue);
+      } catch (data: any) {
+        setColorValue(beforeColor);
+        msg.error(data.message);
+      }
     }
     setShowColorEdit(false);
   };
@@ -370,21 +309,21 @@ const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle, parentId, parentIc
   const [beforeIcon, setBeforeIcon] = useState<string>(icon);
   const [iconValue, setIconValue] = useState<string>(icon);
 
-  const onIconSelectBlur = () => {
+  const onIconSelectBlur = async () => {
     if (iconValue !== beforeIcon) {
-      updateMenuAjax(
-        { id: key, icon: iconValue },
-        () => {
-          msg.success('修改成功！');
-          setBeforeIcon(iconValue);
-        },
-        content => {
-          setIconValue(beforeIcon);
-          msg.error(content);
-        }
-      );
+      try {
+        await updateMenu({
+          menuId,
+          color: iconValue,
+        });
+        msg.success('修改成功！');
+        setBeforeIcon(iconValue);
+      } catch (data: any) {
+        setIconValue(beforeIcon);
+        msg.error(data.message);
+      }
+      setShowIconEdit(false);
     }
-    setShowIconEdit(false);
   };
 
   // BelongMenu部分
@@ -392,25 +331,27 @@ const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle, parentId, parentIc
     {
       value: '主菜单',
       title: '主菜单',
-      children: getEditBelongMenuTree(getTreeSelectList(menus, icons, true), key),
+      children: getEditBelongMenuTree(getTreeSelectList(menus, icons, true), menuId),
     },
   ];
 
   const [showEditBelong, setShowEditBelong] = useState(false);
-  const [selectBelong, setSelectBelong] = useState<string>(parentId || '主菜单');
+  const [selectBelong, setSelectBelong] = useState<number | string>(parentId || '主菜单');
 
   // dnd
   const [draggable, setDraggable] = useState(true);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: key,
+    id: menuId,
     disabled: !draggable,
   });
+
   const styles: React.CSSProperties = {
     transform: CSS.Transform.toString(transform && { ...transform, scaleY: 1 }),
     transition,
     // cursor: 'move',
     ...(isDragging ? { position: 'relative', zIndex: 9999 } : {}),
   };
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -419,11 +360,12 @@ const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle, parentId, parentIc
       },
     })
   );
+
   const onDragEnd = ({ active, over }: DragEndEvent) => {
     if (active.id !== over?.id) {
       setMenuData(prev => {
-        const activeIndex = prev.findIndex(i => i.key === active.id);
-        const overIndex = prev.findIndex(i => i.key === over?.id);
+        const activeIndex = prev.findIndex(i => i.menuId === active.id);
+        const overIndex = prev.findIndex(i => i.menuId === over?.id);
         return arrayMove(prev, activeIndex, overIndex);
       });
     }
@@ -433,8 +375,8 @@ const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle, parentId, parentIc
   const onDragEndOfBlog = ({ active, over }: DragEndEvent) => {
     if (active.id !== over?.id) {
       setBlogData(prev => {
-        const activeIndex = prev.findIndex(i => i.key === active.id);
-        const overIndex = prev.findIndex(i => i.key === over?.id);
+        const activeIndex = prev.findIndex(i => i.blogId === active.id);
+        const overIndex = prev.findIndex(i => i.blogId === over?.id);
         return arrayMove(prev, activeIndex, overIndex);
       });
     }
@@ -444,88 +386,110 @@ const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle, parentId, parentIc
   // handler
   // delete menu
   const handleDelete = async () => {
-    // 需要删除该菜单下的所有博客以及子菜单
-    const item = getSideMenuItem(menus, key as string) as SideMenuItem;
-    await deleteMenuAjax(
-      item.id,
-      async () => {
-        // 删除该菜单下的blogs
-        await deleteBlogOfMenuAjax(item.id);
-        // 删除子菜单和其下的blogs
-        if (item.children)
-          item.children.map(child => {
-            deleteMenuAjax(child.id);
-            if (child.blogs && child.blogs.length) deleteBlogOfMenuAjax(child.id);
-            // 删除grandChild
-            if (child.children)
-              child.children.map(grandChild => {
-                deleteMenuAjax(grandChild.id);
-                if (grandChild.blogs && grandChild.blogs.length) deleteBlogOfMenuAjax(grandChild.id);
-              });
-          });
-        await msg.loadingAsync('删除中...', '删除成功！');
-        // 选择新的id
-        const id = getOneBlogId(menus, selectedId, item.id);
-        dispatch(setSelectedId(id || ''));
-        // 更新state
-        dispatch(deleteMenu(item.id));
+    try {
+      await deleteMenu(menuId);
+      // 更新menu状态
+      dispatch(setMenuList());
+      // 更新删除状态
+      dispatch(setDeleteKey(menuId));
+      dispatch(setDelKind('menu'));
+    } catch (data: any) {
+      msg.error(data.message);
+    }
+  };
 
-        // 更新删除状态
-        dispatch(setDeleteKey(key));
-        dispatch(setDelKind('menu'));
-      },
-      content => {
-        msg.error(content);
+  const handleAdd = async () => {
+    try {
+      const res = await addMenu({
+        title: createTitle as string,
+        icon: selectIcon as string,
+        color: selectColor as string,
+        belongMenuId: menuId,
+      });
+      setMenuData([res.data.menu, ...menuData]);
+      setCreateTitle(undefined);
+      setSelectIcon(undefined);
+      setSelectColor(undefined);
+      msg.success('添加成功！');
+    } catch (data: any) {
+      msg.error(data.message);
+    }
+  };
+
+  const handleChange = async (value: number | string) => {
+    setSelectBelong(value);
+    try {
+      if (value === '主菜单') {
+        await updateMenu({
+          menuId,
+          belongMenuId: 0,
+        });
+        setPId(undefined);
+        setPIcon(undefined);
+        setPTitle('主菜单');
+      } else {
+        await updateMenu({
+          menuId,
+          belongMenuId: value as number,
+        });
+        const res = await getMenu(value as number);
+        const parent = res.data.menu;
+        setPId(parent.menuId);
+        setPTitle(parent.title);
+        setPIcon(parent.icon);
       }
-    );
+      msg.success('修改成功，刷新列表后重置！');
+    } catch (err: any) {
+      msg.error(err.data.message);
+    }
   };
 
   // 博客或菜单被删后修改State
   useEffect(() => {
     if (delKind === 'blog') {
       // 由于是递归关系这里修改的值必定是当前menu下的blog，所以不用考虑key的归属问题
-      setBlogData(blogData.filter(blog => blog.key !== deleteKey));
+      setBlogData(blogData.filter(blog => blog.blogId !== deleteKey));
     }
     if (delKind === 'menu') {
-      setMenuData(menuData.filter(menu => menu.key !== deleteKey));
+      setMenuData(menuData.filter(menu => menu.menuId !== deleteKey));
     }
   }, [deleteKey]);
 
   // 菜单顺序改变后进行操作
   useEffect(() => {
     if (isChange) {
-      const idList = menuData.map(data => {
-        return data.key;
-      });
-      changeSort(
-        idList,
-        () => {
-          // pass
-        },
-        err => {
-          msg.error(err);
+      const changeSort = async (idList: number[]) => {
+        try {
+          await sortMenu(idList);
+        } catch (data: any) {
+          msg.error(data.message);
+        } finally {
+          setIsChange(false);
         }
-      );
-      setIsChange(false);
+      };
+      const idList = menuData.map(data => {
+        return data.menuId;
+      });
+      changeSort(idList);
     }
   }, [menuData]);
 
   // 博客顺序改变后进行操作
   useEffect(() => {
     if (isChange) {
-      const idList = blogData.map(data => {
-        return data.key;
-      });
-      changeSortOfBlog(
-        idList,
-        () => {
-          // pass
-        },
-        err => {
-          msg.error(err);
+      const changeSort = async (idList: number[]) => {
+        try {
+          await sortBlog(idList);
+        } catch (data: any) {
+          msg.error(data.message);
+        } finally {
+          setIsChange(false);
         }
-      );
-      setIsChange(false);
+      };
+      const idList = blogData.map(data => {
+        return data.blogId;
+      });
+      changeSort(idList);
     }
   }, [blogData]);
 
@@ -551,7 +515,7 @@ const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle, parentId, parentIc
             </div>
           ) : undefined}
         </td>
-        <td>{grade}</td>
+        <td>{level}</td>
         {/* title编辑 */}
         <td>
           {showTitleEdit ? (
@@ -647,27 +611,7 @@ const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle, parentId, parentIc
               treeLine={true}
               treeData={antdMenus}
               value={selectBelong}
-              onChange={async value => {
-                setSelectBelong(value);
-                try {
-                  if (value === '主菜单') {
-                    await updateBelong({ id: key, belongingMenu: value, isMain: true });
-                    setPId(undefined);
-                    setPIcon(undefined);
-                    setPTitle('主菜单');
-                  } else {
-                    await updateBelong({ id: key, belongingMenu: value });
-                    const res = await getMenuAjax(value);
-                    const parent = res.data.data.menu;
-                    setPId(parent.id);
-                    setPTitle(parent.title);
-                    setPIcon(parent.icon);
-                  }
-                  msg.success('修改成功，刷新列表后重置！');
-                } catch (err: any) {
-                  msg.error(err.data.message);
-                }
-              }}
+              onChange={handleChange}
               onBlur={() => {
                 setShowEditBelong(false);
               }}
@@ -712,7 +656,7 @@ const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle, parentId, parentIc
               &#xe604;
             </div>
           </Tooltip>
-          {grade !== 3 ? (
+          {level !== 3 ? (
             <>
               <Tooltip title="添加子菜单" placement="top">
                 <div
@@ -736,30 +680,7 @@ const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle, parentId, parentIc
                   setDraggable(true);
                   setShowAddModal(false);
                 }}
-                onOk={() => {
-                  addMenuAjax(
-                    {
-                      title: createTitle,
-                      grade: grade + 1,
-                      icon: selectIcon,
-                      color: selectColor,
-                      parentId: key,
-                    },
-                    res => {
-                      msg.success('创建成功!');
-                      const menu = res.body.menu;
-                      menu.children = [];
-                      menu.blogs = [];
-                      setMenuData([generateMenuData(menu), ...menuData]);
-                      setCreateTitle(undefined);
-                      setSelectIcon(undefined);
-                      setSelectColor(undefined);
-                    },
-                    err => {
-                      msg.error(err);
-                    }
-                  );
-                }}
+                onOk={handleAdd}
               >
                 <div className={style.selectInput}>
                   <div>选择图标：</div>
@@ -810,7 +731,7 @@ const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle, parentId, parentIc
             <DndContext sensors={sensors} modifiers={[restrictToVerticalAxis]} onDragEnd={onDragEndOfBlog}>
               <SortableContext
                 // rowKey array
-                items={blogData.map(i => i.key)}
+                items={blogData.map(i => i.blogId)}
                 strategy={verticalListSortingStrategy}
               >
                 <table className={style.table}>
@@ -831,7 +752,7 @@ const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle, parentId, parentIc
                   </thead>
                   <tbody>
                     {blogData.map(blog => {
-                      return <BlogRow key={blog.key} data={blog}></BlogRow>;
+                      return <BlogRow key={blog.blogId} data={blog} parentIcon={icon} parentTitle={title}></BlogRow>;
                     })}
                   </tbody>
                 </table>
@@ -841,13 +762,13 @@ const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle, parentId, parentIc
         </tr>
       ) : undefined}
       {/* 单个父菜单的子菜单 */}
-      {childOpen && menuData.length && grade !== 3 ? (
+      {childOpen && menuData.length && level !== 3 ? (
         <tr className={`${style.childTr} ${themeMode === 'dark' ? style.trChildDark : style.trChildLight}`}>
           <td colSpan={7} style={{ padding: 0, paddingLeft: 54 }}>
             <DndContext sensors={sensors} modifiers={[restrictToVerticalAxis]} onDragEnd={onDragEnd}>
               <SortableContext
                 // rowKey array
-                items={menuData.map(i => i.key)}
+                items={menuData.map(i => i.menuId)}
                 strategy={verticalListSortingStrategy}
               >
                 <table className={style.table}>
@@ -872,11 +793,11 @@ const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle, parentId, parentIc
                     {menuData.map(item => {
                       return (
                         <MenuRow
-                          key={item.key}
+                          key={item.menuId}
                           data={item}
                           parentIcon={icon}
                           parentTitle={title}
-                          parentId={key}
+                          parentId={menuId}
                         ></MenuRow>
                       );
                     })}
@@ -891,7 +812,9 @@ const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle, parentId, parentIc
   );
 };
 
+// ***********************************************************
 // 总组件
+// ***********************************************************
 const App: React.FC = () => {
   const msg = useGlobalMessage();
   const dispatch = useAppDispatch();
@@ -899,7 +822,9 @@ const App: React.FC = () => {
   const themeMode = useAppSelector(state => state.universal.themeMode);
   const delKind = useAppSelector(state => state.blogMenu.delKind);
   const deleteKey = useAppSelector(state => state.blogMenu.deleteKey);
-  const [menuData, setMenuData] = useState<MenuType[]>([]);
+  const menu = useAppSelector(state => state.blogMenu.menuList);
+
+  const [menuData, setMenuData] = useState<Menu[]>(menu);
   const [isChange, setIsChange] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   // 建立主菜单的选择颜色、icon和菜单标题
@@ -931,12 +856,30 @@ const App: React.FC = () => {
   const onDragEnd = ({ active, over }: DragEndEvent) => {
     if (active.id !== over?.id) {
       setMenuData(prev => {
-        const activeIndex = prev.findIndex(i => i.key === active.id);
-        const overIndex = prev.findIndex(i => i.key === over?.id);
+        const activeIndex = prev.findIndex(i => i.menuId === active.id);
+        const overIndex = prev.findIndex(i => i.menuId === over?.id);
         return arrayMove(prev, activeIndex, overIndex);
       });
     }
     setIsChange(true);
+  };
+
+  // handler
+  const handleAdd = async () => {
+    try {
+      const res = await addMenu({
+        title: createTitle as string,
+        icon: selectIcon as string,
+        color: selectColor as string,
+      });
+      setMenuData([...menuData, res.data.menu]);
+      setCreateTitle(undefined);
+      setSelectIcon(undefined);
+      setSelectColor(undefined);
+      msg.success('创建成功!');
+    } catch (data: any) {
+      msg.error(data.message);
+    }
   };
 
   useEffect(() => {
@@ -946,7 +889,7 @@ const App: React.FC = () => {
   // 博客或菜单被删后修改State
   useEffect(() => {
     if (delKind === 'menu') {
-      setMenuData(menuData.filter(menu => menu.key !== deleteKey));
+      setMenuData(menuData.filter(menu => menu.menuId !== deleteKey));
     }
   }, [deleteKey]);
 
@@ -954,7 +897,7 @@ const App: React.FC = () => {
   useEffect(() => {
     if (isChange) {
       const idList = menuData.map(data => {
-        return data.key;
+        return data.menuId;
       });
       changeSort(
         idList,
@@ -968,22 +911,6 @@ const App: React.FC = () => {
       setIsChange(false);
     }
   }, [menuData]);
-
-  useEffect(() => {
-    getSelfMenu(
-      '',
-      res => {
-        setMenuData(
-          res.body.menus.map((item: SideMenuItem) => {
-            return generateMenuData(item);
-          })
-        );
-      },
-      err => {
-        msg.error(err);
-      }
-    );
-  }, []);
 
   return (
     <>
@@ -1007,29 +934,7 @@ const App: React.FC = () => {
         onCancel={() => {
           setModalOpen(false);
         }}
-        onOk={() => {
-          addMenuAjax(
-            {
-              title: createTitle,
-              grade: 1,
-              icon: selectIcon,
-              color: selectColor,
-            },
-            res => {
-              msg.success('创建成功!');
-              const menu = res.body.menu;
-              menu.children = [];
-              menu.blogs = [];
-              setMenuData([...menuData, generateMenuData(menu)]);
-              setCreateTitle(undefined);
-              setSelectIcon(undefined);
-              setSelectColor(undefined);
-            },
-            err => {
-              msg.error(err);
-            }
-          );
-        }}
+        onOk={handleAdd}
       >
         <div className={style.selectInput}>
           <div>选择图标：</div>
@@ -1072,7 +977,7 @@ const App: React.FC = () => {
       <DndContext sensors={sensors} modifiers={[restrictToVerticalAxis]} onDragEnd={onDragEnd}>
         <SortableContext
           // rowKey array
-          items={menuData.map(i => i.key)}
+          items={menuData.map(i => i.menuId)}
           strategy={verticalListSortingStrategy}
         >
           <table className={style.table} style={{ overflow: 'hidden', borderRadius: '8px 8px 0 0' }}>
@@ -1092,7 +997,7 @@ const App: React.FC = () => {
             </thead>
             <tbody>
               {menuData.map(item => {
-                return <MenuRow key={item.key} data={item}></MenuRow>;
+                return <MenuRow key={item.menuId} data={item}></MenuRow>;
               })}
             </tbody>
           </table>

@@ -3,6 +3,7 @@ import { getAvatar, login } from '@/apis/user';
 import UploadAvatar from '@/components/TopHeader/ChangeInfo/UploadAvatar';
 import LoginForm from '@/components/TopHeader/LoginForm';
 import IntroductionBox from '@/components/HomePage/IntroductionBox';
+import EditMenu from "@/pages/MainPage/BackStage/EditMenu";
 
 const TestPage = () => {
   const [avatarUrl, setAvatarUrl] = useState<string>('');
@@ -48,7 +49,7 @@ const TestPage = () => {
       {/*    height: 500,*/}
       {/*  }}*/}
       {/*/>*/}
-      <IntroductionBox />
+      <EditMenu />
     </div>
   );
 };

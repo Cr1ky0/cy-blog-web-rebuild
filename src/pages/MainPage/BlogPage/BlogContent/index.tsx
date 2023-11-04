@@ -17,7 +17,7 @@ import style from './index.module.scss';
 
 //redux
 import { useAppDispatch, useAppSelector } from '@/redux';
-import { setSelectedId, deleteMenu, setOpt } from '@/redux/slices/blogMenu';
+import { setSelectedId, setOpt } from '@/redux/slices/blogMenu';
 import { initWriteContent, setAllContent, setCurBlogContent, setCurEditId, setIsEdit } from '@/redux/slices/blog';
 import { setFadeOut } from '@/redux/slices/progressbar';
 

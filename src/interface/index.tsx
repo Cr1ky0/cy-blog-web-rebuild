@@ -233,7 +233,7 @@ export interface BlogTagBoxStatistic {
 export type MenuItem = Required<MenuProps>['items'][number];
 
 export interface TreeSelectItem {
-  value?: string;
+  value?: React.Key;
   icon?: React.ReactNode;
   key?: React.Key;
   children?: TreeSelectItem[];
