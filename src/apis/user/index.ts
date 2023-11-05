@@ -2,6 +2,17 @@ import service, { client, Result } from '@/utils/request';
 import { RcFile } from 'antd/es/upload';
 
 // interface
+// init
+export const userInitState: User = {
+  userId: 0,
+  username: '',
+  nickname: '',
+  brief: '',
+  email: '',
+  avatar: '',
+  role: '',
+};
+
 // request
 interface LoginForm {
   userinfo: string;
@@ -75,4 +86,14 @@ export const getCriiky0Avatar = async () => {
 
 export const updateUser = async (data: UpdateUserForm) => {
   return client.post<Result<UpdatedUser>>('/api/user/info', data);
+};
+
+export const getUserInfoById = async (userId: number) => {
+  return client.get<Result<UserInfo>>(`/api/user/${userId}`);
+};
+
+export const getAvatarById = async (userId: number) => {
+  return service.get(`/api/user/avatar/${userId}`, {
+    responseType: 'arraybuffer',
+  });
 };

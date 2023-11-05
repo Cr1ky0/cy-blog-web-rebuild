@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 // css
 import style from './index.module.scss';
@@ -6,21 +6,17 @@ import style from './index.module.scss';
 // redux
 import { useAppDispatch, useAppSelector } from '@/redux';
 import { setSelectedId } from '@/redux/slices/blogMenu';
-import { setFadeOut } from '@/redux/slices/progressbar';
 import { setJumpFlag } from '@/redux/slices/universal';
-
-// util
-import { getSideMenuItem } from '@/utils';
-
-// interface
-import { BlogObj, SideMenuItem } from '@/interface';
 
 // global
 import { ANIME_HIDE_TIME } from '@/global';
+import { getMenu } from '@/apis/menu';
+import { getBlog, MenuBlog } from '@/apis/blog';
+import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
 
 interface ContextObj {
   title: string;
-  blogId: string;
+  blogId: number;
 }
 
 interface ContextRelation {
@@ -29,45 +25,67 @@ interface ContextRelation {
 }
 
 // 判断当前blog是否有前后文
-const getState: (menus: SideMenuItem[], blogId: string) => ContextRelation = (menus, blogId) => {
-  const blog = getSideMenuItem(menus, blogId) as BlogObj;
-  const menu = getSideMenuItem(menus, blog?.belongingMenu) as SideMenuItem;
-  const blogs = menu ? (menu.blogs as BlogObj[]) : [];
-  const last = {} as ContextObj;
-  const next = {} as ContextObj;
-  blogs.forEach((blog, index) => {
-    if (blog.id === blogId)
-      if (index === blogs.length - 1 && index !== 0) {
-        // 无后文
-        last.title = blogs[index - 1].title;
-        last.blogId = blogs[index - 1].id;
-      } else if (index === 0 && blogs.length > 1) {
-        // 无前文
-        next.title = blogs[index + 1].title;
-        next.blogId = blogs[index + 1].id;
-      } else if (blogs.length === 1) {
-        // 无前后文
-      } else {
-        // 有前后文
-        const lastBlog = blogs[index - 1];
-        const nextBlog = blogs[index + 1];
-        last.title = lastBlog.title;
-        last.blogId = lastBlog.id;
-        next.title = nextBlog.title;
-        next.blogId = nextBlog.id;
-      }
-  });
-  return { last, next } as ContextRelation;
+const initRelation = {
+  last: {
+    title: '',
+    blogId: 0,
+  },
+  next: {
+    title: '',
+    blogId: 0,
+  },
 };
-
 const NextPage = () => {
-  const selectedId = useAppSelector(state => state.blogMenu.selectedId);
-  const menus = useAppSelector(state => state.blogMenu.menuList);
-  const themeMode = useAppSelector(state => state.universal.themeMode);
   const dispatch = useAppDispatch();
-  const relation = useMemo(() => getState(menus, selectedId), [menus, selectedId]);
+  const message = useGlobalMessage();
+  const selectedId = useAppSelector(state => state.blogMenu.selectedId);
+  const themeMode = useAppSelector(state => state.universal.themeMode);
+  const [relation, setRelation] = useState<ContextRelation>(initRelation);
+  // const relation = useMemo(() => getState(selectedId), [selectedId]);
 
-  const handleClick = (id: string) => {
+  // 获取前后文环境
+  const getState = useCallback(async (): Promise<void> => {
+    try {
+      const blogRes = await getBlog(selectedId);
+      const blog = blogRes.data.blog;
+      const menuRes = await getMenu(blog.menuId);
+      const menu = menuRes.data.menu;
+      const blogs = menu ? (menu.blogs as MenuBlog[]) : [];
+      const last = {} as ContextObj;
+      const next = {} as ContextObj;
+      blogs.forEach((blog, index) => {
+        if (blog.blogId === selectedId)
+          if (index === blogs.length - 1 && index !== 0) {
+            // 无后文
+            last.title = blogs[index - 1].title;
+            last.blogId = blogs[index - 1].blogId;
+          } else if (index === 0 && blogs.length > 1) {
+            // 无前文
+            next.title = blogs[index + 1].title;
+            next.blogId = blogs[index + 1].blogId;
+          } else if (blogs.length === 1) {
+            // 无前后文
+          } else {
+            // 有前后文
+            const lastBlog = blogs[index - 1];
+            const nextBlog = blogs[index + 1];
+            last.title = lastBlog.title;
+            last.blogId = lastBlog.blogId;
+            next.title = nextBlog.title;
+            next.blogId = nextBlog.blogId;
+          }
+      });
+      setRelation({ last, next });
+    } catch (data: any) {
+      message.error(data.message);
+    }
+  }, [selectedId]);
+
+  useEffect(() => {
+    getState();
+  }, [selectedId]);
+
+  const handleClick = (id: number) => {
     dispatch(setJumpFlag(true));
     setTimeout(async () => {
       await dispatch(setSelectedId(id));

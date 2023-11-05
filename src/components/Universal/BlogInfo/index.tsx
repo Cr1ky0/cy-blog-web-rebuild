@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 // css
 import style from './index.module.scss';
@@ -7,7 +7,7 @@ import style from './index.module.scss';
 import { Tag, Tooltip } from 'antd';
 
 // interface
-import { BlogTagBoxStatistic, BreadCrumbObj } from '@/interface';
+import { BreadCrumbObj } from '@/interface';
 
 // redux
 import { useAppDispatch, useAppSelector } from '@/redux';
@@ -16,25 +16,33 @@ import { addLikeList, removeLikeList } from '@/redux/slices/blog';
 // util
 import { getBreadcrumbList } from '@/utils';
 
-// api
-import { updateLikesOfBlogAjax, updateCollectOfBlogAjax } from '@/api/blog';
-
 // provider
 import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
 import { useIcons } from '@/components/ContextProvider/IconStore';
 import { useViewport } from '@/components/ContextProvider/ViewportProvider';
 import { BREAK_POINT } from '@/global';
+import { updateBlog, updateBlogBrowse } from '@/apis/blog';
+import { User } from '@/apis/user';
+
+interface BlogTagBoxStatistic {
+  blogUser: User;
+  time: string;
+  views: number;
+  belongingMenu: number;
+  isCollected: boolean;
+  blogId: number;
+  likes: number;
+}
 
 interface BlogInfoProps {
   statistics: BlogTagBoxStatistic;
-  showCollect?: boolean;
 }
 
-const isLiked = (likeList: string[], id: string) => {
+const isLiked = (likeList: number[], id: number) => {
   return likeList.some(likeId => likeId === id);
 };
-const BlogInfo: React.FC<BlogInfoProps> = ({ statistics, showCollect }) => {
-  const { author, time, views, id, isCollected, likes } = statistics;
+const BlogInfo: React.FC<BlogInfoProps> = ({ statistics }) => {
+  const { blogUser, time, views, blogId: id, isCollected, likes } = statistics;
   const { width } = useViewport();
   const message = useGlobalMessage();
   const dispatch = useAppDispatch();
@@ -53,41 +61,115 @@ const BlogInfo: React.FC<BlogInfoProps> = ({ statistics, showCollect }) => {
     grandMenu.pop();
   }
 
-  // const [grandMenu, setGrandMenu] = useState<BreadCrumbObj[]>([]);
-  // useEffect(() => {
-  //   const grand = getBreadcrumbList(menus, id, icons).pop();
-  //   setGrandMenu(grand);
-  // }, [id]);
-
-  // useEffect(() => {
-  //   setCollected(isCollected);
-  // }, [isCollected]);
-
   // 收藏
-  const handleCollect = () => {
-    updateCollectOfBlogAjax(id, !collected).then(
-      response => {
-        setCollected(response.data.updatedBlog.isCollected);
-      },
-      err => {
-        message.error(err);
-      }
-    );
+  const handleCollect = async () => {
+    try {
+      const res = await updateBlog({
+        blogId: id,
+        collected: !collected,
+      });
+      const blog = res.data.updatedBlog;
+      setCollected(blog.collected);
+    } catch (data: any) {
+      message.error(data.message);
+    }
   };
 
-  const handleLike = (state: 'add' | 'decrease') => {
-    const isAdd = state === 'add';
-    updateLikesOfBlogAjax(id, isAdd ? likesNum + 1 : likesNum - 1).then(
-      response => {
-        if (isAdd) dispatch(addLikeList(id));
-        else dispatch(removeLikeList(id));
-        setLikesNum(response.data.updatedBlog.likes);
-      },
-      err => {
-        message.error(err);
-      }
-    );
+  const handleLike = async (state: 'add' | 'decrease') => {
+    try {
+      const isAdd = state === 'add';
+      const res = await updateBlogBrowse({
+        blogId: id,
+        like: true,
+        plus: isAdd,
+      });
+      const blog = res.data.updatedBlog;
+      if (isAdd) dispatch(addLikeList(id));
+      else dispatch(removeLikeList(id));
+      setLikesNum(blog.likes);
+    } catch (data: any) {
+      message.error(data.message);
+    }
   };
+
+  const getTagPage = useCallback(() => {
+    if (width > BREAK_POINT) {
+      return grandMenu.map((menu, index) => {
+        return (
+          <Tag key={index} className={style.tag} color={menu.color}>
+            {menu.title}
+          </Tag>
+        );
+      });
+    }
+    return (
+      <Tag className={style.tag} color={grandMenu.length ? grandMenu[grandMenu.length - 1].color : undefined}>
+        {grandMenu.length ? grandMenu[grandMenu.length - 1].title : undefined}
+      </Tag>
+    );
+  }, [width, id]);
+
+  const getLikePage = useCallback(() => {
+    const flag = isLiked(likeList, id);
+    if (flag) {
+      return (
+        <div
+          className={style.like}
+          onClick={() => {
+            handleLike('decrease');
+          }}
+        >
+          <span className="iconfont" style={{ color: '#FF0000' }}>
+            &#xeca2;
+          </span>
+          <span>{likesNum}</span>
+        </div>
+      );
+    }
+    return (
+      <div
+        className={style.like}
+        onClick={() => {
+          handleLike('add');
+        }}
+      >
+        <span className="iconfont">&#xeca1;</span>
+        <span>{likesNum}</span>
+      </div>
+    );
+  }, [likeList, id]);
+
+  const getUserCollectPage = useCallback(() => {
+    if (user && user.userId === blogUser.userId && width > BREAK_POINT) {
+      const getCollectPage = useCallback(() => {
+        if (collected) {
+          return (
+            <>
+              <span className="iconfont" style={{ color: 'gold' }}>
+                &#xe86a;
+              </span>
+              <span>已收藏</span>
+            </>
+          );
+        }
+        return (
+          <>
+            <span className="iconfont">&#xe7df;</span>
+            <span>收藏</span>
+          </>
+        );
+      }, []);
+
+      return (
+        <Tooltip title="收藏" trigger="hover" placement="bottom">
+          <div className={style.collection} onClick={handleCollect}>
+            {/* 收藏标志 */}
+            {getCollectPage()}
+          </div>
+        </Tooltip>
+      );
+    }
+  }, [id, width]);
 
   return (
     <div className={`${style.wrapper} ${themeMode === 'dark' ? style.dark : style.light}`}>
@@ -95,7 +177,7 @@ const BlogInfo: React.FC<BlogInfoProps> = ({ statistics, showCollect }) => {
         <Tooltip title="作者信息" trigger="hover" placement="bottom">
           <div>
             <span className="iconfont">&#xe72e;</span>
-            {author}
+            {blogUser.nickname}
           </div>
         </Tooltip>
         <Tooltip title="发布时间" trigger="hover" placement="bottom">
@@ -113,81 +195,15 @@ const BlogInfo: React.FC<BlogInfoProps> = ({ statistics, showCollect }) => {
         <Tooltip title="分类标签" trigger="hover" placement="bottom">
           <div className={style.classification}>
             <span className="iconfont">&#xe623;</span>
-            {width > BREAK_POINT ? (
-              grandMenu.map((menu, index) => {
-                return (
-                  <Tag
-                    key={index}
-                    className={style.tag}
-                    color={menu.color}
-                    // style={{
-                    //   border: themeMode === 'dark' ? 'none' : undefined,
-                    // }}
-                  >
-                    {menu.title}
-                  </Tag>
-                );
-              })
-            ) : (
-              <Tag
-                className={style.tag}
-                color={grandMenu.length ? grandMenu[grandMenu.length - 1].color : undefined}
-                // style={{
-                //   border: themeMode === 'dark' ? 'none' : undefined,
-                // }}
-              >
-                {grandMenu.length ? grandMenu[grandMenu.length - 1].title : undefined}
-              </Tag>
-            )}
+            {getTagPage()}
           </div>
         </Tooltip>
       </div>
       <div className={style.rightWrapper}>
         {/* 收藏标志 */}
-        {isLiked(likeList, id) ? (
-          <div
-            className={style.like}
-            onClick={() => {
-              handleLike('decrease');
-            }}
-          >
-            <span className="iconfont" style={{ color: '#FF0000' }}>
-              &#xeca2;
-            </span>
-            <span>{likesNum}</span>
-          </div>
-        ) : (
-          <div
-            className={style.like}
-            onClick={() => {
-              handleLike('add');
-            }}
-          >
-            <span className="iconfont">&#xeca1;</span>
-            <span>{likesNum}</span>
-          </div>
-        )}
+        {getLikePage()}
         {/* User在才能收藏 */}
-        {(user && width >= BREAK_POINT) || (user && showCollect) ? (
-          <Tooltip title="收藏" trigger="hover" placement="bottom">
-            <div className={style.collection} onClick={handleCollect}>
-              {/* 收藏标志 */}
-              {collected ? (
-                <>
-                  <span className="iconfont" style={{ color: 'gold' }}>
-                    &#xe86a;
-                  </span>
-                  <span>已收藏</span>
-                </>
-              ) : (
-                <>
-                  <span className="iconfont">&#xe7df;</span>
-                  <span>收藏</span>
-                </>
-              )}
-            </div>
-          </Tooltip>
-        ) : undefined}
+        {getUserCollectPage()}
       </div>
     </div>
   );

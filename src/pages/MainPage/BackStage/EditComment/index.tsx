@@ -34,24 +34,8 @@ interface DataType {
   belongingMenu: string;
   commentCount: string;
   author: number;
-  comments: CommentApiObj;
+  comment: Comment;
 }
-
-// interface ExpandedDataType {
-//   key: React.Key;
-//   username: string;
-//   contents: string;
-//   likes: number;
-//   replyCount: number;
-//   replys: ReplyApiObj[];
-// }
-//
-// interface childExpandDataType {
-//   key: React.Key;
-//   username: string;
-//   contents: string;
-//   likes: number;
-// }
 
 const columns: TableColumnsType<DataType> = [
   { title: '博客标题', dataIndex: 'title', key: 'title' },
@@ -61,90 +45,22 @@ const columns: TableColumnsType<DataType> = [
 ];
 
 const EditComment: React.FC = () => {
-  const themeMode = useAppSelector(state => state.universal.themeMode);
+  const [search] = useSearchParams();
   const dispatch = useAppDispatch();
   const msg = useGlobalMessage();
   const navigate = useNavigate();
+
+  const themeMode = useAppSelector(state => state.universal.themeMode);
+
   const [blogList, setBlogList] = useState<DataType[]>([]);
   const [count, setCount] = useState(0);
 
   //nav
-  const [search] = useSearchParams();
   const page = search.get('page');
 
-  // 列表形式
-  // const expandedRowRender = (record: any) => {
-  //   const columns: TableColumnsType<ExpandedDataType> = [
-  //     { title: '发表人', dataIndex: 'username', key: 'username' },
-  //     { title: '内容', dataIndex: 'contents', key: 'contents' },
-  //     { title: '回复数', dataIndex: 'replyCount', key: 'replyCount' },
-  //     { title: '点赞数', dataIndex: 'likes', key: 'likes' },
-  //     {
-  //       title: 'Action',
-  //       dataIndex: 'operation',
-  //       key: 'operation',
-  //       render: () => (
-  //         <Space size="middle">
-  //           <Button type="primary">回复</Button>
-  //           <Button danger>删除</Button>
-  //         </Space>
-  //       ),
-  //     },
-  //   ];
-  //
-  //   const data = record.comments
-  //     .map((comment: CommentApiObj) => ({
-  //       key: comment._id,
-  //       username: comment.username,
-  //       contents: comment.contents,
-  //       likes: comment.likes,
-  //       replyCount: comment.replys.length,
-  //       replys: comment.replys,
-  //     }))
-  //     .sort((a: any, b: any) => b.replyCount - a.replyCount);
-  //
-  //   const childRender = (record: any) => {
-  //     const columns: TableColumnsType<childExpandDataType> = [
-  //       { title: '发表人', dataIndex: 'username', key: 'username' },
-  //       { title: '内容', dataIndex: 'contents', key: 'contents' },
-  //       { title: '点赞数', dataIndex: 'likes', key: 'likes' },
-  //       {
-  //         title: 'Action',
-  //         dataIndex: 'operation',
-  //         key: 'operation',
-  //         render: () => (
-  //           <Space size="middle">
-  //             <Button danger>删除</Button>
-  //           </Space>
-  //         ),
-  //       },
-  //     ];
-  //     const data = record.replys.map((reply: ReplyApiObj) => ({
-  //       key: reply._id,
-  //       username: reply.username,
-  //       contents: reply.contents,
-  //       likes: reply.likes,
-  //     }));
-  //     return <Table columns={columns} dataSource={data} pagination={false} />;
-  //   };
-  //
-  //   return (
-  //     <Table
-  //       columns={columns}
-  //       dataSource={data}
-  //       pagination={false}
-  //       expandable={{
-  //         expandedRowRender: childRender,
-  //         rowExpandable: record => record.replyCount > 0,
-  //       }}
-  //     />
-  //   );
-  // };
-
-  // 原形式
   const BackStageCommentList = (record: any) => {
     const commentsList = record.comments
-      .map((comment: CommentApiObj) => {
+      .map((comment: Comment) => {
         return {
           replys: comment.replys,
           id: comment._id,

@@ -13,6 +13,13 @@ export interface Result<T = unknown> {
   data: T;
 }
 
+export interface RequestPageOptions {
+  id: number;
+  page?: number;
+  size?: number;
+  sort?: string;
+}
+
 // 都用json发数据
 service.defaults.headers.post['Content-Type'] = 'application/json';
 service.defaults.withCredentials = true;

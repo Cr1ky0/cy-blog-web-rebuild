@@ -9,7 +9,6 @@ import style from './index.module.scss';
 
 // ui
 import LinkBtn2 from '@/components/Universal/LinkBtn2';
-import EditMenu from '@/components/SideMenu/EditMenu';
 
 // redux
 import { useAppSelector, useAppDispatch } from '@/redux';
@@ -22,11 +21,12 @@ import { useIcons } from '../ContextProvider/IconStore';
 // utils
 import { getAntdMenus, getSideMenuItem, getParentListOfBlog } from '@/utils';
 
-// interface
-import { SideMenuItem } from '@/interface';
-
 // global
 import { ANIME_HIDE_TIME } from '@/global';
+import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
+
+// interface
+import { MenuBlog } from '@/apis/blog';
 
 interface SideMenuProps {
   styles?: CSSProperties;
@@ -43,46 +43,39 @@ const SideMenu: React.FC<SideMenuProps> = ({ styles, noEdit, page, closeMenu }) 
   const selectedId = useAppSelector(state => state.blogMenu.selectedId);
   const opt = useAppSelector(state => state.blogMenu.opt);
   const antdMenus = getAntdMenus(menus, icons);
-  const [parentKey] = useState(getParentListOfBlog(menus, icons, selectedId));
-  // 预览展开state
-  const [open, setOpen] = useState(false);
+  const parentKey = useMemo(() => {
+    const list = getParentListOfBlog(menus, icons, selectedId);
+    return list.map(id => {
+      return id.toString();
+    });
+  }, [menus, icons, selectedId]);
 
-  // openKeys
-  const [openKeys, setOpenKeys] = useState<string[]>([]);
-
-  useEffect(() => {
-    const parentList = getParentListOfBlog(menus, icons, selectedId);
-    setOpenKeys([...openKeys, ...parentList]);
-  }, [selectedId]);
+  const handleSelect = async (e: any) => {
+    const key = parseInt(e.key);
+    if (opt) {
+      if (!noEdit) {
+        dispatch(setSelectedId(key));
+      } else {
+        // 触发事件
+        const item = getSideMenuItem(menus, key);
+        if (item && !('blogId' in item) && key !== selectedId) {
+          // 操作标志置为false，不可继续操作
+          dispatch(setOpt(false));
+          dispatch(setJumpFlag(true));
+          setTimeout(async () => {
+            dispatch(setSelectedId(e.key));
+            if (page === 'blog') {
+              navigate(`/blog`);
+            }
+          }, ANIME_HIDE_TIME);
+        }
+        if (closeMenu) closeMenu();
+      }
+    }
+  };
 
   return (
     <div className={style.wrapper} style={styles}>
-      {noEdit ? undefined : (
-        <div className={style.edit}>
-          <LinkBtn2
-            className={`${style.editBtn} iconfont`}
-            onClick={() => {
-              setOpen(true);
-            }}
-          >
-            &#xe603;
-          </LinkBtn2>
-        </div>
-      )}
-      <div>
-        <Modal
-          title="编辑分类标签"
-          centered
-          footer=""
-          destroyOnClose
-          open={open}
-          onCancel={() => {
-            setOpen(false);
-          }}
-        >
-          <EditMenu></EditMenu>
-        </Modal>
-      </div>
       {/* 有tag则显示菜单，否则显示提示 */}
       {menus.length ? (
         <Menu
@@ -90,36 +83,11 @@ const SideMenu: React.FC<SideMenuProps> = ({ styles, noEdit, page, closeMenu }) 
           inlineIndent={12}
           style={{ borderRadius: '0 0 5px 5px', border: 'none' }}
           defaultOpenKeys={parentKey}
-          openKeys={openKeys}
+          openKeys={parentKey}
           mode="inline"
           items={antdMenus}
-          selectedKeys={[selectedId]}
-          onOpenChange={(cur: any) => {
-            setOpenKeys(cur);
-          }}
-          // handle select
-          onClick={e => {
-            if (opt) {
-              if (!noEdit) {
-                dispatch(setSelectedId(e.key));
-              } else {
-                // 触发事件
-                const item = getSideMenuItem(menus, e.key) as SideMenuItem;
-                if (!item.grade && e.key !== selectedId) {
-                  // 操作标志置为false，不可继续操作
-                  dispatch(setOpt(false));
-                  dispatch(setJumpFlag(true));
-                  setTimeout(async () => {
-                    dispatch(setSelectedId(e.key));
-                    if (page === 'blog') {
-                      navigate(`/blog`);
-                    }
-                  }, ANIME_HIDE_TIME);
-                }
-                if (closeMenu) closeMenu();
-              }
-            }
-          }}
+          selectedKeys={[selectedId.toString()]}
+          onClick={handleSelect}
         />
       ) : (
         <div className={style.noneMenu}>当前还没有分类，快去添加吧！</div>

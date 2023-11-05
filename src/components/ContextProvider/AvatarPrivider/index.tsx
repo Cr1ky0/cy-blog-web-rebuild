@@ -1,16 +1,32 @@
-import React, { useContext, createContext, useState, useEffect } from 'react';
-import { avatarAjax } from '@/api/user';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 // default.png
 import img from '@/assets/images/default.webp';
-import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
-import { getAvatar } from '@/apis/user';
+import { getAvatar, getAvatarById } from '@/apis/user';
 
 interface avatarContextProps {
   children?: React.ReactNode;
 }
 
-const avatarContext = createContext(img);
+interface AvatarContext {
+  avatar: string;
+  getAvatarById: (userId: number) => Promise<any>;
+}
+
+const avatarContext = createContext<AvatarContext>({
+  avatar: img,
+  getAvatarById: async (userId: number) => {
+    try {
+      const res = await getAvatarById(userId);
+      const type = res.headers['content-type'];
+      const blob = new Blob([res.data], { type });
+      // img src
+      return URL.createObjectURL(blob);
+    } catch (data: any) {
+      return img;
+    }
+  },
+});
 const AvatarProvider: React.FC<avatarContextProps> = ({ children }) => {
   const [avatar, setAvatar] = useState<string>(img);
 
@@ -32,11 +48,12 @@ const AvatarProvider: React.FC<avatarContextProps> = ({ children }) => {
     init();
   }, []);
 
-  return <avatarContext.Provider value={avatar}>{children}</avatarContext.Provider>;
+  return <avatarContext.Provider value={{ avatar, getAvatarById }}>{children}</avatarContext.Provider>;
 };
 
 export default AvatarProvider;
 
 export const useAvatar = () => {
-  return useContext(avatarContext);
+  const { avatar, getAvatarById } = useContext(avatarContext);
+  return { avatar, getAvatarById };
 };

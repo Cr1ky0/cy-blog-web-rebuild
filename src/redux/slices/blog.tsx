@@ -1,42 +1,45 @@
-import service from '@/utils/request';
+import service, { client, Result } from '@/utils/request';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 // interface
-import { BlogObj, TextContentObj, TimeLineObj } from '@/interface';
+import { TextContentObj } from '@/interface';
+import { Blog, BlogTimeLine, BlogTimeLineRes } from '@/apis/blog';
 
 interface blogInitObj {
-  primBlog: BlogObj;
+  primBlog: Blog;
   writeContent: TextContentObj;
   isEdit: boolean; // 标志博客是否处于编辑状态，处于编辑状态则提交按钮变为更新
-  timeLine: TimeLineObj[];
+  timeLine: BlogTimeLine[];
   blogsNum: number;
-  likeList: string[]; // 点赞列表，记录当前点赞过的博客
+  likeList: number[]; // 点赞列表，记录当前点赞过的博客
   chosen: number; // 精选页面chosen
-  curEditId: string; // 当前正在编辑的id
+  curEditId: number; // 当前正在编辑的id
   curBlogContent: string; // 当前选中博客内容，用于toc
 }
 
 // 合并了菜单的slice因为无法解决设置了selectedId后设置curBlog延迟的问题
 const initialState: blogInitObj = {
-  primBlog: {} as BlogObj,
+  primBlog: {} as Blog,
   writeContent: {} as TextContentObj,
   isEdit: false, // 标志博客是否处于编辑状态，处于编辑状态则提交按钮变为更新
-  timeLine: [] as TimeLineObj[],
+  timeLine: [] as BlogTimeLine[],
   blogsNum: 0,
-  likeList: [] as string[],
+  likeList: [] as number[],
   chosen: 0,
-  curEditId: '',
+  curEditId: 0,
   curBlogContent: '',
 };
 
+interface BlogCountResult {
+  count: number;
+}
+
 export const setTimeLine = createAsyncThunk('blog/setTimeLine', async () => {
-  const response = await service.get('/api/blogs/timeline');
-  return response.data;
+  return client.get<Result<BlogTimeLineRes>>('/api/blog/criiky0/timeline');
 });
 
 export const setMyBlogsNum = createAsyncThunk('blog/getMyBlogsNum', async () => {
-  const response = await service.get('/api/blogs/counts');
-  return response.data;
+  return await client.get<Result<BlogCountResult>>('/api/blog/criiky0/count');
 });
 
 const blogSlice = createSlice({
@@ -81,7 +84,7 @@ const blogSlice = createSlice({
     initWriteContent: state => {
       state.writeContent = {
         title: '',
-        menuId: '',
+        menuId: 0,
         menuTitle: '',
         content: '',
       };
@@ -93,13 +96,13 @@ const blogSlice = createSlice({
   extraReducers(builder) {
     builder
       .addCase(setTimeLine.fulfilled, (state, action) => {
-        state.timeLine = [...action.payload.data.timeLine];
+        state.timeLine = [...action.payload.data.timeline];
       })
       .addCase(setTimeLine.rejected, (state, action) => {
         console.log(action.error.message);
       })
       .addCase(setMyBlogsNum.fulfilled, (state, action) => {
-        state.blogsNum = action.payload.data.length;
+        state.blogsNum = action.payload.data.count;
       })
       .addCase(setMyBlogsNum.rejected, (state, action) => {
         console.log(action.error.message);

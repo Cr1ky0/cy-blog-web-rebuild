@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router';
 
 // antd
@@ -12,14 +12,13 @@ import { useAppDispatch, useAppSelector } from '@/redux';
 
 import { setSelectedId } from '@/redux/slices/blogMenu';
 //util
-import { getClassificationInfo, getOneBlogFromMenu, getSideMenuItem } from '@/utils';
-
-// interface
-import { SideMenuItem } from '@/interface';
+import { getClassificationInfo, getOneBlogFromMenu } from '@/utils';
 
 // context
 import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
 import { setMobileMenuOpen } from '@/redux/slices/universal';
+import { getMenu } from '@/apis/menu';
+import { ClassificationInfoObj } from '@/interface';
 
 const Classification = () => {
   const navigate = useNavigate();
@@ -45,6 +44,23 @@ const Classification = () => {
       : [];
   }, [themeMode]);
 
+  const handleClick = async (info: ClassificationInfoObj) => {
+    try {
+      const res = await getMenu(info.id);
+      const menu = res.data.menu;
+      const blogId = getOneBlogFromMenu(menu);
+      if (blogId) {
+        dispatch(setSelectedId(blogId));
+        dispatch(setMobileMenuOpen(false));
+        navigate('/blog');
+      } else {
+        message.success('当前分类下暂时没有博客哦~');
+      }
+    } catch (data: any) {
+      message.error(data.message);
+    }
+  };
+
   return (
     <div className="clearfix">
       {classInfoList
@@ -59,15 +75,7 @@ const Classification = () => {
                   marginRight: '15px',
                 }}
                 onClick={() => {
-                  const item = getSideMenuItem(menus, info.id) as SideMenuItem;
-                  const blogId = getOneBlogFromMenu(item);
-                  if (blogId) {
-                    dispatch(setSelectedId(blogId));
-                    dispatch(setMobileMenuOpen(false));
-                    navigate('/blog');
-                  } else {
-                    message.success('当前分类下暂时没有博客哦~');
-                  }
+                  handleClick(info);
                 }}
               >
                 <span>{info.title}</span>

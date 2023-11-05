@@ -39,12 +39,7 @@ const items: MenuItem[] = [
   getItem('博客管理', 'blog', <BookOutlined />),
   getItem('菜单管理', 'editmenu', <MenuOutlined />),
   getItem('添加照片', 'photo', <PlusSquareOutlined />),
-  getItem('编辑照片', 'editPhoto', <PictureOutlined />, [
-    getItem('即时上传', 'now', <PushpinOutlined />),
-    getItem('大事记', 'bigEvent', <StarOutlined />),
-    getItem('往事回忆', 'memory', <FieldTimeOutlined />),
-    getItem('其他', 'others', <FolderOutlined />),
-  ]),
+  getItem('编辑照片', 'editPhoto', <PictureOutlined />),
   getItem('OSS设置', 'oss', <CloudDownloadOutlined />),
   getItem('SMTP设置', 'smtp', <MailOutlined />),
 ];

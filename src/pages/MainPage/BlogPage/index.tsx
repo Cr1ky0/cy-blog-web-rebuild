@@ -3,7 +3,7 @@ import { Outlet } from 'react-router';
 
 // comp
 import SideMenu from '@/components/SideMenu';
-import BlogToc2 from '@/components/BlogPage/BlogToc2';
+import BlogToc from '@/components/BlogPage/BlogToc';
 import MobileTopBtn from '@/components/Universal/MobileTopBtn';
 
 // css
@@ -80,7 +80,7 @@ const BlogPage = () => {
         {selectedId ? <Outlet /> : <div style={{ fontSize: '24px' }}>当前没有博客，请添加博客后访问！</div>}
       </div>
       <div className={`${style.toc} showAnime`} style={width > 1100 ? undefined : { display: 'none' }}>
-        {selectedId ? <BlogToc2 text={curBlogContent}></BlogToc2> : undefined}
+        {selectedId ? <BlogToc text={curBlogContent}></BlogToc> : undefined}
       </div>
       {/* Mobile Menu */}
       <MobileTopBtn

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 // antd
 import { Tag } from 'antd';
@@ -7,121 +7,128 @@ import { Tag } from 'antd';
 import style from './index.module.scss';
 
 // interface
-import { CommentListObj } from '@/interface';
+import { Comment, updateCommentBrowse } from '@/apis/comment';
 
 // context
 import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
 import { useGlobalModal } from '@/components/ContextProvider/ModalProvider';
+import { useAvatar } from '@/components/ContextProvider/AvatarPrivider';
 
 // img
 import img from '@/assets/images/default.webp';
 
 // redux
 import { useAppDispatch, useAppSelector } from '@/redux';
-import { addLikeId, delLikeId, updateComment, deleteComment, decLength } from '@/redux/slices/comments';
+import { addLikeId, delLikeId, setComments, setLength } from '@/redux/slices/comments';
 
 // util
 import { isLike } from '@/utils';
 
 //api
-import { avatarAjax, getAvatarOfUser } from '@/api/user';
-import { updateCommentAjax, deleteCommentAjax } from '@/api/comment';
+import { deleteCommentAjax } from '@/apis/comment';
 
 // comp
 import WriteComment from '@/components/Comment/WriteComment';
-import { delReplysOfCommentAjax } from '@/api/reply';
-import { decreaseCommentCountAjax } from '@/api/blog';
+
+// api
+import { getUserInfoById, User, userInitState } from '@/apis/user';
 
 export interface SingleCommentProps {
-  info: CommentListObj;
+  info: Comment;
   noLikes?: boolean;
+  isReply?: boolean;
 }
 
+// TODO:根据isReply来改写为Reply样式
 const SingleComment: React.FC<SingleCommentProps> = props => {
   const { info, noLikes } = props;
+  const { content, username, brief, createAt, userId, likes: likeNum, commentId, belongCommentId } = info;
   const modal = useGlobalModal();
   const message = useGlobalMessage();
-  const { contents, username, brief, time, userId, likes, id, userRole, belongingBlog } = info;
+  const dispatch = useAppDispatch();
+  const { getAvatarById } = useAvatar();
   // 利用likeList判断当前评论的id是否在其中来记录点赞状态
   const likeList = useAppSelector(state => state.comments.likeList);
   const themeMode = useAppSelector(state => state.universal.themeMode);
-  const isChosen = isLike(likeList, id);
-  const dispatch = useAppDispatch();
-  const [avatar, setAvatar] = useState(img);
+  const curPage = useAppSelector(state => state.comments.curPage);
+  const selectedId = useAppSelector(state => state.blogMenu.selectedId);
   const user = useAppSelector(state => state.user.user);
 
+  const [avatar, setAvatar] = useState(img);
+  const [commentUser, setCommentUser] = useState<User>(userInitState);
   const [replyOpen, setReplyOpen] = useState(false);
+  const [likes, setLikes] = useState(likeNum);
+
+  const isChosen = isLike(likeList, commentId);
 
   const handleDel = () => {
     modal.confirm({
       title: '提示',
       content: '是否删除该评论？',
       onOk: async () => {
-        await deleteCommentAjax(
-          id,
-          async () => {
-            await delReplysOfCommentAjax(id);
-            await decreaseCommentCountAjax(belongingBlog);
-            message.success('删除成功');
-            dispatch(deleteComment(id));
-            dispatch(decLength());
-          },
-          msg => {
-            message.error(msg);
-          }
+        await deleteCommentAjax(commentId);
+        dispatch(
+          setComments({
+            id: selectedId,
+            page: curPage,
+          })
         );
+        dispatch(setLength(selectedId));
+        message.success('删除成功');
       },
     });
   };
 
-  // 获取当前评论用户的头像
+  // 获取当前评论用户的头像以及用户信息
   useEffect(() => {
-    const getUserAvatarById = async (id: string) => {
-      const res = await getAvatarOfUser(id);
-      await avatarAjax(
-        res.data.avatar,
-        response => {
-          const reader = new FileReader();
-          reader.onload = e => {
-            if (e.target) setAvatar(e.target.result as string);
-          };
-          reader.readAsDataURL(response);
-        },
-        msg => {
-          message.error(msg);
+    const getUserAvatarById = async () => {
+      if (userId) {
+        try {
+          const res = await getAvatarById(userId);
+          setAvatar(res.data);
+          const userRes = await getUserInfoById(userId);
+          setCommentUser(userRes.data.user);
+        } catch (data: any) {
+          message.error(data.message);
         }
-      );
+      }
     };
-    getUserAvatarById(userId);
+    getUserAvatarById();
   }, []);
 
   const handleClick = async () => {
-    if (!isChosen) {
-      dispatch(addLikeId(id));
-      await updateCommentAjax(
-        { id, likes: likes + 1 },
-        data => {
-          const updatedComment = data.data.updatedComment;
-          dispatch(updateComment({ id, data: { likes: updatedComment.likes } }));
-        },
-        msg => {
-          message.error(msg);
-        }
-      );
-    } else {
-      dispatch(delLikeId(id));
-      await updateCommentAjax(
-        { id, likes: likes - 1 },
-        data => {
-          const updatedComment = data.data.updatedComment;
-          dispatch(updateComment({ id, data: { likes: updatedComment.likes } }));
-        },
-        msg => {
-          message.error(msg);
-        }
-      );
+    try {
+      if (!isChosen) {
+        const res = await updateCommentBrowse({
+          commentId,
+          plus: true,
+        });
+        const comment = res.data.updatedComment;
+        dispatch(addLikeId(commentId));
+        setLikes(comment.likes);
+      } else {
+        const res = await updateCommentBrowse({
+          commentId,
+          plus: false,
+        });
+        const comment = res.data.updatedComment;
+        dispatch(delLikeId(commentId));
+        setLikes(comment.likes);
+      }
+    } catch (data: any) {
+      message.error(data.message);
     }
   };
+
+  const getTagPage = useCallback(() => {
+    if (commentUser.role === 'admin') {
+      return <Tag color="red">管理员</Tag>;
+    } else if (commentUser.role === 'user') {
+      return <Tag color="blue">用户</Tag>;
+    } else {
+      return <Tag color="green">游客</Tag>;
+    }
+  }, [commentId]);
 
   return (
     <div className={`${style.wrapper} clearfix ${themeMode === 'dark' ? 'dark' : 'light'}`}>
@@ -134,10 +141,8 @@ const SingleComment: React.FC<SingleCommentProps> = props => {
         <div className={style.info}>
           <div className={style.infoBox}>
             <div className={style.username}>{username}</div>
-            <div className={style.tags}>
-              {userRole === 'admin' ? <Tag color="red">管理员</Tag> : <Tag color="blue">游客</Tag>}
-            </div>
-            <div className={style.time}>{time}</div>
+            <div className={style.tags}>{getTagPage()}</div>
+            <div className={style.time}>{createAt}</div>
           </div>
           <div className={style.rightFuncBox}>
             {user && user.role === 'admin' ? (
@@ -171,11 +176,11 @@ const SingleComment: React.FC<SingleCommentProps> = props => {
         </div>
         <div className={style.signature}>{brief}</div>
       </div>
-      <div className={style.comment}>{contents}</div>
+      <div className={style.comment}>{content}</div>
       {/* reply */}
       {replyOpen ? (
         <div className={style.writeComment}>
-          <WriteComment belongingComment={id}></WriteComment>
+          <WriteComment belongCommentId={belongCommentId}></WriteComment>
         </div>
       ) : undefined}
     </div>

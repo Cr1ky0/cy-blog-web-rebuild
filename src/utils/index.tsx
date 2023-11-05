@@ -2,26 +2,15 @@ import React from 'react';
 import { ReactElement } from 'react';
 
 // interface
-import {
-  AntdIcon,
-  BlogObj,
-  BreadCrumbObj,
-  ClassificationInfoObj,
-  MenuItem,
-  SideMenuItem,
-  TreeSelectItem,
-} from '@/interface';
+import { AntdIcon, BreadCrumbObj, ClassificationInfoObj, MenuItem, TreeSelectItem } from '@/interface';
 
 // antd
 import type { DataNode } from 'antd/es/tree';
 import { Menu } from '@/apis/menu';
+import { MenuBlog } from '@/apis/blog';
 
 // 获取某个博客的父菜单链条
-export const getParentListOfBlog: (menus: SideMenuItem[], icons: AntdIcon[], id: string) => string[] = (
-  menus,
-  icons,
-  id
-) => {
+export const getParentListOfBlog: (menus: Menu[], icons: AntdIcon[], id: number) => number[] = (menus, icons, id) => {
   const list = getBreadcrumbList(menus, id, icons).map(item => {
     return item.menu_id;
   });
@@ -30,13 +19,13 @@ export const getParentListOfBlog: (menus: SideMenuItem[], icons: AntdIcon[], id:
 };
 
 // 获取某个博客的父菜单
-export const getParentOfBlog: (menus: SideMenuItem[], blogId: string) => string | undefined = (menus, blogId) => {
-  let parent: string | undefined = '';
+export const getParentOfBlog: (menus: Menu[], blogId: number) => number | undefined = (menus, blogId) => {
+  let parent: number | undefined = 0;
   menus.forEach(menu => {
     menu.blogs?.forEach(blog => {
-      if (blog.id === blogId) parent = menu.id;
+      if (blog.blogId === blogId) parent = menu.menuId;
     });
-    if (!parent && menu.children) parent = getParentOfBlog(menu.children, blogId);
+    if (!parent && menu.subMenu) parent = getParentOfBlog(menu.subMenu, blogId);
   });
   if (parent) return parent;
 };
@@ -79,22 +68,6 @@ export const filterMarkdown = (str: string) => {
   return result;
 };
 
-// 节流
-export const trottle = (fn: any, delay: number) => {
-  let valid = true;
-  return () => {
-    if (valid) {
-      valid = false;
-      // 立即执行
-      fn();
-      // 每500ms执行一次
-      setTimeout(() => {
-        valid = true;
-      }, delay);
-    }
-  };
-};
-
 // 颜色相关
 export const getColorRgb = (primaryColor: string) => {
   const color = primaryColor.split(',');
@@ -135,113 +108,53 @@ export const getAntdIcon: (name: string, antdIcons: AntdIcon[]) => ReactElement 
 };
 
 // 根据key获得其在SideMenuList对象
-export const getSideMenuItem: (menus: SideMenuItem[], key: string) => SideMenuItem | undefined = (menus, key) => {
-  const filter = menus.filter(menu => menu.id === key);
+export const getSideMenuItem: (menus: Menu[], key: number) => Menu | MenuBlog | undefined = (menus, key) => {
+  const filter = menus.filter(menu => menu.menuId === key);
   if (filter && filter.length) return filter[0];
   for (let i = 0; i < menus.length; i += 1) {
     const menu = menus[i];
     if (menu.blogs) {
-      const filter = (menu.blogs as BlogObj[]).filter(blog => blog.id === key);
+      const filter = (menu.blogs as MenuBlog[]).filter(blog => blog.blogId === key);
       if (filter && filter.length) return filter[0];
     }
-    if (menu.children) {
+    if (menu.subMenu) {
       // 这里递归不能直接返回，因为在循环内存在多个递归，如果直接返回会导致被undefined覆盖
       // 因此需要指定值当值存在时再返回
-      const temp = getSideMenuItem(menu.children as SideMenuItem[], key);
+      const temp = getSideMenuItem(menu.subMenu, key);
       if (temp) return temp;
     }
   }
 };
 
-// 获取第一层展开的key
-export const getAllKeyOfSideMenu: (menus: SideMenuItem[]) => string[] = menus => {
-  const keys: string[] = [];
-  menus.map(menu => {
-    keys.push(menu.id);
-    // if (menu.children) menu.children.map(child => keys.push(child.id));
-  });
-  return keys;
-};
-
 // 根据blog id获取其parent链
 export const getBreadcrumbList: (
   menus: Menu[],
-  id: string,
+  id: number,
   icons: AntdIcon[],
   list?: BreadCrumbObj[]
 ) => BreadCrumbObj[] = (menus, id, icons, list = []) => {
-  const blogOrMenu = getSideMenuItem(menus, id) as SideMenuItem;
+  const blogOrMenu = getSideMenuItem(menus, id) as Menu;
   if (blogOrMenu) {
     list.unshift({
       title: blogOrMenu.title,
       icon: blogOrMenu.icon ? getAntdIcon(blogOrMenu.icon as string, icons) : undefined,
       color: blogOrMenu.color as string,
-      menu_id: blogOrMenu.id,
+      menu_id: blogOrMenu.menuId,
     });
-    if (blogOrMenu.belongingMenu) {
-      return getBreadcrumbList(menus, blogOrMenu.belongingMenu, icons, list);
+    if (blogOrMenu.belongMenuId) {
+      return getBreadcrumbList(menus, blogOrMenu.belongMenuId, icons, list);
     }
     return list;
   } else return [];
 };
-``;
-// 从SideMenuList内获取一个blog key
-export const getOneBlogId: (menus: SideMenuItem[], curId?: string, menuId?: string) => string | void = (
-  menus,
-  curId,
-  menuId
-) => {
-  // curId用来避免选中当前已选中的id
-  // menuId用来避免选中当前菜单下的SelectedId
-  // 这两个参数都可选
-  let blogKey = '';
-  menus.forEach(menu => {
-    if (menu.id !== menuId) {
-      // 检查blogs
-      if (menu.blogs && menu.blogs.length) {
-        const blogs = menu.blogs.filter(blog => blog.id !== curId);
-        if (blogs.length) {
-          blogKey = blogs[0].id;
-          return;
-        }
-      }
-      // 进入子菜单
-      if (menu.children) {
-        menu.children.forEach(child => {
-          if (child.id !== menuId)
-            if (child.blogs && child.blogs.length) {
-              const blogs = child.blogs.filter(blog => blog.id !== curId);
-              if (blogs.length) {
-                blogKey = blogs[0].id;
-                return;
-              }
-            }
-          if (child.children) {
-            child.children.forEach(grandChild => {
-              if (grandChild.id !== menuId)
-                if (grandChild.blogs && grandChild.blogs.length) {
-                  const blogs = grandChild.blogs.filter(blog => blog.id !== curId);
-                  if (blogs.length) {
-                    blogKey = blogs[0].id;
-                    return;
-                  }
-                }
-            });
-          }
-        });
-      }
-    }
-  });
-  return blogKey;
-};
 
 // 检测当前SideMenuItem其是否包含blog
-export const hasBlog: (menus: SideMenuItem[]) => boolean = menus => {
+export const hasBlog: (menus: Menu[]) => boolean = menus => {
   let flag = false;
   menus.map(menu => {
     if (menu.blogs && menu.blogs.length) flag = true;
-    if (menu.children)
-      menu.children.map(child => {
+    if (menu.subMenu)
+      menu.subMenu.map(child => {
         if (child.blogs && child.blogs.length) flag = true;
       });
   });
@@ -249,41 +162,33 @@ export const hasBlog: (menus: SideMenuItem[]) => boolean = menus => {
 };
 
 // 检测当前删除的菜单是否包含curKey
-export const hasCurKey: (menu: SideMenuItem, curKey: string | number) => boolean = (menu, curKey) => {
+export const hasCurKey: (menu: Menu, curKey: string | number) => boolean = (menu, curKey) => {
   let flag = false;
-  if (menu.id === curKey) {
+  if (menu.menuId === curKey) {
     flag = true;
   }
-  if (menu.children)
-    menu.children.map(child => {
-      if (child.id === curKey) flag = true;
+  if (menu.subMenu)
+    menu.subMenu.map(child => {
+      if (child.menuId === curKey) flag = true;
     });
   return flag;
 };
 
-// 获取一个菜单Item的Id
-export const getOneMenuId: (menus: SideMenuItem[]) => string = menus => {
-  if (menus.length) return menus[0].id;
-  else {
-    return '';
-  }
-};
-
 // 检测菜单中是否有该博客
-export const hasBlogOfId: (menus: SideMenuItem[], id: string) => boolean = (menus, id) => {
+export const hasBlogOfId: (menus: Menu[], id: number) => boolean = (menus, id) => {
   let flag = false;
   menus.forEach(menu => {
     menu.blogs?.forEach(blog => {
-      if (blog.id === id) flag = true;
+      if (blog.blogId === id) flag = true;
     });
-    if (menu.children && !flag) flag = hasBlogOfId(menu.children, id);
+    if (menu.subMenu && !flag) flag = hasBlogOfId(menu.subMenu, id);
   });
 
   return flag;
 };
 
 // 通过likeList判断该评论是否已被点赞
-export const isLike = (likeList: string[], id: string) => {
+export const isLike = (likeList: number[], id: number) => {
   return likeList.some(itemId => itemId === id);
 };
 
@@ -315,25 +220,25 @@ export const filterTitle = (text: string) => {
 };
 
 // 获取菜单的Title,Color以及其下的分类和博客数量
-const getBlogClassName = (menu: SideMenuItem) => {
-  return menu.blogs ? (menu.children ? menu.blogs.length + menu.children.length : menu.blogs.length) : 0;
+const getBlogClassName = (menu: Menu) => {
+  return menu.blogs ? (menu.subMenu ? menu.blogs.length + menu.subMenu.length : menu.blogs.length) : 0;
 };
-export const getClassificationInfo: (menus: SideMenuItem[]) => ClassificationInfoObj[] = menus => {
+export const getClassificationInfo: (menus: Menu[]) => ClassificationInfoObj[] = menus => {
   const list = [] as ClassificationInfoObj[];
   menus.map(menu => {
     list.push({
       title: menu.title,
       color: menu.color as string,
       blogNum: getBlogClassName(menu),
-      id: menu.id,
+      id: menu.menuId,
     });
-    if (menu.children)
-      menu.children.map(child => {
+    if (menu.subMenu)
+      menu.subMenu.map(child => {
         list.push({
           title: child.title,
           color: child.color as string,
           blogNum: getBlogClassName(child),
-          id: child.id,
+          id: child.menuId,
         });
       });
   });
@@ -341,12 +246,12 @@ export const getClassificationInfo: (menus: SideMenuItem[]) => ClassificationInf
 };
 
 // 从该菜单获取一个blogId，没有则返回false
-export const getOneBlogFromMenu: (menu: SideMenuItem) => string = menu => {
-  let id = '';
-  if (menu.blogs && menu.blogs.length) id = menu.blogs[0].id;
-  else if (menu.children) {
-    menu.children.forEach(child => {
-      if (child.blogs && child.blogs.length) id = child.blogs[0].id;
+export const getOneBlogFromMenu: (menu: Menu) => number = menu => {
+  let id = 0;
+  if (menu.blogs && menu.blogs.length) id = menu.blogs[0].blogId;
+  else if (menu.subMenu) {
+    menu.subMenu.forEach(child => {
+      if (child.blogs && child.blogs.length) id = child.blogs[0].blogId;
     });
   }
   return id;
@@ -355,7 +260,7 @@ export const getOneBlogFromMenu: (menu: SideMenuItem) => string = menu => {
 /**************** 列表生成 *****************/
 
 // 将SideMenuItem列表转化为MenuItem列表
-function getItem(label: React.ReactNode, key: React.Key, icon?: React.ReactNode, children?: MenuItem[]): MenuItem {
+function getItem(label: React.ReactNode, key: string, icon?: React.ReactNode, children?: MenuItem[]): MenuItem {
   return {
     key,
     icon,
@@ -365,7 +270,7 @@ function getItem(label: React.ReactNode, key: React.Key, icon?: React.ReactNode,
 }
 
 // 根据SideMenuItem[]获取规范的Menu组件列表
-export const getAntdMenus: (menus: SideMenuItem[], icons: AntdIcon[]) => MenuItem[] = (menus, icons) => {
+export const getAntdMenus: (menus: Menu[], icons: AntdIcon[]) => MenuItem[] = (menus, icons) => {
   return menus.map(menu => {
     // 从iconsContext中提取出对应icon Node
     const icon = getAntdIcon(menu.icon as string, icons);
@@ -373,15 +278,15 @@ export const getAntdMenus: (menus: SideMenuItem[], icons: AntdIcon[]) => MenuIte
     const newList: MenuItem[] = [];
     if (menu.blogs && menu.blogs.length) {
       menu.blogs.map(blog => {
-        newList.push(getItem(<span className="iconfont">&#xe627;&nbsp;{blog.title}</span>, blog.id));
+        newList.push(getItem(<span className="iconfont">&#xe627;&nbsp;{blog.title}</span>, blog.blogId.toString()));
       });
     }
     return getItem(
       menu.title,
-      menu.id,
+      menu.menuId.toString(),
       icon ? icon : undefined,
-      (menu.children && menu.children.length) || (menu.blogs && menu.blogs.length)
-        ? ([...newList, ...getAntdMenus(menu.children ? menu.children : [], icons)] as MenuItem[])
+      (menu.subMenu && menu.subMenu.length) || (menu.blogs && menu.blogs.length)
+        ? ([...newList, ...getAntdMenus(menu.subMenu ? menu.subMenu : [], icons)] as MenuItem[])
         : undefined
     );
   });
@@ -397,7 +302,7 @@ function getTreeItem(title: string, key?: React.Key | null, icon?: React.ReactNo
   } as DataNode;
 }
 
-export const getDataNodeTree: (menus: SideMenuItem[], icons: AntdIcon[], onlyParent?: boolean) => DataNode[] = (
+export const getDataNodeTree: (menus: Menu[], icons: AntdIcon[], onlyParent?: boolean) => DataNode[] = (
   menus,
   icons,
   onlyParent = false
@@ -408,12 +313,12 @@ export const getDataNodeTree: (menus: SideMenuItem[], icons: AntdIcon[], onlyPar
     const icon = icons.filter(icon => icon.name === menu.icon);
     return getTreeItem(
       menu.title,
-      menu.id,
+      menu.menuId,
       icon[0] ? icon[0].icon : undefined,
-      menu.children
-        ? onlyParent && menu.grade === 3
+      menu.subMenu
+        ? onlyParent && menu.level === 3
           ? undefined
-          : getDataNodeTree(menu.children, icons, onlyParent)
+          : getDataNodeTree(menu.subMenu, icons, onlyParent)
         : undefined
     );
   });

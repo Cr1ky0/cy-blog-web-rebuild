@@ -4,8 +4,8 @@ import type { MenuProps } from 'antd/es/menu';
 
 /******** Ajax ********/
 export interface UpdateMenuBelongFormData {
-  id: string;
-  belongingMenu: string;
+  id: number;
+  belongingMenu: number;
   isMain?: boolean;
 }
 
@@ -30,15 +30,6 @@ export interface UserUpdateObj {
   avatar?: unknown;
 }
 
-// userInfo
-export interface UserObj {
-  name: string;
-  email: string;
-  brief: string;
-  avatar: string;
-  id: string;
-}
-
 // email
 export interface EmailObj {
   code?: string;
@@ -49,12 +40,12 @@ export interface EmailObj {
 export interface AddMenuObj {
   title: string;
   grade: number;
-  parentId?: string;
+  parentId?: number;
   icon: string;
 }
 
 export interface UpdateMenuObj {
-  id: string;
+  id: number;
   title?: string;
   icon?: string;
   color?: string;
@@ -62,7 +53,7 @@ export interface UpdateMenuObj {
 
 // blog
 export interface AddBlogObj {
-  belongingMenu: string;
+  belongingMenu: number;
   title: string;
   contents: string;
   updateAt?: string;
@@ -70,48 +61,42 @@ export interface AddBlogObj {
 }
 
 export interface UpdateBlogObj {
-  blogId: string;
+  blogId: number;
   data: AddBlogObj;
 }
 
 // comments
 export interface AddCommentObj {
-  belongingBlog: string;
+  belongingBlog: number;
   contents: string;
   username?: string;
-  userId?: string;
+  userId?: number;
   userRole: string;
   brief?: string;
 }
 
 export interface UpdateCommentObj {
-  id: string;
+  id: number;
   likes: number;
 }
 
 // reply
 export interface AddReplyObj {
-  belongingComment: string;
+  belongingComment: number;
   contents: string;
   username?: string;
-  userId?: string;
+  userId?: number;
   userRole: string;
   brief?: string;
 }
 
 /******** redux ********/
-//Emoji
-export interface EmojiObj {
-  key: string;
-  value: string;
-}
-
 // blog（和菜单里的blogs项通用）
 export interface BlogObj {
-  _id: string;
-  id: string;
+  _id: number;
+  id: number;
   title: string;
-  belongingMenu: string;
+  belongingMenu: number;
   isCollected?: boolean;
   author?: string;
   publishAt?: string;
@@ -121,21 +106,21 @@ export interface BlogObj {
   views?: number;
   sort?: number;
   commentCount?: number;
-  belongTo?: string;
+  belongTo?: number;
 }
 
-export interface SideMenuItem {
-  id: string;
-  _id: string;
-  title: string;
-  grade?: number;
-  sort?: number;
-  belongingMenu?: string;
-  icon?: string;
-  color?: string;
-  children?: SideMenuItem[];
-  blogs?: BlogObj[];
-}
+// export interface SideMenuItem {
+//   id: string;
+//   _id: string;
+//   title: string;
+//   grade?: number;
+//   sort?: number;
+//   belongingMenu?: string;
+//   icon?: string;
+//   color?: string;
+//   children?: SideMenuItem[];
+//   blogs?: BlogObj[];
+// }
 
 // export interface CommentObj {
 //   id: string;
@@ -150,24 +135,24 @@ export interface SideMenuItem {
 
 export interface CommentListObj {
   replys: ReplyApiObj[];
-  id: string;
+  id: number;
   username: string;
   brief: string;
   time: string;
   likes: number;
   contents: string;
   userRole: string;
-  userId: string;
-  belongingBlog: string;
+  userId: number;
+  belongingBlog: number;
 }
 
 export interface CommentApiObj {
-  _id: string;
+  _id: number;
   contents: string;
   likes: number;
   publishAt: string;
-  belongingUser: string;
-  belongingBlog: string;
+  belongingUser: number;
+  belongingBlog: number;
   userRole: string;
   username: string;
   replys: ReplyApiObj[];
@@ -175,12 +160,12 @@ export interface CommentApiObj {
 }
 
 export interface ReplyApiObj {
-  _id: string;
+  _id: number;
   contents: string;
   likes: number;
   publishAt: string;
-  belongingUser: string;
-  belongingComment: string;
+  belongingUser: number;
+  belongingComment: number;
   userRole: string;
   username: string;
   brief: string;
@@ -188,21 +173,21 @@ export interface ReplyApiObj {
 
 export interface TextContentObj {
   title: string;
-  menuId: string; // 所属分类Id
+  menuId: number; // 所属分类Id
   menuTitle: string;
   content: string;
 }
 
 export interface TimeLineObj {
-  id: string;
-  _id: string;
+  id: number;
+  _id: number;
   title: string;
   publishAt: string;
 }
 
 /************ 请求参数 ****************/
 export interface RequestOptions {
-  id: string;
+  id: number;
   sort?: string;
   page?: number;
   limit?: number;
@@ -215,18 +200,6 @@ export interface ReqOptions {
   limit?: string;
   fields?: string;
   options?: string;
-}
-
-/******** HomePage ********/
-// BlogTagBox
-export interface BlogTagBoxStatistic {
-  author: string;
-  time: string;
-  views: number;
-  belongingMenu: string;
-  isCollected: boolean;
-  id: string;
-  likes: number;
 }
 
 /******** SideMenu ********/
@@ -255,7 +228,7 @@ export type noticeObj = {
 
 /********* BlogPage *********/
 export interface BreadCrumbObj {
-  menu_id: string;
+  menu_id: number;
   icon?: React.ReactNode;
   title: string;
   color?: string;
@@ -266,5 +239,5 @@ export interface ClassificationInfoObj {
   title: string;
   color: string;
   blogNum: number;
-  id: string;
+  id: number;
 }

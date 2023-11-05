@@ -75,12 +75,6 @@ const router: Routes[] = [
           {
             path: 'editPhoto',
             element: lazy(() => import('@/pages/MainPage/BackStage/EditPhoto')),
-            children: [
-              {
-                path: '',
-                element: lazy(() => import('@/pages/MainPage/BackStage/EditPhoto/EditCertain')),
-              },
-            ],
           },
           {
             path: 'oss',

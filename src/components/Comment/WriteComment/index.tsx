@@ -15,21 +15,19 @@ import { useViewport } from '@/components/ContextProvider/ViewportProvider';
 
 // redux
 import { useAppDispatch, useAppSelector } from '@/redux';
-import { addLength, setComments, setIsLoading, addReply } from '@/redux/slices/comments';
+import { setComments, setIsLoading, setLength } from '@/redux/slices/comments';
 
 // api
-import { addCommentAjax } from '@/api/comment';
-import { addReplyAjax } from '@/api/reply';
-import { plusCommentCountAjax } from '@/api/blog';
+import { addComment } from '@/apis/comment';
 
 // global
 import { BREAK_POINT } from '@/global';
 
 interface WriteCommentProps {
-  belongingComment?: string;
+  belongCommentId?: number;
 }
 
-const WriteComment: React.FC<WriteCommentProps> = ({ belongingComment }) => {
+const WriteComment: React.FC<WriteCommentProps> = ({ belongCommentId }) => {
   const message = useGlobalMessage();
   const dispatch = useAppDispatch();
   const { width } = useViewport();
@@ -58,83 +56,60 @@ const WriteComment: React.FC<WriteCommentProps> = ({ belongingComment }) => {
     const comment = commentRef.current as HTMLTextAreaElement;
     const username = (userNameRef.current as InputRef).input as HTMLInputElement;
     const brief = (userBriefRef.current as InputRef).input as HTMLInputElement;
+    if (!comment.value) {
+      message.error('请输入评论！');
+      setIsLoading1(false);
+      return;
+    }
     try {
-      if (!comment.value) {
-        message.error('请输入评论！');
-        setIsLoading1(false);
-        return;
+      if (belongCommentId) {
+        await addComment({
+          blogId: selectedId,
+          belongCommentId,
+          content: comment.value,
+          userId: user ? user.userId : undefined,
+          brief: user ? user.brief : brief.value ? brief.value : undefined,
+          username: user ? user.username : username.value ? username.value : undefined,
+        });
+        await message.loadingAsync('提交中...', '提交成功');
+        comment.value = '';
+        dispatch(setLength(selectedId));
+        dispatch(setIsLoading(true));
+        setTimeout(() => {
+          dispatch(setIsLoading(false));
+        }, 500);
+        dispatch(
+          setComments({
+            id: selectedId,
+            page: curPage,
+          })
+        );
+      } else {
+        await addComment({
+          blogId: selectedId,
+          content: comment.value,
+          userId: user ? user.userId : undefined,
+          brief: user ? user.brief : brief.value ? brief.value : undefined,
+          username: user ? user.username : username.value ? username.value : undefined,
+        });
+        await message.loadingAsync('提交中...', '提交成功');
+        comment.value = '';
+        dispatch(setLength(selectedId));
+        dispatch(setIsLoading(true));
+        setTimeout(() => {
+          dispatch(setIsLoading(false));
+        }, 500);
+        dispatch(
+          setComments({
+            id: selectedId,
+            page: curPage,
+            sort: sort === 'time' ? 'create_at' : 'likes',
+          })
+        );
       }
-      // const res = await filterCommentAjax(comment.value);
-
-      // 是否违规
-      // const data = res.data.data;
-      // const type = data.conclusion_type;
-      // const dataObj = data.data[0];
-      // if (type.toString() === '1')
-      if (belongingComment)
-        await addReplyAjax(
-          {
-            belongingComment,
-            contents: comment.value,
-            userId: user ? user.userId : undefined,
-            brief: user ? user.brief : brief.value ? brief.value : undefined,
-            username: user ? user.username : username.value ? username.value : '匿名',
-            userRole: user ? user.role : 'visitor',
-          },
-          async data => {
-            await message.loadingAsync('提交中...', '提交成功');
-            comment.value = '';
-            dispatch(setIsLoading(true));
-            setTimeout(() => {
-              dispatch(setIsLoading(false));
-            }, 500);
-            dispatch(addReply({ belongingComment, newReply: data.data.reply }));
-            setIsLoading1(false);
-          },
-          msg => {
-            message.error(msg);
-            setIsLoading1(false);
-          }
-        );
-      else
-        await addCommentAjax(
-          {
-            belongingBlog: selectedId,
-            contents: comment.value,
-            userId: user ? user.userId : undefined,
-            brief: user ? user.brief : brief.value ? brief.value : undefined,
-            username: user ? user.username : username.value ? username.value : '匿名',
-            userRole: user ? user.role : 'visitor',
-          },
-          async () => {
-            await plusCommentCountAjax(selectedId);
-            await message.loadingAsync('提交中...', '提交成功');
-            comment.value = '';
-            dispatch(setIsLoading(true));
-            setTimeout(() => {
-              dispatch(setIsLoading(false));
-            }, 500);
-            dispatch(addLength());
-            dispatch(
-              setComments({
-                id: selectedId,
-                page: curPage,
-                sort: sort === 'time' ? '-publishAt' : '-likes',
-              })
-            );
-            setIsLoading1(false);
-          },
-          msg => {
-            message.error(msg);
-            setIsLoading1(false);
-          }
-        );
-      // else {
-      //   message.error(`评论包含敏感词: ${dataObj.words[0]} ,请重新编辑后发送！`);
-      //   setIsLoading1(false);
-      // }
-    } catch (err: any) {
-      message.error(err.message);
+    } catch (data: any) {
+      message.error(data.message);
+    } finally {
       setIsLoading1(false);
     }
   };
@@ -180,12 +155,11 @@ const WriteComment: React.FC<WriteCommentProps> = ({ belongingComment }) => {
             loading={isLoading}
             onClick={handleSubmit}
           >
-            {belongingComment ? '回复' : '评论'}
+            {belongCommentId ? '回复' : '评论'}
           </Button>
         </div>
       </div>
     </div>
   );
 };
-
 export default WriteComment;

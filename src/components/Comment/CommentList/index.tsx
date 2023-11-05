@@ -28,6 +28,7 @@ const items: MenuProps['items'] = [
 ];
 
 const CommentList = () => {
+  const dispatch = useAppDispatch();
   const sort = useAppSelector(state => state.comments.sort);
   const comments = useAppSelector(state => state.comments.commentList);
   const selectedId = useAppSelector(state => state.blogMenu.selectedId);
@@ -35,7 +36,6 @@ const CommentList = () => {
   const isLoading = useAppSelector(state => state.comments.isLoading);
   const length = useAppSelector(state => state.comments.length);
   const themeMode = useAppSelector(state => state.universal.themeMode);
-  const dispatch = useAppDispatch();
   const onClick: MenuProps['onClick'] = e => {
     dispatch(setSort(e.key));
   };
@@ -51,7 +51,7 @@ const CommentList = () => {
         setComments({
           id: selectedId,
           page: curPage,
-          sort: '-publishAt',
+          sort: 'create_at',
         })
       );
     } else {
@@ -63,7 +63,7 @@ const CommentList = () => {
         setComments({
           id: selectedId,
           page: curPage,
-          sort: '-likes',
+          sort: 'likes',
         })
       );
     }
@@ -79,7 +79,7 @@ const CommentList = () => {
       setComments({
         id: selectedId,
         page,
-        sort: sort === 'time' ? '-publishAt' : '-likes',
+        sort: sort === 'time' ? 'create_at' : 'likes',
       })
     );
   };
@@ -107,7 +107,7 @@ const CommentList = () => {
             {comments.length ? (
               comments.map(comment => {
                 return (
-                  <div key={comment.id}>
+                  <div key={comment.commentId}>
                     <SingleComment info={comment} />
                     <ReplyList comment={comment}></ReplyList>
                   </div>

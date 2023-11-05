@@ -1,6 +1,21 @@
 import { client, Result } from '@/utils/request';
 
 // interface
+// init
+export const blogInitState: Blog = {
+  blogId: 0,
+  title: '',
+  content: '',
+  likes: 0,
+  views: 0,
+  collected: false,
+  creatAt: '',
+  updateAt: '',
+  sort: 0,
+  userId: 0,
+  menuId: 0,
+};
+
 // request
 interface UpdateBlogForm {
   blogId: number;
@@ -9,6 +24,18 @@ interface UpdateBlogForm {
   collected?: boolean;
   updateAt?: string;
   menuId?: number;
+}
+
+interface AddBlogForm {
+  title: string;
+  content: string;
+  menuId: number;
+}
+
+interface UpdateBlogBrowseForm {
+  blogId: number;
+  like?: boolean;
+  plus?: boolean;
 }
 
 // response
@@ -35,6 +62,12 @@ export interface MenuBlog {
   createAt: string;
 }
 
+export interface BlogTimeLine {
+  blogId: number;
+  title: string;
+  createAt: string;
+}
+
 interface GetBlogRes {
   blog: Blog;
 }
@@ -45,6 +78,10 @@ interface GetMenuBlogRes {
 
 interface UpdateBlogRes {
   updatedBlog: Blog;
+}
+
+export interface BlogTimeLineRes {
+  timeline: BlogTimeLine[];
 }
 
 export const getBlog = async (blogId: number) => {
@@ -65,4 +102,16 @@ export const getBlogsOfMenu = async (menuId: number) => {
 
 export const sortBlog = async (idList: number[]) => {
   return client.patch<Result<void>>('/api/blog/sort', idList);
+};
+
+export const addBlog = async (data: AddBlogForm) => {
+  return client.post<Result<GetBlogRes>>('/api/blog', data);
+};
+
+export const updateBlogBrowse = async (data: UpdateBlogBrowseForm) => {
+  return client.patch<Result<UpdateBlogRes>>('/api/blog/browse', data);
+};
+
+export const getCriiky0TimeLine = async () => {
+  return client.get<Result<BlogTimeLineRes>>('/api/criiky0/timeline');
 };

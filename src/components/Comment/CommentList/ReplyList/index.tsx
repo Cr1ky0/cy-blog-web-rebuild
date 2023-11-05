@@ -4,16 +4,14 @@ import React from 'react';
 import style from './index.module.scss';
 
 // interface
-import { CommentListObj } from '@/interface';
-
-// comp
-import SingleReply from '@/components/Comment/CommentList/ReplyList/SingleReply';
+import { Comment } from '@/apis/comment';
 
 // redux
 import { useAppSelector } from '@/redux';
+import SingleComment from '@/components/Comment/CommentList/SingleComment';
 
 interface ReplyListProps {
-  comment: CommentListObj;
+  comment: Comment;
   noLikes?: boolean;
 }
 
@@ -22,11 +20,11 @@ const ReplyList: React.FC<ReplyListProps> = ({ comment, noLikes }) => {
   return (
     <div
       className={`${style.wrapper} ${themeMode === 'dark' ? 'dark' : 'light'}`}
-      style={comment.replys && comment.replys.length ? { paddingTop: 30 } : undefined}
+      style={comment.subComments && comment.subComments.length ? { paddingTop: 30 } : undefined}
     >
-      {comment.replys
-        ? comment.replys.map(reply => {
-            return <SingleReply key={reply._id} reply={reply} noLikes={noLikes}></SingleReply>;
+      {comment.subComments
+        ? comment.subComments.map(reply => {
+            return <SingleComment key={reply.commentId} info={reply} noLikes={noLikes} isReply></SingleComment>;
           })
         : undefined}
     </div>

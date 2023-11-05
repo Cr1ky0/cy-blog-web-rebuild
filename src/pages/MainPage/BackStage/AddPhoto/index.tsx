@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState } from 'react';
 import { nanoid } from 'nanoid';
 
 // antd
-import { Form, Upload, Select, DatePicker, Badge } from 'antd';
+import { Form, Upload, DatePicker, Badge } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import { RcFile } from 'antd/lib/upload';
 import type { UploadFile } from 'antd/es/upload/interface';
@@ -20,140 +20,83 @@ import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
 // redux
 import { useAppDispatch } from '@/redux';
 
-// api
-import { getOSSPolicy } from '@/api/OSS';
-import { addPhotos } from '@/api/images';
-
 // provider
 import { useViewport } from '@/components/ContextProvider/ViewportProvider';
 
 // global
 import { BREAK_POINT } from '@/global';
 import { setSelectKey } from '@/redux/slices/backstage';
-
-interface OSSDataType {
-  dir: string;
-  expire: string;
-  host: string;
-  accessid: string;
-  policy: string;
-  signature: string;
-}
+import { getPolicy, OSSPolicy } from '@/apis/oss';
+import { addImage } from '@/apis/image';
 
 interface AliyunOSSUploadProps {
   value?: UploadFile[];
   onChange?: (fileList: UploadFile[]) => void;
-  select: string;
   time: Date;
 }
 
-const AliyunOSSUpload = ({ value, onChange, select, time }: AliyunOSSUploadProps) => {
+const AliyunOSSUpload = ({ value }: AliyunOSSUploadProps) => {
   const message = useGlobalMessage();
   const { width } = useViewport();
-  const [OSSData, setOSSData] = useState<OSSDataType>();
+  const [OSSData, setOSSData] = useState<OSSPolicy>();
   const [uploadList, setUploadList] = useState<string[]>([]);
 
   const init = async () => {
-    getOSSPolicy(
-      '',
-      data => {
-        setOSSData(data);
-      },
-      content => {
-        message.error(content);
-      }
-    );
+    try {
+      const res = await getPolicy();
+      setOSSData(res.data);
+    } catch (data: any) {
+      message.error(data.message);
+    }
   };
 
   useEffect(() => {
     init();
   }, []);
 
-  // 这里当OSS上传后进行应用服务器上传
-  // 需要用防抖技术，否则会多次重复上传
-  const debounce = useCallback(() => {
-    let timer: any;
-    return (files: UploadFile[], select: string, uploadList: string[], time: Date) => {
-      if (timer) clearTimeout(timer);
-      timer = setTimeout(() => {
-        // 过滤已经上传的
-        const fileList = files.length
-          ? files.filter(file => {
-              return !uploadList.includes(file.url as string);
-            })
-          : [];
-        const photos = fileList.map(file => {
-          return {
-            filename: file.url,
-            classification: select,
-            photoTime: time,
-          };
-        });
-        if (photos.length)
-          addPhotos(
-            photos,
-            () => {
-              message.success('上传成功');
-              setUploadList([...uploadList, ...(photos.map(photo => photo.filename) as string[])]);
-            },
-            content => {
-              message.error(`上传至OSS成功但是上传至应用服务器失败：${content}`);
-            }
-          );
-      }, 300);
-    };
-  }, []);
-
-  const debounceFunc = useMemo(() => {
-    return debounce();
-  }, []);
-
-  const handleChange: UploadProps['onChange'] = ({ file, fileList }) => {
-    message.destroy();
-    // 上传msg
-    const uploads = fileList.filter(file => {
-      return file.status === 'uploading';
-    });
-    // 成功msg
-    const success = fileList.filter(file => {
-      return file.status === 'done';
-    });
-    // 失败msg
-    const error = fileList.filter(file => {
-      return file.status === 'error';
-    });
-    if (uploads.length > 0) message.loading('上传中');
-    if (success.length > 0 && file.status !== 'removed') {
+  const handleChange: UploadProps['onChange'] = async ({ file }) => {
+    const status = file.status;
+    if (status === 'uploading') {
+      message.destroy();
+      message.loading('上传中');
+    }
+    if (status === 'done') {
       // 应用服务器上传
-      debounceFunc(fileList, select, uploadList, time);
+      try {
+        await addImage({
+          fileName: file.url as string,
+        });
+        setUploadList([...uploadList, file.url as string]);
+        message.destroy();
+        message.success('success');
+      } catch (data: any) {
+        message.error(data.message);
+      }
     }
-    if (error.length > 0) message.error('上传失败');
-    // 修改状态列表
-    onChange?.([...fileList]);
+    if (status === 'error') {
+      message.destroy();
+      message.error('上传失败');
+    }
   };
 
-  const onRemove = (file: UploadFile) => {
-    const files = (value || []).filter(v => v.url !== file.url);
-    if (onChange) {
-      onChange(files);
-    }
+  const onRemove = () => {
+    return true;
   };
-
   const getExtraData: UploadProps['data'] = file => ({
     key: file.url,
     OSSAccessKeyId: OSSData?.accessid,
     policy: OSSData?.policy,
     Signature: OSSData?.signature,
+    success_action_status: 200,
+    // callback:'' // 上线时使用
   });
 
-  const beforeUpload: UploadProps['beforeUpload'] = async (file, fileList) => {
+  const beforeUpload: UploadProps['beforeUpload'] = async file => {
     if (!OSSData) return false;
+    await init();
 
-    const expire = Number(OSSData.expire) * 1000;
-
-    if (expire < Date.now()) {
-      await init();
-    }
+    // 判断文件大小是否超过5MB
+    const inSize = file.size < 5 * 1024 * 1024;
 
     // 判断是否是图像
     const isImg = !!file.type.match('image');
@@ -163,7 +106,7 @@ const AliyunOSSUpload = ({ value, onChange, select, time }: AliyunOSSUploadProps
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     file.url = OSSData.dir + filename;
-    return isImg || Upload.LIST_IGNORE;
+    return (inSize && isImg) || Upload.LIST_IGNORE;
   };
 
   // 预览
@@ -211,13 +154,8 @@ const AliyunOSSUpload = ({ value, onChange, select, time }: AliyunOSSUploadProps
 
 const AddPhoto: React.FC = () => {
   const dispatch = useAppDispatch();
-  const [selValue, setSelValue] = useState('now');
   const [time, setTime] = useState<Date>(new Date(Date.now()));
   const dateFormat = 'YYYY/MM/DD';
-
-  const handleChange = (value: string) => {
-    setSelValue(value);
-  };
 
   const handleTime = (value: any) => {
     setTime(value.$d);
@@ -228,24 +166,6 @@ const AddPhoto: React.FC = () => {
   }, []);
   return (
     <div className={style.wrapper}>
-      <div className={style.classSelect}>
-        <span>请选择上传照片分类：</span>
-        <Select
-          defaultValue="now"
-          style={{ width: 160 }}
-          onChange={handleChange}
-          options={[
-            { value: 'now', label: '即时上传' },
-            { value: 'memory', label: '往事回忆' },
-            { value: 'bigEvent', label: '大事记' },
-            { value: 'others', label: '其他' },
-          ]}
-        />
-        <span>
-          <Badge color="magenta" status="processing" style={{ paddingRight: 5 }}></Badge>
-          用于前端不同照片展示区分类
-        </span>
-      </div>
       <div className={style.photoTime}>
         <span>请选择上传照片日期：</span>
         <DatePicker placeholder="请选择照片日期" format={dateFormat} onChange={handleTime} />
@@ -257,7 +177,7 @@ const AddPhoto: React.FC = () => {
       <div className={style.upload}>
         <Form labelCol={{ span: 4 }}>
           <Form.Item name="photos">
-            <AliyunOSSUpload select={selValue} time={time} />
+            <AliyunOSSUpload time={time} />
           </Form.Item>
         </Form>
       </div>
