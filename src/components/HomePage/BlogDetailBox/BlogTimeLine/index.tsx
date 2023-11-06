@@ -16,8 +16,8 @@ import { setTimeLine } from '@/redux/slices/blog';
 import { setSelectedId } from '@/redux/slices/blogMenu';
 
 // interface
-import { TimeLineObj } from '@/interface';
 import { setMobileMenuOpen } from '@/redux/slices/universal';
+import { BlogTimeLineObj } from '@/apis/blog';
 
 const BlogTimeLine = () => {
   const timeline = useAppSelector(state => state.blog.timeLine);
@@ -25,14 +25,14 @@ const BlogTimeLine = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   // 生成带年份分类的时间轴对象
-  const generateTimeLine = (timeline: TimeLineObj[], handleClick: MouseEventHandler) => {
+  const generateTimeLine = (timeline: BlogTimeLineObj[], handleClick: MouseEventHandler) => {
     // timeLine[] 已经按时间新到旧排序
     if (timeline && timeline.length) {
       const list = [];
       timeline.map((item, index) => {
         if (index < timeline.length - 1) {
-          const year1 = moment(item.publishAt).format('YYYY');
-          const year2 = moment(timeline[index + 1].publishAt).format('YYYY');
+          const year1 = moment(item.createAt).format('YYYY');
+          const year2 = moment(timeline[index + 1].createAt).format('YYYY');
           if (year1 !== year2) {
             list.push({
               dot: (
@@ -53,7 +53,8 @@ const BlogTimeLine = () => {
           dot: <div className={`${style.dot} ${themeMode === 'dark' ? 'dark-3-onforce' : ''}`}></div>,
           children: (
             <div
-              id={item.id}
+              id={item.blogId.toString()}
+              key={item.blogId}
               className={style.itemWrapper}
               // 鼠标移入修改dot颜色
               onMouseEnter={e => {
@@ -69,7 +70,7 @@ const BlogTimeLine = () => {
               // click
               onClick={handleClick}
             >
-              <span className={style.time}>{moment(item.publishAt).format('M/DD')}</span>
+              <span className={style.time}>{moment(item.createAt).format('M/DD')}</span>
               <span className={style.title}>{item.title}</span>
             </div>
           ),
@@ -82,7 +83,7 @@ const BlogTimeLine = () => {
             <ClockCircleOutlined style={{ fontSize: '14px' }} />
           </div>
         ),
-        children: <div className={style.year}>{moment(timeline[0].publishAt).format('YYYY')}</div>,
+        children: <div className={style.year}>{moment(timeline[0].createAt).format('YYYY')}</div>,
       });
       return list;
     }

@@ -3,13 +3,13 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 // interface
 import { TextContentObj } from '@/interface';
-import { Blog, BlogTimeLine, BlogTimeLineRes } from '@/apis/blog';
+import { Blog, BlogTimeLineObj, BlogTimeLineRes } from '@/apis/blog';
 
 interface blogInitObj {
   primBlog: Blog;
   writeContent: TextContentObj;
   isEdit: boolean; // 标志博客是否处于编辑状态，处于编辑状态则提交按钮变为更新
-  timeLine: BlogTimeLine[];
+  timeLine: BlogTimeLineObj[];
   blogsNum: number;
   likeList: number[]; // 点赞列表，记录当前点赞过的博客
   chosen: number; // 精选页面chosen
@@ -22,7 +22,7 @@ const initialState: blogInitObj = {
   primBlog: {} as Blog,
   writeContent: {} as TextContentObj,
   isEdit: false, // 标志博客是否处于编辑状态，处于编辑状态则提交按钮变为更新
-  timeLine: [] as BlogTimeLine[],
+  timeLine: [] as BlogTimeLineObj[],
   blogsNum: 0,
   likeList: [] as number[],
   chosen: 0,

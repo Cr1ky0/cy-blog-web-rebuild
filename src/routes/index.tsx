@@ -81,10 +81,6 @@ const router: Routes[] = [
             element: lazy(() => import('@/pages/MainPage/BackStage/EditOSS')),
           },
           {
-            path: 'smtp',
-            element: lazy(() => import('@/pages/MainPage/BackStage/EditSMTP')),
-          },
-          {
             path: 'editmenu',
             element: lazy(() => import('@/pages/MainPage/BackStage/EditMenu')),
           },

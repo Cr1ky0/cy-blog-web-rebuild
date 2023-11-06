@@ -77,6 +77,7 @@ const TimeLine = () => {
           dot: <div className={`${style.dot} ${themeMode === 'dark' ? 'dark-3-onforce' : ''}`}></div>,
           children: (
             <div
+              id={item.imageId.toString()}
               key={item.imageId}
               className={`${style.itemWrapper} showAnime`}
               // click

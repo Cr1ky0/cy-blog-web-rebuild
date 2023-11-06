@@ -16,7 +16,7 @@ import { useAppSelector } from '@/redux';
 const Avatar = () => {
   const message = useGlobalMessage();
   const navigate = useNavigate();
-  const avatar = useAvatar();
+  const { avatar } = useAvatar();
 
   const user = useAppSelector(state => state.user.user);
 

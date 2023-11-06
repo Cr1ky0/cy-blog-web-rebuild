@@ -1,4 +1,4 @@
-import {client, GetCountRequest, GetPageRequest, RequestPageOptions, Result} from '@/utils/request';
+import { client, GetCountRequest, GetPageRequest, RequestPageOptions, Result } from '@/utils/request';
 
 // interface
 // request

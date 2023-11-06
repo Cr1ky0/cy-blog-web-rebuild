@@ -10,7 +10,6 @@ import { DeleteOutlined, FormOutlined } from '@ant-design/icons';
 // css
 import style from './index.module.scss';
 
-
 // provider
 import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
 import { useGlobalModal } from '@/components/ContextProvider/ModalProvider';

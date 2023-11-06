@@ -62,7 +62,7 @@ export interface MenuBlog {
   createAt: string;
 }
 
-export interface BlogTimeLine {
+export interface BlogTimeLineObj {
   blogId: number;
   title: string;
   createAt: string;
@@ -89,7 +89,7 @@ interface UpdateBlogRes {
 }
 
 export interface BlogTimeLineRes {
-  timeline: BlogTimeLine[];
+  timeline: BlogTimeLineObj[];
 }
 
 export const getBlog = async (blogId: number) => {

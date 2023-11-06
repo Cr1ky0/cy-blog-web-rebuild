@@ -38,7 +38,7 @@ const IntroductionBox: React.FC<IntroductionBoxProps> = props => {
   const loginUser = useAppSelector(state => state.user.user);
 
   const [user, setUser] = useState({} as GetUserRes['user']);
-  const [avatar, setAvatar] = useState<string>(useAvatar());
+  const [avatar, setAvatar] = useState<string>(useAvatar().avatar);
 
   const limit = 40;
 
