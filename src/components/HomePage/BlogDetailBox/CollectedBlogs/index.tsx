@@ -3,21 +3,13 @@ import React, { useEffect, useState } from 'react';
 // css
 import style from './index.module.scss';
 
-// api
-import { getCollectedBlogs } from '@/api/blog';
-
 // context
 import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
 import { useAppDispatch } from '@/redux';
 import { setSelectedId } from '@/redux/slices/blogMenu';
 import { useNavigate } from 'react-router';
 import { setMobileMenuOpen } from '@/redux/slices/universal';
-
-interface showBlogObj {
-  title: string;
-  id: string;
-  _id: string;
-}
+import { getCollectedBlogOfCriiky0, MenuBlog } from '@/apis/blog';
 
 const truncateString = (str: string) => {
   const maxLen = 28;
@@ -49,28 +41,29 @@ const ShowBlogs = () => {
   const message = useGlobalMessage();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [blogs, setBlogs] = useState<showBlogObj[]>([]);
+  const [blogs, setBlogs] = useState<MenuBlog[]>([]);
+
   useEffect(() => {
-    getCollectedBlogs(
-      '',
+    getCollectedBlogOfCriiky0().then(
       response => {
-        setBlogs(response);
+        setBlogs(response.data.collectedBlogs);
       },
-      err => {
-        message.error(err);
+      error => {
+        message.error(error.message);
       }
     );
   }, []);
+
   return (
     <div className={style.wrapper}>
       {blogs && blogs.length
         ? blogs.map(blog => {
             return (
               <div
-                key={blog.id}
+                key={blog.blogId}
                 className={style.blogTitle}
                 onClick={() => {
-                  dispatch(setSelectedId(blog.id));
+                  dispatch(setSelectedId(blog.blogId));
                   dispatch(setMobileMenuOpen(false));
                   navigate('/blog');
                 }}

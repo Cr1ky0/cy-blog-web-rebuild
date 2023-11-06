@@ -1,4 +1,4 @@
-import { client, GetPageRequest, RequestPageOptions, Result } from '@/utils/request';
+import { client, GetCountResponse, GetPageRequest, RequestPageOptions, Result } from '@/utils/request';
 
 // interface
 // init
@@ -84,6 +84,10 @@ interface GetMenuBlogRes {
   blogs: MenuBlog[];
 }
 
+interface GetCollectedBlogsRes {
+  collectedBlogs: MenuBlog[];
+}
+
 interface UpdateBlogRes {
   updatedBlog: Blog;
 }
@@ -131,7 +135,15 @@ export const getBlogPageOfCriiky0 = async (data: RequestPageOptions) => {
   );
 };
 
+export const getBlogCountOfCriiky0 = async (options: string) => {
+  return client.get<Result<GetCountResponse>>(`/api/blog/criiky0/count?options=${options}`);
+};
+
 export const getBlogHasCommentOfUser = async (data: RequestPageOptions) => {
   const { page, size } = data;
   return client.get<Result<GetPageRequest<BlogHasComment>>>(`/api/blog/hascomment?page=${page}&size=${size}`);
+};
+
+export const getCollectedBlogOfCriiky0 = async () => {
+  return client.get<Result<GetCollectedBlogsRes>>('/api/blog/criiky0/collected');
 };

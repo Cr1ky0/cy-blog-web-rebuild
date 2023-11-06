@@ -29,7 +29,7 @@ export interface GetPageRequest<T> {
   pageNum: number;
 }
 
-export interface GetCountRequest {
+export interface GetCountResponse {
   count: number;
 }
 

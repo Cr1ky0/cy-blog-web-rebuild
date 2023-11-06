@@ -17,11 +17,9 @@ import { useAppSelector } from '@/redux';
 // util
 import { getClassificationInfo } from '@/utils';
 
-// api
-import { getCollectedBlogsNum } from '@/api/blog';
-
 // context
 import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
+import { getBlogCountOfCriiky0 } from '@/apis/blog';
 
 interface BlogDetailBoxProps {
   isMobile?: boolean;
@@ -50,13 +48,12 @@ const BlogDetailBox: React.FC<BlogDetailBoxProps> = ({ isMobile }) => {
   };
 
   useEffect(() => {
-    // 获取收藏数
-    getCollectedBlogsNum().then(
+    getBlogCountOfCriiky0('collected:1').then(
       response => {
         setCollectNum(response.data.count);
       },
-      err => {
-        message.error(err.message);
+      error => {
+        message.error(error.message);
       }
     );
   }, []);

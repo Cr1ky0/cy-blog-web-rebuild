@@ -16,9 +16,9 @@ import { setChosenList } from '@/redux/slices/chosenList';
 import { setChosen } from '@/redux/slices/blog';
 
 // api
-import { getCollectedBlogsNum } from '@/api/blog';
 import { setStarBlogPage } from '@/redux/slices/universal';
 import { ANIME_HIDE_TIME } from '@/global';
+import { getBlogCountOfCriiky0 } from '@/apis/blog';
 
 const choseList = ['收藏', '最多点赞', '最多浏览'];
 const StarBlog = () => {
@@ -51,7 +51,7 @@ const StarBlog = () => {
     now.classList.add(style.optionsOnChosen);
     // 如果为收藏页，获取收藏总数
     if (chosen === 0) {
-      getCollectedBlogsNum().then(res => {
+      getBlogCountOfCriiky0('collected:1').then(res => {
         setCollectNum(res.data.count);
       });
     }

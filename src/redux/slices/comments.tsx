@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { client, GetCountRequest, GetPageRequest, RequestPageOptions, Result } from '@/utils/request';
+import { client, GetCountResponse, GetPageRequest, RequestPageOptions, Result } from '@/utils/request';
 import { Comment } from '@/apis/comment';
 
 interface commentsState {
@@ -28,7 +28,7 @@ export const setComments = createAsyncThunk('comments/setComments', async (optio
 });
 
 export const setLength = createAsyncThunk('comments/setLength', async (blogId: number) => {
-  return client.get<Result<GetCountRequest>>(`/api/comment/curblog/count?blog_id=${blogId}`);
+  return client.get<Result<GetCountResponse>>(`/api/comment/curblog/count?blog_id=${blogId}`);
 });
 
 const commentsSlice = createSlice({

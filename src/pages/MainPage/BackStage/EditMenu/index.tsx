@@ -15,10 +15,6 @@ import { Tag, Tooltip, Input, Select, TreeSelect, Modal, Button } from 'antd';
 // css
 import style from './index.module.scss';
 
-// api
-import { changeSort } from '@/api/menu';
-import { changeSortOfBlog } from '@/api/blog';
-
 // provider
 import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
 import { useGlobalModal } from '@/components/ContextProvider/ModalProvider';
@@ -896,19 +892,19 @@ const App: React.FC = () => {
   // 顺序改变后进行操作
   useEffect(() => {
     if (isChange) {
+      const changeSort = async (idList: number[]) => {
+        try {
+          await sortBlog(idList);
+        } catch (data: any) {
+          msg.error(data.message);
+        } finally {
+          setIsChange(false);
+        }
+      };
       const idList = menuData.map(data => {
         return data.menuId;
       });
-      changeSort(
-        idList,
-        () => {
-          // pass
-        },
-        err => {
-          msg.error(err);
-        }
-      );
-      setIsChange(false);
+      changeSort(idList);
     }
   }, [menuData]);
 

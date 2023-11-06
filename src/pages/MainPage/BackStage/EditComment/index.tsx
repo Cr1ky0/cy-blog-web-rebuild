@@ -14,15 +14,8 @@ import style from './index.module.scss';
 import { useAppDispatch, useAppSelector } from '@/redux';
 import { setSelectKey } from '@/redux/slices/backstage';
 
-// api
-import { getBlogsWithCommentsAjax, getBlogsWithCommentsCountAjax } from '@/api/blog';
-
 // provider
 import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
-import { getMenuAjax } from '@/api/menu';
-
-// interface
-import { CommentListObj } from '@/interface';
 
 // comp
 import SingleComment from '@/components/Comment/CommentList/SingleComment';
