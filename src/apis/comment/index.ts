@@ -1,4 +1,4 @@
-import { client, GetCountRequest, Result } from '@/utils/request';
+import {client, GetCountRequest, GetPageRequest, RequestPageOptions, Result} from '@/utils/request';
 
 // interface
 // request
@@ -53,4 +53,9 @@ export const deleteCommentAjax = async (commentId: number) => {
 
 export const getCommentCountOfBlog = async (blogId: number) => {
   return client.get<Result<GetCountRequest>>(`/api/comment/curblog/count?blog_id=${blogId}`);
+};
+
+export const getCommentPageOfBlog = async (data: RequestPageOptions) => {
+  const { id, page, size } = data;
+  return client.get<Result<GetPageRequest<Comment>>>(`/api/comment/curblog?blog_id=${id}&page=${page}&size=${size}`);
 };

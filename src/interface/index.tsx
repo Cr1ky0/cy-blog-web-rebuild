@@ -146,18 +146,6 @@ export interface CommentListObj {
   belongingBlog: number;
 }
 
-export interface CommentApiObj {
-  _id: number;
-  contents: string;
-  likes: number;
-  publishAt: string;
-  belongingUser: number;
-  belongingBlog: number;
-  userRole: string;
-  username: string;
-  replys: ReplyApiObj[];
-  brief: string;
-}
 
 export interface ReplyApiObj {
   _id: number;

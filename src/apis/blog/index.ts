@@ -1,4 +1,4 @@
-import {client, GetPageRequest, RequestPageOptions, Result} from '@/utils/request';
+import { client, GetPageRequest, RequestPageOptions, Result } from '@/utils/request';
 
 // interface
 // init
@@ -68,6 +68,14 @@ export interface BlogTimeLine {
   createAt: string;
 }
 
+export interface BlogHasComment {
+  commentCount: number;
+  blogId: number;
+  userId: number;
+  menuId: number;
+  title: string;
+}
+
 interface GetBlogRes {
   blog: Blog;
 }
@@ -83,7 +91,6 @@ interface UpdateBlogRes {
 export interface BlogTimeLineRes {
   timeline: BlogTimeLine[];
 }
-
 
 export const getBlog = async (blogId: number) => {
   return client.get<Result<GetBlogRes>>(`/api/blog/single/${blogId}`);
@@ -122,4 +129,9 @@ export const getBlogPageOfCriiky0 = async (data: RequestPageOptions) => {
   return client.get<Result<GetPageRequest<Blog>>>(
     `/api/blog/criiky0?page=${page}&size=${size}&sort=${sort}&collected=${collected}`
   );
+};
+
+export const getBlogHasCommentOfUser = async (data: RequestPageOptions) => {
+  const { page, size } = data;
+  return client.get<Result<GetPageRequest<BlogHasComment>>>(`/api/blog/hascomment?page=${page}&size=${size}`);
 };

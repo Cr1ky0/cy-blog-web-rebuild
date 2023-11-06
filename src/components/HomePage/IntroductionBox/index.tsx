@@ -17,7 +17,7 @@ import { useAvatar } from '@/components/ContextProvider/AvatarPrivider';
 import { useAppDispatch, useAppSelector } from '@/redux';
 import { setTimeLine } from '@/redux/slices/blog';
 import { useNavigate } from 'react-router';
-import { getCriiky0Avatar, getCriiky0Info, UserInfo } from '@/apis/user';
+import { getCriiky0Avatar, getCriiky0Info, GetUserRes } from '@/apis/user';
 
 // interface
 export interface IntroductionBoxProps {
@@ -37,7 +37,7 @@ const IntroductionBox: React.FC<IntroductionBoxProps> = props => {
   const themeMode = useAppSelector(state => state.universal.themeMode);
   const loginUser = useAppSelector(state => state.user.user);
 
-  const [user, setUser] = useState({} as UserInfo['user']);
+  const [user, setUser] = useState({} as GetUserRes['user']);
   const [avatar, setAvatar] = useState<string>(useAvatar());
 
   const limit = 40;

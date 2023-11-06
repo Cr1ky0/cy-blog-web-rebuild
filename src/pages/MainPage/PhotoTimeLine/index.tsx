@@ -27,7 +27,7 @@ import { setChosenList } from '@/redux/slices/chosenList';
 import { setIsLoading } from '@/redux/slices/progressbar';
 
 // interface
-import { getImagePage, Image } from '@/apis/image';
+import { getImagePageOfCriiky0, Image } from '@/apis/image';
 
 // util
 import _ from 'lodash';
@@ -127,7 +127,7 @@ const TimeLine = () => {
       // 触发事件
       if (cur >= document.documentElement.scrollHeight) {
         setPhotoLoad(true);
-        getImagePage({
+        getImagePageOfCriiky0({
           page: page + 1,
           size: 10,
         }).then(
@@ -155,7 +155,7 @@ const TimeLine = () => {
   }, [page, photos]);
 
   useEffect(() => {
-    getImagePage({
+    getImagePageOfCriiky0({
       page: 1,
       size: 10,
     }).then(

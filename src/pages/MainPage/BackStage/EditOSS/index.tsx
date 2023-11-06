@@ -12,102 +12,107 @@ import { useAppDispatch } from '@/redux';
 import { setSelectKey } from '@/redux/slices/backstage';
 
 // api
-import { OSSConfig } from '@/interface/OSSApi';
-import { getOSSObject, setOSSObject } from '@/api/OSS';
+import { AddOSSConfigForm, getOSSConfig, OSSConfig, OSSConfigInit, setOSSConfig } from '@/apis/oss';
 
 // provider
 import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
 
 const EditOSS = () => {
-  const dispatch = useAppDispatch();
   const msg = useGlobalMessage();
-  const navigate = useNavigate();
-  const [config, setConfig] = useState<OSSConfig>();
-  const [loading, setLoading] = useState(true);
+  const dispatch = useAppDispatch();
+
+  const [config, setConfig] = useState<OSSConfig>(OSSConfigInit);
   const [form] = Form.useForm();
+
+  const refreshConfig = () => {
+    form.setFieldsValue({
+      accessKeyId: config.accessKeyId,
+      accessKeySecret: config.accessKeySecret,
+      bucket: config.bucket,
+      endpoint: config.endpoint,
+      dir: config.dir,
+      callbackUrl: config.callbackUrl,
+    });
+  };
+
+  const clearConfig = () => {
+    form.setFieldsValue({
+      accessKeyId: '',
+      accessKeySecret: '',
+      bucket: '',
+      endpoint: '',
+      dir: '',
+      callbackUrl: '',
+    });
+  };
+
+  // 刷新config
+  useEffect(() => {
+    refreshConfig();
+  }, [config]);
+
   useEffect(() => {
     dispatch(setSelectKey('oss'));
-    getOSSObject(
-      '',
-      res => {
-        setConfig(res.data.OSSObject);
+    getOSSConfig().then(
+      response => {
+        setConfig(response.data.config);
       },
-      err => {
-        msg.error(err);
+      error => {
+        msg.error(error.message);
       }
     );
-    setTimeout(() => {
-      setLoading(false);
-    }, 50);
   }, []);
 
+  const handleSubmit = async (values: AddOSSConfigForm) => {
+    try {
+      const res = await setOSSConfig(values);
+      refreshConfig();
+      setConfig(res.data.config);
+    } catch (data: any) {
+      msg.error(data.message);
+    }
+  };
+
   return (
-    <>
-      {loading ? undefined : (
-        <div className={style.wrapper}>
-          <Form
-            form={form}
-            name="wrap"
-            labelCol={{ flex: '120px' }}
-            labelAlign="right"
-            labelWrap
-            colon={false}
-            className={style.form}
-            initialValues={{
-              accessKeyId: config?.accessKeyId,
-              accessKeySecret: config?.accessKeySecret,
-              bucket: config?.bucket,
-              region: config?.region,
-            }}
-            onFinish={values => {
-              setOSSObject(
-                values,
-                () => {
-                  msg.loadingSuccessAsync('保存中...', '保存成功!');
-                  navigate(0);
-                },
-                err => {
-                  msg.error(err);
-                }
-              );
-            }}
-          >
-            <Form.Item label="AccessKeyId" name="accessKeyId" rules={[{ required: true }]}>
-              <Input placeholder="设定 AccessKeyId" />
-            </Form.Item>
-            <Form.Item label="AccessKeySecret" name="accessKeySecret" rules={[{ required: true }]}>
-              <Input placeholder="设定 AccessKeySecret" type="password" />
-            </Form.Item>
-            <Form.Item label="Bucket" name="bucket" rules={[{ required: true }]}>
-              <Input placeholder="设定 Bucket" />
-            </Form.Item>
-            <Form.Item label="Region" name="region" rules={[{ required: true }]}>
-              <Input placeholder="设定 Region" />
-            </Form.Item>
-            <Form.Item label=" ">
-              <Button type="primary" htmlType="submit">
-                保存
-              </Button>
-              <Button
-                style={{ marginLeft: '20px' }}
-                type="primary"
-                danger
-                onClick={() => {
-                  form.setFieldsValue({
-                    accessKeyId: '',
-                    accessKeySecret: '',
-                    bucket: '',
-                    region: '',
-                  });
-                }}
-              >
-                清除
-              </Button>
-            </Form.Item>
-          </Form>
-        </div>
-      )}
-    </>
+    <div className={style.wrapper}>
+      <Form
+        form={form}
+        name="wrap"
+        labelCol={{ flex: '120px' }}
+        labelAlign="right"
+        labelWrap
+        colon={false}
+        className={style.form}
+        onFinish={handleSubmit}
+      >
+        <Form.Item label="AccessKeyId" name="accessKeyId" rules={[{ required: true }]}>
+          <Input placeholder="设定 AccessKeyId" />
+        </Form.Item>
+        <Form.Item label="AccessKeySecret" name="accessKeySecret" rules={[{ required: true }]}>
+          <Input placeholder="设定 AccessKeySecret" type="password" />
+        </Form.Item>
+        <Form.Item label="Bucket" name="bucket" rules={[{ required: true }]}>
+          <Input placeholder="设定 Bucket" />
+        </Form.Item>
+        <Form.Item label="Endpoint" name="endpoint" rules={[{ required: true }]}>
+          <Input placeholder="设定 endpoint" />
+        </Form.Item>
+        <Form.Item label="Dir" name="dir">
+          <Input placeholder="设定 图片路径" />
+        </Form.Item>
+        <Form.Item label="CallbackUrl" name="callbackUrl">
+          <Input placeholder="设定 上传回调地址" />
+        </Form.Item>
+        <Form.Item label=" ">
+          <Button type="primary" htmlType="submit">
+            保存
+          </Button>
+          <Button style={{ marginLeft: '20px' }} type="primary" danger onClick={clearConfig}>
+            清除
+          </Button>
+        </Form.Item>
+      </Form>
+    </div>
   );
 };
 

@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { client, Result } from '@/utils/request';
-import { User, UserInfo } from '@/apis/user';
+import { User, GetUserRes } from '@/apis/user';
 
 interface userInitObj {
   user: User;
@@ -11,7 +11,7 @@ const initialState: userInitObj = {
 };
 
 export const setMyUser = createAsyncThunk('user/setMyUser', async () => {
-  const response = await client.get<Result<UserInfo>>('/api/users/info');
+  const response = await client.get<Result<GetUserRes>>('/api/users/info');
   return Promise.resolve(response);
 });
 

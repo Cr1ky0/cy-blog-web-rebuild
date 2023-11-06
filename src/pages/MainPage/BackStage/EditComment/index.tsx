@@ -27,14 +27,18 @@ import { CommentListObj } from '@/interface';
 // comp
 import SingleComment from '@/components/Comment/CommentList/SingleComment';
 import ReplyList from '@/components/Comment/CommentList/ReplyList';
+import { getBlogHasCommentOfUser } from '@/apis/blog';
+import { getMenu } from '@/apis/menu';
+import { getCommentPageOfBlog } from '@/apis/comment';
+import { Comment } from '@/apis/comment';
 
 interface DataType {
   key: React.Key;
   title: string;
   belongingMenu: string;
-  commentCount: string;
-  author: number;
-  comment: Comment[];
+  commentCount: number;
+  author: string;
+  comments: Comment[];
 }
 
 const columns: TableColumnsType<DataType> = [
@@ -51,6 +55,7 @@ const EditComment: React.FC = () => {
   const navigate = useNavigate();
 
   const themeMode = useAppSelector(state => state.universal.themeMode);
+  const user = useAppSelector(state => state.user.user);
 
   const [blogList, setBlogList] = useState<DataType[]>([]);
   const [count, setCount] = useState(0);
@@ -59,29 +64,12 @@ const EditComment: React.FC = () => {
   const page = search.get('page');
 
   const BackStageCommentList = (record: any) => {
-    const commentsList = record.comments
-      .map((comment: Comment) => {
-        return {
-          replys: comment.replys,
-          id: comment._id,
-          username: comment.username,
-          brief: comment.brief,
-          time: moment(comment.publishAt).format('YYYY-MM-DD HH:mm:ss'),
-          likes: comment.likes,
-          contents: comment.contents,
-          userRole: comment.userRole,
-          userId: comment.belongingUser,
-          belongingBlog: comment.belongingBlog,
-        };
-      })
-      .reverse();
-
     return (
       <div className={`${style.comments} ${themeMode === 'dark' ? 'dark' : 'light'}`}>
-        {commentsList.length
-          ? commentsList.map((comment: CommentListObj) => {
+        {record.comment.length
+          ? record.comment.map((comment: Comment) => {
               return (
-                <div key={comment.id}>
+                <div key={comment.commentId}>
                   <SingleComment info={comment} noLikes />
                   <ReplyList comment={comment} noLikes />
                 </div>
@@ -92,56 +80,47 @@ const EditComment: React.FC = () => {
     );
   };
 
+  // 初始化
   useEffect(() => {
     dispatch(setSelectKey('comment'));
   }, []);
 
-  useEffect(() => {
-    getBlogsWithCommentsCountAjax(
-      '',
-      data => {
-        setCount(data.count);
-      },
-      err => {
-        msg.error(err);
-      }
-    );
-  }, []);
-
   // 获取blog
   useEffect(() => {
-    const getDataType = async ()=>{
-      // await
-    }
-
-    getBlogsWithCommentsAjax(
-      { page: page ? page : 1, limit: 8 },
-      data => {
-        data.blogs.map(async (blog: any) => {
-          const res = await getMenuAjax(blog.belongingMenu);
-          let inList = false;
-          blogList.map(item => {
-            if (item.key === blog._id) inList = true;
-          });
-          if (!inList) {
-            blogList.push({
-              key: blog._id,
-              belongingMenu: res.data.data.menu.title,
-              title: blog.title,
-              author: blog.author,
-              commentCount: blog.commentCount,
-              comments: blog.comments,
-            });
-            setBlogList([...blogList].sort((a: any, b: any) => b.commentCount - a.commentCount));
-          }
+    const getDataType = async () => {
+      try {
+        const res = await getBlogHasCommentOfUser({
+          page: page ? parseInt(page) : 1,
+          size: 8,
         });
-      },
-      err => {
-        msg.error(err);
+        const blogs = res.data.records;
+        blogs.map(async blog => {
+          const menuRes = await getMenu(blog.menuId);
+          const commnetRes = await getCommentPageOfBlog({
+            id: blog.blogId,
+            sort: 'create_at',
+          });
+          setCount(commnetRes.data.totalSize);
+          setBlogList([
+            ...blogList,
+            {
+              key: blog.blogId,
+              belongingMenu: menuRes.data.menu.title,
+              title: blog.title,
+              author: user.nickname,
+              commentCount: blog.commentCount,
+              comments: commnetRes.data.records,
+            },
+          ]);
+        });
+      } catch (data: any) {
+        msg.error(data.message);
       }
-    );
+    };
+    getDataType();
   }, [page]);
 
+  // TODO:Table分页
   return (
     <div className={`${style.wrapper} ${themeMode === 'dark' ? 'dark' : 'light'}`}>
       <Table

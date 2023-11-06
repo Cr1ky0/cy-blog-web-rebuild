@@ -20,9 +20,20 @@ interface LoginForm {
   password: string;
 }
 
-interface UpdateUserForm {
-  nickname: string;
-  brief: string;
+export interface UpdateUserForm {
+  nickname?: string;
+  brief?: string;
+}
+
+export interface UpdatePswForm {
+  oldPsw: string;
+  newPsw: string;
+  pswConfirm: string;
+}
+
+export interface UpdateEmailForm {
+  newEmail: string;
+  code: number;
 }
 
 // response
@@ -44,7 +55,7 @@ export interface User {
   role: string;
 }
 
-export interface UserInfo {
+export interface GetUserRes {
   user: User;
 }
 
@@ -71,11 +82,11 @@ export const getVerificationCode = async () => {
 };
 
 export const getUserInfo = async () => {
-  return client.get<Result<UserInfo>>('/api/user/info');
+  return client.get<Result<GetUserRes>>('/api/user/info');
 };
 
 export const getCriiky0Info = async () => {
-  return client.get<Result<UserInfo>>('/api/user/criiky0');
+  return client.get<Result<GetUserRes>>('/api/user/criiky0');
 };
 
 export const getCriiky0Avatar = async () => {
@@ -89,11 +100,23 @@ export const updateUser = async (data: UpdateUserForm) => {
 };
 
 export const getUserInfoById = async (userId: number) => {
-  return client.get<Result<UserInfo>>(`/api/user/${userId}`);
+  return client.get<Result<GetUserRes>>(`/api/user/${userId}`);
 };
 
 export const getAvatarById = async (userId: number) => {
   return service.get(`/api/user/avatar/${userId}`, {
     responseType: 'arraybuffer',
   });
+};
+
+export const updatePsw = async (data: UpdatePswForm) => {
+  return client.patch<Result<void>>('/api/user/password', data);
+};
+
+export const sendCode = async (email: string) => {
+  return client.get<Result<void>>(`/api/user/code?email=${email}`);
+};
+
+export const updateEmail = async (data: UpdateEmailForm) => {
+  return client.patch<Result<GetUserRes>>('/api/user/email', data);
 };

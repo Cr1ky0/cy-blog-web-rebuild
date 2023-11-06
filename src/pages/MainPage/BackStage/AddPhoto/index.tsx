@@ -26,7 +26,7 @@ import { useViewport } from '@/components/ContextProvider/ViewportProvider';
 // global
 import { BREAK_POINT } from '@/global';
 import { setSelectKey } from '@/redux/slices/backstage';
-import { getPolicy, OSSPolicy } from '@/apis/oss';
+import { getOSSPolicy, OSSPolicy } from '@/apis/oss';
 import { addImage } from '@/apis/image';
 
 interface AliyunOSSUploadProps {
@@ -43,7 +43,7 @@ const AliyunOSSUpload = ({ value }: AliyunOSSUploadProps) => {
 
   const init = async () => {
     try {
-      const res = await getPolicy();
+      const res = await getOSSPolicy();
       setOSSData(res.data);
     } catch (data: any) {
       message.error(data.message);
@@ -95,8 +95,8 @@ const AliyunOSSUpload = ({ value }: AliyunOSSUploadProps) => {
     if (!OSSData) return false;
     await init();
 
-    // 判断文件大小是否超过5MB
-    const inSize = file.size < 5 * 1024 * 1024;
+    // 判断文件大小是否超过50MB
+    const inSize = file.size < 50 * 1024 * 1024;
 
     // 判断是否是图像
     const isImg = !!file.type.match('image');
