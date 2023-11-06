@@ -1,4 +1,4 @@
-import { client, Result } from '@/utils/request';
+import { client, GetPageRequest, RequestPageOptions, Result } from '@/utils/request';
 
 // interface
 // request
@@ -11,6 +11,7 @@ interface AddImageForm {
 export interface Image {
   imageId: number;
   endpoint: string;
+  fileName: string;
   bucket: string;
   uploadAt: string;
   photoTime: string;
@@ -25,4 +26,9 @@ interface GetImageRes {
 
 export const addImage = async (data: AddImageForm) => {
   return client.post<Result<GetImageRes>>('/api/image', data);
+};
+
+export const getImagePage = async (data: RequestPageOptions) => {
+  const { page, size } = data;
+  return client.get<Result<GetPageRequest<Image>>>(`/api/image/criiky0?page=${page}&size=${size}`);
 };

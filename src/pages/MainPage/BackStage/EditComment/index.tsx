@@ -22,7 +22,7 @@ import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
 import { getMenuAjax } from '@/api/menu';
 
 // interface
-import { CommentApiObj, CommentListObj } from '@/interface';
+import { CommentListObj } from '@/interface';
 
 // comp
 import SingleComment from '@/components/Comment/CommentList/SingleComment';
@@ -34,7 +34,7 @@ interface DataType {
   belongingMenu: string;
   commentCount: string;
   author: number;
-  comment: Comment;
+  comment: Comment[];
 }
 
 const columns: TableColumnsType<DataType> = [
@@ -110,6 +110,10 @@ const EditComment: React.FC = () => {
 
   // 获取blog
   useEffect(() => {
+    const getDataType = async ()=>{
+      // await
+    }
+
     getBlogsWithCommentsAjax(
       { page: page ? page : 1, limit: 8 },
       data => {

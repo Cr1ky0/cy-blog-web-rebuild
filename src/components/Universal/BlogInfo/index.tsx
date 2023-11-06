@@ -22,17 +22,7 @@ import { useIcons } from '@/components/ContextProvider/IconStore';
 import { useViewport } from '@/components/ContextProvider/ViewportProvider';
 import { BREAK_POINT } from '@/global';
 import { updateBlog, updateBlogBrowse } from '@/apis/blog';
-import { User } from '@/apis/user';
-
-interface BlogTagBoxStatistic {
-  blogUser: User;
-  time: string;
-  views: number;
-  belongingMenu: number;
-  isCollected: boolean;
-  blogId: number;
-  likes: number;
-}
+import { BlogTagBoxStatistic } from '@/components/HomePage/BlogTagBox';
 
 interface BlogInfoProps {
   statistics: BlogTagBoxStatistic;

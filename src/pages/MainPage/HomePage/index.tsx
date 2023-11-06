@@ -31,36 +31,31 @@ const HomePage = () => {
   const { width } = useViewport();
   const dispatch = useAppDispatch();
   const [search] = useSearchParams();
+
   const [loading, setLoading] = useState(false);
   const [curPage, setCurPage] = useState(search.get('page') ? parseInt(search.get('page') as string) : 1);
+  const [backgroundImage, setBackgroundImage] = useState(null);
   const totalNum = useAppSelector(state => state.blog.blogsNum);
   const themeMode = useAppSelector(state => state.universal.themeMode);
+
   const homePhotoWrapper = useRef<HTMLDivElement>(null);
   const divRef = useRef<HTMLDivElement>(null);
 
-  // photo
-  const [backgroundImage, setBackgroundImage] = useState(null);
-
-  // 重置mobile open
   useEffect(() => {
-    dispatch(setMobileMenuOpen(false));
-  }, []);
-
-  // 导入随机背景图片
-  useEffect(() => {
+    // 导入随机背景图片
     const randomNumber = Math.floor(Math.random() * 11) + 1;
-
     import(`@/assets/images/homephoto-${randomNumber}.png`).then(imageModule => {
       if (!backgroundImage) setBackgroundImage(imageModule.default);
     });
-  }, []);
-
-  useEffect(() => {
+    // 重置mobile open
+    dispatch(setMobileMenuOpen(false));
+    // 设置导航
     dispatch(setChosenList([true, false, false, false]));
-  }, []);
-
-  // 打开滚动条
-  useEffect(() => {
+    // 回滚
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
     // 如果先前打开了滚动条要先关闭
     dispatch(setIsLoading(false));
     setTimeout(() => {
@@ -68,12 +63,19 @@ const HomePage = () => {
     }, 50);
   }, []);
 
-  useEffect(() => {
+  const handleChange = (page: number) => {
     window.scrollTo({
-      top: 0,
+      top: parseInt(window.getComputedStyle(homePhotoWrapper.current as HTMLDivElement).height) + 0.5,
       behavior: 'smooth',
     });
-  }, []);
+    setLoading(true);
+    setTimeout(() => {
+      // 点击跳转
+      navigate(`?page=${page}`);
+      setCurPage(page);
+      setLoading(false);
+    }, 500);
+  };
 
   return (
     <>
@@ -105,19 +107,7 @@ const HomePage = () => {
                 pageSize={10}
                 current={curPage}
                 total={totalNum}
-                onChange={page => {
-                  window.scrollTo({
-                    top: parseInt(window.getComputedStyle(homePhotoWrapper.current as HTMLDivElement).height) + 0.5,
-                    behavior: 'smooth',
-                  });
-                  setLoading(true);
-                  setTimeout(() => {
-                    // 点击跳转
-                    navigate(`?page=${page}`);
-                    setCurPage(page);
-                    setLoading(false);
-                  }, 500);
-                }}
+                onChange={handleChange}
               />
             </div>
           </div>

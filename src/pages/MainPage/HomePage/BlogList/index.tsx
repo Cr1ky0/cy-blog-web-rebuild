@@ -4,37 +4,39 @@ import { useSearchParams } from 'react-router-dom';
 // comp
 import ShowBlogTagList from '@/components/Universal/ShowBlogTagList';
 
-// api
-import { getSelfBlogsOfCertain } from '@/api/blog';
-
 // context
 import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
 
-// interface
-import { BlogObj } from '@/interface';
 
 // utils
 import { filterLT } from '@/utils';
+import { Blog, getBlogPageOfCriiky0 } from '@/apis/blog';
 
 const BlogList = () => {
   const message = useGlobalMessage();
   const [search] = useSearchParams();
   const page = search.get('page') ? search.get('page') : '1';
-  const [blogs, setBlogs] = useState([] as BlogObj[]);
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+
   useEffect(() => {
-    getSelfBlogsOfCertain({ page: page as string, sort: '-publishAt' }).then(
-      res => {
-        const blogs = res.data.blogs.map((blog: BlogObj) => {
+    const getPage = async () => {
+      try {
+        const res = await getBlogPageOfCriiky0({
+          page: parseInt(page as string),
+          size: 10,
+        });
+        const blogs = res.data.records.map((blog: Blog) => {
           // 处理后端过滤的<
-          const contents = filterLT(blog.contents as string);
+          const contents = filterLT(blog.content as string);
           return Object.assign({}, blog, { contents });
         });
         setBlogs(blogs);
-      },
-      err => {
-        message.error(err.message);
+      } catch (data: any) {
+        message.error(data.message);
       }
-    );
+    };
+
+    getPage();
   }, [page]);
 
   return <ShowBlogTagList blogs={blogs}></ShowBlogTagList>;

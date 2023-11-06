@@ -191,7 +191,7 @@ const BlogContent = () => {
               statistics={{
                 blogId: curBlog.blogId,
                 blogUser,
-                time: curBlog.creatAt,
+                time: curBlog.createAt,
                 views: curBlog.views,
                 likes: curBlog.likes,
                 belongingMenu: curBlog.menuId,

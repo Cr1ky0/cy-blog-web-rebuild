@@ -1,4 +1,4 @@
-import { client, Result } from '@/utils/request';
+import {client, GetPageRequest, RequestPageOptions, Result} from '@/utils/request';
 
 // interface
 // init
@@ -9,7 +9,7 @@ export const blogInitState: Blog = {
   likes: 0,
   views: 0,
   collected: false,
-  creatAt: '',
+  createAt: '',
   updateAt: '',
   sort: 0,
   userId: 0,
@@ -46,7 +46,7 @@ export interface Blog {
   likes: number;
   views: number;
   collected: boolean;
-  creatAt: string;
+  createAt: string;
   updateAt: string;
   sort: number;
   version?: number;
@@ -84,6 +84,7 @@ export interface BlogTimeLineRes {
   timeline: BlogTimeLine[];
 }
 
+
 export const getBlog = async (blogId: number) => {
   return client.get<Result<GetBlogRes>>(`/api/blog/single/${blogId}`);
 };
@@ -114,4 +115,11 @@ export const updateBlogBrowse = async (data: UpdateBlogBrowseForm) => {
 
 export const getCriiky0TimeLine = async () => {
   return client.get<Result<BlogTimeLineRes>>('/api/criiky0/timeline');
+};
+
+export const getBlogPageOfCriiky0 = async (data: RequestPageOptions) => {
+  const { page, size, sort, collected } = data;
+  return client.get<Result<GetPageRequest<Blog>>>(
+    `/api/blog/criiky0?page=${page}&size=${size}&sort=${sort}&collected=${collected}`
+  );
 };

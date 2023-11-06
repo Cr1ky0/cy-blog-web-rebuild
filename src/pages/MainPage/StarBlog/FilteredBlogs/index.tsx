@@ -4,46 +4,47 @@ import { useSearchParams } from 'react-router-dom';
 // comp
 import ShowBlogTagList from '@/components/Universal/ShowBlogTagList';
 
-// api
-import { getSelfBlogsOfCertain } from '@/api/blog';
-
 // context
 import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
 
 // util
 import { filterLT } from '@/utils';
 
-// interface
-import { BlogObj } from '@/interface';
+// redux
 import { useAppSelector } from '@/redux';
+
+// api
+import { Blog, getBlogPageOfCriiky0 } from '@/apis/blog';
 
 const FilteredBlogs = () => {
   const message = useGlobalMessage();
   // params参数
-  const [searchParams] = useSearchParams();
   const page = useAppSelector(state => state.universal.starBlogPage);
   const chosen = useAppSelector(state => state.blog.chosen);
+
+  const [searchParams] = useSearchParams();
   const filter = searchParams.get('filter') ? searchParams.get('filter') : chosen;
+
   const option = parseInt(filter as string);
-  const [blogs, setBlogs] = useState([] as BlogObj[]);
+  const [blogs, setBlogs] = useState([] as Blog[]);
   // 请求参数
   const options = [
-    { page: String(page), limit: '10', fields: '', sort: '', options: 'isCollected=true' },
-    { page: String(page), limit: '10', fields: '', sort: '-likes' },
-    { page: String(page), limit: '10', fields: '', sort: '-views' },
+    { page: page, size: 10, sort: 'create_at', collected: true },
+    { page: page, size: 10, sort: 'likes' },
+    { page: page, size: 10, sort: 'views' },
   ];
   useEffect(() => {
-    getSelfBlogsOfCertain(options[option]).then(
-      res => {
-        const blogs = res.data.blogs.map((blog: BlogObj) => {
+    getBlogPageOfCriiky0(options[option]).then(
+      response => {
+        const blogs = response.data.records.map((blog: Blog) => {
           // 处理后端过滤的<
-          const contents = filterLT(blog.contents as string);
+          const contents = filterLT(blog.content as string);
           return Object.assign({}, blog, { contents });
         });
         setBlogs(blogs);
       },
-      err => {
-        message.error(err.message);
+      error => {
+        message.error(error.message);
       }
     );
   }, [filter, page]);

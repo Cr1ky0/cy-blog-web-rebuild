@@ -14,10 +14,23 @@ export interface Result<T = unknown> {
 }
 
 export interface RequestPageOptions {
-  id: number;
+  id?: number;
   page?: number;
   size?: number;
   sort?: string;
+  collected?: boolean;
+}
+
+export interface GetPageRequest<T> {
+  records: T[];
+  totalSize: number;
+  totalPage: number;
+  pageSize: number;
+  pageNum: number;
+}
+
+export interface GetCountRequest {
+  count: number;
 }
 
 // 都用json发数据

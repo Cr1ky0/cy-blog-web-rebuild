@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { client, RequestPageOptions, Result } from '@/utils/request';
-import { GetCommentCountRes, GetCommentPageRes, Comment } from '@/apis/comment';
+import { client, GetCountRequest, GetPageRequest, RequestPageOptions, Result } from '@/utils/request';
+import { Comment } from '@/apis/comment';
 
 interface commentsState {
   commentList: Comment[];
@@ -22,13 +22,13 @@ const initialState: commentsState = {
 
 export const setComments = createAsyncThunk('comments/setComments', async (options: RequestPageOptions) => {
   const { id, page, size, sort } = options;
-  return client.get<Result<GetCommentPageRes>>(
+  return client.get<Result<GetPageRequest<Comment>>>(
     `/api/comment/curblog?blog_id=${id}?page=${page}&size=${size}&sort=${sort}`
   );
 });
 
 export const setLength = createAsyncThunk('comments/setLength', async (blogId: number) => {
-  return client.get<Result<GetCommentCountRes>>(`/api/comment/curblog/count?blog_id=${blogId}`);
+  return client.get<Result<GetCountRequest>>(`/api/comment/curblog/count?blog_id=${blogId}`);
 });
 
 const commentsSlice = createSlice({
@@ -55,7 +55,7 @@ const commentsSlice = createSlice({
   extraReducers(builder) {
     builder
       .addCase(setComments.fulfilled, (state, action) => {
-        state.commentList = action.payload.data.comments;
+        state.commentList = action.payload.data.records;
       })
       .addCase(setComments.rejected, (state, action) => {
         console.log(action.error.message);

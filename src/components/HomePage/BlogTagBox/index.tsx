@@ -6,13 +6,9 @@ import style from './index.module.scss';
 
 // comp
 import BlogInfo from '@/components/Universal/BlogInfo';
-import ReactMarkdownRender from '@/components/ReactMarkdownRender';
 
 // util
 import { filterMarkdown, getLimitString } from '@/utils';
-
-// interface
-import { BlogTagBoxStatistic } from '@/interface';
 
 // redux
 import { useAppDispatch, useAppSelector } from '@/redux';
@@ -24,22 +20,36 @@ import { useViewport } from '@/components/ContextProvider/ViewportProvider';
 // global
 import { BREAK_POINT } from '@/global';
 
+// api
+import { User } from '@/apis/user';
+
+export interface BlogTagBoxStatistic {
+  blogUser: User;
+  time: string;
+  views: number;
+  belongingMenu: number;
+  isCollected: boolean;
+  blogId: number;
+  likes: number;
+}
+
 export interface BlogTagBoxProps {
   children: string;
   title: string;
-  blogId: string;
   statistic: BlogTagBoxStatistic;
 }
 
 // 主页的BlogBox组件
 const BlogTagBox: React.FC<BlogTagBoxProps> = props => {
-  const { children, title, statistic, blogId } = props;
-  const { author, time, views, belongingMenu, id, isCollected, likes } = statistic;
-  const themeMode = useAppSelector(state => state.universal.themeMode);
+  const { children, title, statistic } = props;
+  const { blogUser, time, views, belongingMenu, blogId, isCollected, likes } = statistic;
+
   const { width } = useViewport();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const limit = width > BREAK_POINT ? 200 : 100;
+
+  const themeMode = useAppSelector(state => state.universal.themeMode);
   const [str] = useState(getLimitString(limit, filterMarkdown(children)));
   return (
     <div className={`${style.wrapper} clearfix ${themeMode === 'dark' ? style.tagDark : style.tagLight}`}>
@@ -59,7 +69,7 @@ const BlogTagBox: React.FC<BlogTagBoxProps> = props => {
       <div className={style.text}>{str}</div>
       <div className={style.line}></div>
       <div className={`${style.statistics} clearfix`}>
-        <BlogInfo statistics={{ author, time, views, belongingMenu, id, isCollected, likes }}></BlogInfo>
+        <BlogInfo statistics={{ blogUser, time, views, belongingMenu, blogId, isCollected, likes }}></BlogInfo>
       </div>
     </div>
   );

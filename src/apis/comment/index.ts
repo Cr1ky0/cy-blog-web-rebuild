@@ -1,4 +1,4 @@
-import { client, Result } from '@/utils/request';
+import { client, GetCountRequest, Result } from '@/utils/request';
 
 // interface
 // request
@@ -30,18 +30,6 @@ export interface Comment {
   subComments: Comment[];
 }
 
-export interface GetCommentPageRes {
-  comments: Comment[];
-  totalSize: number;
-  totalPage: number;
-  pageSize: number;
-  pageNum: number;
-}
-
-export interface GetCommentCountRes {
-  count: number;
-}
-
 interface GetCommentRes {
   comment: Comment;
 }
@@ -61,4 +49,8 @@ export const updateCommentBrowse = async (data: UpdateCommentBrowseForm) => {
 
 export const deleteCommentAjax = async (commentId: number) => {
   return client.delete<Result<void>>(`/api/comment?comment_id=${commentId}`);
+};
+
+export const getCommentCountOfBlog = async (blogId: number) => {
+  return client.get<Result<GetCountRequest>>(`/api/comment/curblog/count?blog_id=${blogId}`);
 };
