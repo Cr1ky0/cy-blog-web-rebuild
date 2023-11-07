@@ -7,27 +7,27 @@ export interface AddMenuForm {
   title: string;
   icon: string;
   color: string;
-  belongMenuId?: number;
+  belongMenuId?: string;
 }
 
 export interface UpdateMenuForm {
-  menuId: number;
+  menuId: string;
   title?: string;
   icon?: string;
   color?: string;
-  belongMenuId?: number;
+  belongMenuId?: string;
 }
 
 // response
 export interface Menu {
-  menuId: number;
+  menuId: string;
   title: string;
   icon: string;
   color: string;
   level: number;
   sort: 0;
-  belongMenuId: number;
-  userId: number;
+  belongMenuId: string;
+  userId: string;
   subMenu?: Menu[];
   blogs?: MenuBlog[];
   version?: number;
@@ -50,11 +50,11 @@ export const addMenu = async (data: AddMenuForm) => {
   return client.post<Result<GetMenuResponse>>('/api/menu', data);
 };
 
-export const getMenu = async (menuId: number) => {
-  return client.get<Result<GetMenuResponse>>(`/api/blog/${menuId}`);
+export const getMenu = async (menuId: string) => {
+  return client.get<Result<GetMenuResponse>>(`/api/menu/single/${menuId}`);
 };
 
-export const deleteMenu = async (menuId: number) => {
+export const deleteMenu = async (menuId: string) => {
   return client.delete<Result<void>>(`/api/menu?menu_id=${menuId}`);
 };
 
@@ -62,6 +62,6 @@ export const updateMenu = async (data: UpdateMenuForm) => {
   return client.patch<Result<UpdateMenuResponse>>('/api/menu', data);
 };
 
-export const sortMenu = async (idList: number[]) => {
+export const sortMenu = async (idList: string[]) => {
   return client.patch<Result<void>>('/api/menu/sort', idList);
 };

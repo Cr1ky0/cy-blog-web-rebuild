@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 // comp
 import BlogTagBox from '@/components/HomePage/BlogTagBox';
@@ -16,7 +16,7 @@ const ShowBlogTagList: React.FC<ShowBlogTagListProps> = ({ blogs }) => {
   const message = useGlobalMessage();
   const [blogUser, setBlogUser] = useState<User>(userInitState);
 
-  const getBlogsPage = useCallback(() => {
+  useEffect(() => {
     if (blogs && blogs.length) {
       const aBlog = blogs[0];
       getUserInfoById(aBlog.userId).then(
@@ -27,6 +27,11 @@ const ShowBlogTagList: React.FC<ShowBlogTagListProps> = ({ blogs }) => {
           message.error(data.message);
         }
       );
+    }
+  }, [blogs]);
+
+  const getBlogsPage = useCallback(() => {
+    if (blogs && blogs.length) {
       return blogs.map(blog => {
         const { blogId, title, content, createAt, views, menuId, collected, likes } = blog;
         return (
@@ -50,7 +55,7 @@ const ShowBlogTagList: React.FC<ShowBlogTagListProps> = ({ blogs }) => {
       });
     }
     return undefined;
-  }, [blogs]);
+  }, [blogs, blogUser]);
 
   return (
     <>{blogs && blogs.length ? <>{getBlogsPage()}</> : <div style={{ fontSize: '20px', textAlign: 'center' }}></div>}</>

@@ -27,9 +27,9 @@ export interface BlogTagBoxStatistic {
   blogUser: User;
   time: string;
   views: number;
-  belongingMenu: number;
+  belongingMenu: string;
   isCollected: boolean;
-  blogId: number;
+  blogId: string;
   likes: number;
 }
 
@@ -51,6 +51,7 @@ const BlogTagBox: React.FC<BlogTagBoxProps> = props => {
 
   const themeMode = useAppSelector(state => state.universal.themeMode);
   const [str] = useState(getLimitString(limit, filterMarkdown(children)));
+
   return (
     <div className={`${style.wrapper} clearfix ${themeMode === 'dark' ? style.tagDark : style.tagLight}`}>
       <div className={style.titleWrapper}>

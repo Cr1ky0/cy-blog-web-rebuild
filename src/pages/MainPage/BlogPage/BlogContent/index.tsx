@@ -44,9 +44,11 @@ const BlogContent = () => {
   const dispatch = useAppDispatch();
   const [deleted, setDeleted] = useState(false);
   const [blogUser, setBlogUser] = useState<User>(userInitState);
+
   const menus = useAppSelector(state => state.blogMenu.menuList);
   const selectedId = useAppSelector(state => state.blogMenu.selectedId);
   const user = useAppSelector(state => state.user.user);
+
   // 获取面包屑列表
   const breadcrumbList = useMemo(() => {
     const breadcrumbs: BreadCrumbObj[] = selectedId ? getBreadcrumbList(menus, selectedId, icons) : [];

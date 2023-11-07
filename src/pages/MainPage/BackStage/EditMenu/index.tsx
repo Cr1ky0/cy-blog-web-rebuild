@@ -38,7 +38,7 @@ interface MenuRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
   data: Menu;
   parentIcon?: string;
   parentTitle?: string;
-  parentId?: number;
+  parentId?: string;
 }
 
 interface BlogRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
@@ -112,7 +112,7 @@ const BlogRow: React.FC<BlogRowProps> = ({ data, parentTitle, parentIcon }) => {
     }
   };
 
-  const handleUpdateBelong = async (id: number) => {
+  const handleUpdateBelong = async (id: string) => {
     try {
       const res1 = await updateBlog({
         blogId,
@@ -332,7 +332,7 @@ const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle, parentId, parentIc
   ];
 
   const [showEditBelong, setShowEditBelong] = useState(false);
-  const [selectBelong, setSelectBelong] = useState<number | string>(parentId || '主菜单');
+  const [selectBelong, setSelectBelong] = useState<string>(parentId || '主菜单');
 
   // dnd
   const [draggable, setDraggable] = useState(true);
@@ -412,13 +412,13 @@ const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle, parentId, parentIc
     }
   };
 
-  const handleChange = async (value: number | string) => {
+  const handleChange = async (value: string) => {
     setSelectBelong(value);
     try {
       if (value === '主菜单') {
         await updateMenu({
           menuId,
-          belongMenuId: 0,
+          belongMenuId: '',
         });
         setPId(undefined);
         setPIcon(undefined);
@@ -426,9 +426,9 @@ const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle, parentId, parentIc
       } else {
         await updateMenu({
           menuId,
-          belongMenuId: value as number,
+          belongMenuId: value,
         });
-        const res = await getMenu(value as number);
+        const res = await getMenu(value);
         const parent = res.data.menu;
         setPId(parent.menuId);
         setPTitle(parent.title);
@@ -436,7 +436,7 @@ const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle, parentId, parentIc
       }
       msg.success('修改成功，刷新列表后重置！');
     } catch (err: any) {
-      msg.error(err.data.message);
+      msg.error(err.message);
     }
   };
 
@@ -454,7 +454,7 @@ const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle, parentId, parentIc
   // 菜单顺序改变后进行操作
   useEffect(() => {
     if (isChange) {
-      const changeSort = async (idList: number[]) => {
+      const changeSort = async (idList: string[]) => {
         try {
           await sortMenu(idList);
         } catch (data: any) {
@@ -473,7 +473,7 @@ const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle, parentId, parentIc
   // 博客顺序改变后进行操作
   useEffect(() => {
     if (isChange) {
-      const changeSort = async (idList: number[]) => {
+      const changeSort = async (idList: string[]) => {
         try {
           await sortBlog(idList);
         } catch (data: any) {
@@ -892,7 +892,7 @@ const App: React.FC = () => {
   // 顺序改变后进行操作
   useEffect(() => {
     if (isChange) {
-      const changeSort = async (idList: number[]) => {
+      const changeSort = async (idList: string[]) => {
         try {
           await sortBlog(idList);
         } catch (data: any) {

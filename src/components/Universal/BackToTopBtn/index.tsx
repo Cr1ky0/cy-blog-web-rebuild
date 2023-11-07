@@ -11,6 +11,7 @@ import { useViewport } from '@/components/ContextProvider/ViewportProvider';
 
 // redux
 import { useAppSelector } from '@/redux';
+import _ from 'lodash';
 
 const BackToTopBtn = () => {
   const { width } = useViewport();
@@ -29,34 +30,22 @@ const BackToTopBtn = () => {
   }, [width]);
 
   useEffect(() => {
-    const throttle = () => {
-      let valid = true;
-      return () => {
-        if (valid) {
+    const throttleFunc = _.throttle(() => {
+      const current = thisRef.current;
+      if (current) {
+        if (document.documentElement.scrollTop !== 0) {
+          current.style.visibility = 'visible';
+          current.style.opacity = '1';
+        } else {
           setTimeout(() => {
-            // 逻辑处理
-            // 总滚动大小 = 总滚动高度 - 视图大小
-            const current = thisRef.current;
-            if (current) {
-              if (document.documentElement.scrollTop !== 0) {
-                current.style.visibility = 'visible';
-                current.style.opacity = '1';
-              } else {
-                setTimeout(() => {
-                  current.style.visibility = 'hidden';
-                }, 300);
-                current.style.opacity = '0';
-              }
-            }
-            setScrollTop(document.documentElement.scrollTop);
-            setScrollHeight(document.documentElement.scrollHeight - window.innerHeight);
-            valid = true;
+            current.style.visibility = 'hidden';
           }, 300);
-          valid = false;
+          current.style.opacity = '0';
         }
-      };
-    };
-    const throttleFunc = throttle();
+      }
+      setScrollTop(document.documentElement.scrollTop);
+      setScrollHeight(document.documentElement.scrollHeight - window.innerHeight);
+    }, 300);
     window.addEventListener('scroll', throttleFunc);
     return () => {
       window.removeEventListener('scroll', throttleFunc);

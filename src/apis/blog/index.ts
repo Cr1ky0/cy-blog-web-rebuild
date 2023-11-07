@@ -3,7 +3,7 @@ import { client, GetCountResponse, GetPageRequest, RequestPageOptions, Result } 
 // interface
 // init
 export const blogInitState: Blog = {
-  blogId: 0,
+  blogId: '',
   title: '',
   content: '',
   likes: 0,
@@ -12,35 +12,35 @@ export const blogInitState: Blog = {
   createAt: '',
   updateAt: '',
   sort: 0,
-  userId: 0,
-  menuId: 0,
+  userId: '',
+  menuId: '',
 };
 
 // request
 interface UpdateBlogForm {
-  blogId: number;
+  blogId: string;
   title?: string;
   content?: string;
   collected?: boolean;
   updateAt?: string;
-  menuId?: number;
+  menuId?: string;
 }
 
 interface AddBlogForm {
   title: string;
   content: string;
-  menuId: number;
+  menuId: string;
 }
 
 interface UpdateBlogBrowseForm {
-  blogId: number;
+  blogId: string;
   like?: boolean;
   plus?: boolean;
 }
 
 // response
 export interface Blog {
-  blogId: number;
+  blogId: string;
   title: string;
   content: string;
   likes: number;
@@ -51,28 +51,29 @@ export interface Blog {
   sort: number;
   version?: number;
   deleted?: number;
-  userId: number;
-  menuId: number;
+  userId: string;
+  menuId: string;
 }
 
 export interface MenuBlog {
-  blogId: number;
+  menuId: string;
+  blogId: string;
   title: string;
   sort: number;
   createAt: string;
 }
 
 export interface BlogTimeLineObj {
-  blogId: number;
+  blogId: string;
   title: string;
   createAt: string;
 }
 
 export interface BlogHasComment {
   commentCount: number;
-  blogId: number;
-  userId: number;
-  menuId: number;
+  blogId: string;
+  userId: string;
+  menuId: string;
   title: string;
 }
 
@@ -96,11 +97,11 @@ export interface BlogTimeLineRes {
   timeline: BlogTimeLineObj[];
 }
 
-export const getBlog = async (blogId: number) => {
+export const getBlog = async (blogId: string) => {
   return client.get<Result<GetBlogRes>>(`/api/blog/single/${blogId}`);
 };
 
-export const delBlog = async (blogId: number) => {
+export const delBlog = async (blogId: string) => {
   return client.delete<Result<void>>(`/api/blog?blog_id=${blogId}`);
 };
 
@@ -108,11 +109,11 @@ export const updateBlog = async (data: UpdateBlogForm) => {
   return client.patch<Result<UpdateBlogRes>>('/api/blog', data);
 };
 
-export const getBlogsOfMenu = async (menuId: number) => {
+export const getBlogsOfMenu = async (menuId: string) => {
   return client.get<Result<GetMenuBlogRes>>(`/api/blog/certain_menu?menu_id=${menuId}`);
 };
 
-export const sortBlog = async (idList: number[]) => {
+export const sortBlog = async (idList: string[]) => {
   return client.patch<Result<void>>('/api/blog/sort', idList);
 };
 
@@ -121,17 +122,20 @@ export const addBlog = async (data: AddBlogForm) => {
 };
 
 export const updateBlogBrowse = async (data: UpdateBlogBrowseForm) => {
-  return client.patch<Result<UpdateBlogRes>>('/api/blog/browse', data);
+  const { blogId, like, plus } = data;
+  return client.patch<Result<UpdateBlogRes>>(
+    `/api/blog/browse?blog_id=${blogId}&like=${like || ''}&plus=${plus || ''}`
+  );
 };
 
 export const getCriiky0TimeLine = async () => {
-  return client.get<Result<BlogTimeLineRes>>('/api/criiky0/timeline');
+  return client.get<Result<BlogTimeLineRes>>('/api/blog/criiky0/timeline');
 };
 
 export const getBlogPageOfCriiky0 = async (data: RequestPageOptions) => {
   const { page, size, sort, collected } = data;
   return client.get<Result<GetPageRequest<Blog>>>(
-    `/api/blog/criiky0?page=${page}&size=${size}&sort=${sort}&collected=${collected}`
+    `/api/blog/criiky0?page=${page || ''}&size=${size || ''}&sort=${sort || ''}&collected=${collected || ''}`
   );
 };
 
@@ -141,7 +145,9 @@ export const getBlogCountOfCriiky0 = async (options: string) => {
 
 export const getBlogHasCommentOfUser = async (data: RequestPageOptions) => {
   const { page, size } = data;
-  return client.get<Result<GetPageRequest<BlogHasComment>>>(`/api/blog/hascomment?page=${page}&size=${size}`);
+  return client.get<Result<GetPageRequest<BlogHasComment>>>(
+    `/api/blog/hascomment?page=${page || ''}&size=${size || ''}`
+  );
 };
 
 export const getCollectedBlogOfCriiky0 = async () => {

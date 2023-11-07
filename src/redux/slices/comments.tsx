@@ -8,7 +8,7 @@ interface commentsState {
   isLoading: boolean;
   length: number;
   sort: 'time' | 'hot';
-  likeList: number[]; // 用来存放已经点过赞的评论id列表
+  likeList: string[]; // 用来存放已经点过赞的评论id列表
 }
 
 const initialState: commentsState = {
@@ -23,11 +23,11 @@ const initialState: commentsState = {
 export const setComments = createAsyncThunk('comments/setComments', async (options: RequestPageOptions) => {
   const { id, page, size, sort } = options;
   return client.get<Result<GetPageRequest<Comment>>>(
-    `/api/comment/curblog?blog_id=${id}?page=${page}&size=${size}&sort=${sort}`
+    `/api/comment/curblog?blog_id=${id}&page=${page || ''}&size=${size || ''}&sort=${sort || ''}`
   );
 });
 
-export const setLength = createAsyncThunk('comments/setLength', async (blogId: number) => {
+export const setLength = createAsyncThunk('comments/setLength', async (blogId: string) => {
   return client.get<Result<GetCountResponse>>(`/api/comment/curblog/count?blog_id=${blogId}`);
 });
 

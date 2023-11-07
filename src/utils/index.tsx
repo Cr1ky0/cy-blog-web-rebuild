@@ -3,24 +3,15 @@ import { ReactElement } from 'react';
 
 // interface
 import { AntdIcon, BreadCrumbObj, ClassificationInfoObj, MenuItem, TreeSelectItem } from '@/interface';
-
-// antd
-import type { DataNode } from 'antd/es/tree';
 import { Menu } from '@/apis/menu';
 import { MenuBlog } from '@/apis/blog';
 
-// 获取某个博客的父菜单链条
-export const getParentListOfBlog: (menus: Menu[], icons: AntdIcon[], id: number) => number[] = (menus, icons, id) => {
-  const list = getBreadcrumbList(menus, id, icons).map(item => {
-    return item.menu_id;
-  });
-  list.pop();
-  return list;
-};
+// antd
+import type { DataNode } from 'antd/es/tree';
 
 // 获取某个博客的父菜单
-export const getParentOfBlog: (menus: Menu[], blogId: number) => number | undefined = (menus, blogId) => {
-  let parent: number | undefined = 0;
+export const getParentOfBlog: (menus: Menu[], blogId: string) => string | undefined = (menus, blogId) => {
+  let parent: string | undefined = '';
   menus.forEach(menu => {
     menu.blogs?.forEach(blog => {
       if (blog.blogId === blogId) parent = menu.menuId;
@@ -102,13 +93,14 @@ export const getAntdIcon: (name: string, antdIcons: AntdIcon[]) => ReactElement 
   name: string,
   antdIcons: AntdIcon[]
 ) => {
-  return antdIcons.filter(icon => {
+  const icons = antdIcons.filter(icon => {
     return icon.name === name;
-  })[0].icon;
+  });
+  return icons.length ? icons[0].icon : <></>;
 };
 
 // 根据key获得其在SideMenuList对象
-export const getSideMenuItem: (menus: Menu[], key: number) => Menu | MenuBlog | undefined = (menus, key) => {
+export const getMenuItem: (menus: Menu[], key: string) => Menu | MenuBlog | undefined = (menus, key) => {
   const filter = menus.filter(menu => menu.menuId === key);
   if (filter && filter.length) return filter[0];
   for (let i = 0; i < menus.length; i += 1) {
@@ -120,7 +112,7 @@ export const getSideMenuItem: (menus: Menu[], key: number) => Menu | MenuBlog | 
     if (menu.subMenu) {
       // 这里递归不能直接返回，因为在循环内存在多个递归，如果直接返回会导致被undefined覆盖
       // 因此需要指定值当值存在时再返回
-      const temp = getSideMenuItem(menu.subMenu, key);
+      const temp = getMenuItem(menu.subMenu, key);
       if (temp) return temp;
     }
   }
@@ -129,24 +121,43 @@ export const getSideMenuItem: (menus: Menu[], key: number) => Menu | MenuBlog | 
 // 根据blog id获取其parent链
 export const getBreadcrumbList: (
   menus: Menu[],
-  id: number,
+  id: string,
   icons: AntdIcon[],
   list?: BreadCrumbObj[]
 ) => BreadCrumbObj[] = (menus, id, icons, list = []) => {
-  const blogOrMenu = getSideMenuItem(menus, id) as Menu;
-  if (blogOrMenu) {
-    list.unshift({
-      title: blogOrMenu.title,
-      icon: blogOrMenu.icon ? getAntdIcon(blogOrMenu.icon as string, icons) : undefined,
-      color: blogOrMenu.color as string,
-      menu_id: blogOrMenu.menuId,
+  const item = getMenuItem(menus, id) as Menu | MenuBlog;
+  if (!item) return list;
+  if ('blogId' in item) {
+    list.push({
+      id: item.blogId,
+      title: item.title,
     });
-    if (blogOrMenu.belongMenuId) {
-      return getBreadcrumbList(menus, blogOrMenu.belongMenuId, icons, list);
-    }
-    return list;
-  } else return [];
+    getBreadcrumbList(menus, item.menuId, icons, list); // 跳过返回值
+  } else {
+    list.push({
+      id: item.menuId,
+      title: item.title,
+      color: item.color,
+      icon: getAntdIcon(item.icon, icons),
+    });
+    getBreadcrumbList(menus, item.belongMenuId, icons, list); // 跳过返回值
+  }
+  return list;
 };
+
+// 根据id获取Menu[]中某项的parentIdList（包含自己）
+export function getParentIdList(menu: Menu[], id: string, idList: string[] = []): string[] {
+  const item = getMenuItem(menu, id) as Menu | MenuBlog;
+  if (!item) return idList;
+  if ('blogId' in item) {
+    idList.push(item.blogId);
+    getParentIdList(menu, item.menuId, idList); // 跳过返回值
+  } else {
+    idList.push(item.menuId);
+    getParentIdList(menu, item.belongMenuId, idList); // 跳过返回值
+  }
+  return idList;
+}
 
 // 检测当前SideMenuItem其是否包含blog
 export const hasBlog: (menus: Menu[]) => boolean = menus => {
@@ -161,21 +172,8 @@ export const hasBlog: (menus: Menu[]) => boolean = menus => {
   return flag;
 };
 
-// 检测当前删除的菜单是否包含curKey
-export const hasCurKey: (menu: Menu, curKey: string | number) => boolean = (menu, curKey) => {
-  let flag = false;
-  if (menu.menuId === curKey) {
-    flag = true;
-  }
-  if (menu.subMenu)
-    menu.subMenu.map(child => {
-      if (child.menuId === curKey) flag = true;
-    });
-  return flag;
-};
-
 // 检测菜单中是否有该博客
-export const hasBlogOfId: (menus: Menu[], id: number) => boolean = (menus, id) => {
+export const hasBlogOfId: (menus: Menu[], id: string) => boolean = (menus, id) => {
   let flag = false;
   menus.forEach(menu => {
     menu.blogs?.forEach(blog => {
@@ -188,7 +186,7 @@ export const hasBlogOfId: (menus: Menu[], id: number) => boolean = (menus, id) =
 };
 
 // 通过likeList判断该评论是否已被点赞
-export const isLike = (likeList: number[], id: number) => {
+export const isLike = (likeList: string[], id: string) => {
   return likeList.some(itemId => itemId === id);
 };
 
@@ -246,8 +244,8 @@ export const getClassificationInfo: (menus: Menu[]) => ClassificationInfoObj[] =
 };
 
 // 从该菜单获取一个blogId，没有则返回false
-export const getOneBlogFromMenu: (menu: Menu) => number = menu => {
-  let id = 0;
+export const getOneBlogFromMenu: (menu: Menu) => string = menu => {
+  let id = '';
   if (menu.blogs && menu.blogs.length) id = menu.blogs[0].blogId;
   else if (menu.subMenu) {
     menu.subMenu.forEach(child => {
@@ -262,10 +260,10 @@ export const getOneBlogFromMenu: (menu: Menu) => number = menu => {
 // 将SideMenuItem列表转化为MenuItem列表
 function getItem(label: React.ReactNode, key: string, icon?: React.ReactNode, children?: MenuItem[]): MenuItem {
   return {
+    label,
     key,
     icon,
     children,
-    label,
   } as MenuItem;
 }
 
@@ -278,7 +276,7 @@ export const getAntdMenus: (menus: Menu[], icons: AntdIcon[]) => MenuItem[] = (m
     const newList: MenuItem[] = [];
     if (menu.blogs && menu.blogs.length) {
       menu.blogs.map(blog => {
-        newList.push(getItem(<span className="iconfont">&#xe627;&nbsp;{blog.title}</span>, blog.blogId.toString()));
+        newList.push(getItem(<span className="iconfont">&#xe627;&nbsp;{blog.title}</span>, blog.blogId));
       });
     }
     return getItem(
@@ -362,7 +360,7 @@ export const getTreeSelectList: (menus: Menu[], icons: AntdIcon[], onlyParent?: 
   });
 };
 
-export const getEditBelongMenuTree = (menus: TreeSelectItem[], selfId: number) => {
+export const getEditBelongMenuTree = (menus: TreeSelectItem[], selfId: string) => {
   return menus.filter(menu => {
     menu.children = menu.children?.filter(child => {
       child.children = [];

@@ -26,8 +26,10 @@ import { setLoginFormOpen } from '@/redux/slices/universal';
 // TODO:后续可以做一个类似笔记的功能，选中的文本可以做标记等等
 const MainPage = () => {
   const dispatch = useAppDispatch();
+
   const themeMode = useAppSelector(state => state.universal.themeMode);
   const loginFormOpen = useAppSelector(state => state.universal.loginFormOpen);
+
   useEffect(() => {
     // 加载后先把emoji请求回来，后面不再请求了
     dispatch(setEmoji());

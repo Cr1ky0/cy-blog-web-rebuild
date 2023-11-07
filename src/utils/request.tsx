@@ -14,7 +14,7 @@ export interface Result<T = unknown> {
 }
 
 export interface RequestPageOptions {
-  id?: number;
+  id?: string;
   page?: number;
   size?: number;
   sort?: string;
@@ -46,8 +46,12 @@ service.interceptors.request.use(config => {
 service.interceptors.response.use(
   response => {
     const data = response.data;
-    if (response.status !== 200) return Promise.reject();
-    if (data.code !== 200) return Promise.reject(data as Result); // catch的就是data
+    if (response.status !== 200) {
+      return Promise.reject();
+    }
+    if ('code' in data && data.code !== 200) {
+      return Promise.reject(data as Result);
+    } // catch的就是data
     return Promise.resolve(response);
   },
   async error => {

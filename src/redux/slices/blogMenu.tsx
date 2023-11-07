@@ -1,15 +1,13 @@
 import { client, Result } from '@/utils/request';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
-// util
-
 // interface
 import { Menu, MenuResponse } from '@/apis/menu';
 
 interface blogMenuInitObj {
   menuList: Menu[];
-  selectedId: number; // 选的博客id
-  deleteKey: number;
+  selectedId: string; // 选的博客id
+  deleteKey: string;
   delKind: 'menu' | 'blog';
   opt: boolean;
 }
@@ -17,8 +15,8 @@ interface blogMenuInitObj {
 // 合并了菜单的slice因为无法解决设置了selectedId后设置curBlog延迟的问题
 const initialState: blogMenuInitObj = {
   menuList: [] as Menu[],
-  selectedId: 0, // 选的博客id
-  deleteKey: 0, // EditMenu中删除的id，可以是blog也可以是menu
+  selectedId: '', // 选的博客id
+  deleteKey: '', // EditMenu中删除的id，可以是blog也可以是menu
   delKind: 'menu', // EditMenu中删除的种类
   opt: true, // 可以点击menu标志（用来控制操作频率）
 };
@@ -59,15 +57,5 @@ const blogMenuSlice = createSlice({
   },
 });
 
-export const {
-  setOpt,
-  setDeleteKey,
-  setDelKind,
-  setSelectedId,
-  // addMenu,
-  // editMenu,
-  // deleteMenu,
-  // addBlogMenu,
-  // editBlogMenu,
-} = blogMenuSlice.actions;
+export const { setOpt, setDeleteKey, setDelKind, setSelectedId } = blogMenuSlice.actions;
 export default blogMenuSlice.reducer;

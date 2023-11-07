@@ -3,7 +3,7 @@ import { client, Result } from '@/utils/request';
 // interface
 // response
 export interface BlogDoc {
-  id: number;
+  id: string;
   title: string;
   content: string;
   menuTitle: string;

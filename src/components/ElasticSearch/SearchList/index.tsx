@@ -32,7 +32,7 @@ const SearchList: React.FC<SearchListProps> = ({ docs, match, closeBox }) => {
   const selectedId = useAppSelector(state => state.blogMenu.selectedId);
   const menuTitle = docs.length ? docs[0].menuTitle : '';
 
-  const handleClick = useCallback((id: number, blog: BlogDoc) => {
+  const handleClick = useCallback((id: string, blog: BlogDoc) => {
     closeBox();
     if (blog.id !== selectedId) {
       if (location.pathname === '/blog') {

@@ -16,7 +16,7 @@ import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
 
 interface ContextObj {
   title: string;
-  blogId: number;
+  blogId: string;
 }
 
 interface ContextRelation {
@@ -28,11 +28,11 @@ interface ContextRelation {
 const initRelation = {
   last: {
     title: '',
-    blogId: 0,
+    blogId: '',
   },
   next: {
     title: '',
-    blogId: 0,
+    blogId: '',
   },
 };
 const NextPage = () => {
@@ -50,7 +50,7 @@ const NextPage = () => {
       const blog = blogRes.data.blog;
       const menuRes = await getMenu(blog.menuId);
       const menu = menuRes.data.menu;
-      const blogs = menu ? (menu.blogs as MenuBlog[]) : [];
+      const blogs = menu.blogs ? (menu.blogs as MenuBlog[]) : [];
       const last = {} as ContextObj;
       const next = {} as ContextObj;
       blogs.forEach((blog, index) => {
@@ -85,7 +85,7 @@ const NextPage = () => {
     getState();
   }, [selectedId]);
 
-  const handleClick = (id: number) => {
+  const handleClick = (id: string) => {
     dispatch(setJumpFlag(true));
     setTimeout(async () => {
       await dispatch(setSelectedId(id));

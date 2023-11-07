@@ -1,9 +1,15 @@
-import service, { client, Result } from '@/utils/request';
+import { client, Result } from '@/utils/request';
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 // interface
-import { TextContentObj } from '@/interface';
 import { Blog, BlogTimeLineObj, BlogTimeLineRes } from '@/apis/blog';
+
+export interface TextContentObj {
+  title: string;
+  menuId: string; // 所属分类Id
+  menuTitle: string;
+  content: string;
+}
 
 interface blogInitObj {
   primBlog: Blog;
@@ -11,9 +17,9 @@ interface blogInitObj {
   isEdit: boolean; // 标志博客是否处于编辑状态，处于编辑状态则提交按钮变为更新
   timeLine: BlogTimeLineObj[];
   blogsNum: number;
-  likeList: number[]; // 点赞列表，记录当前点赞过的博客
+  likeList: string[]; // 点赞列表，记录当前点赞过的博客
   chosen: number; // 精选页面chosen
-  curEditId: number; // 当前正在编辑的id
+  curEditId: string; // 当前正在编辑的id
   curBlogContent: string; // 当前选中博客内容，用于toc
 }
 
@@ -24,9 +30,9 @@ const initialState: blogInitObj = {
   isEdit: false, // 标志博客是否处于编辑状态，处于编辑状态则提交按钮变为更新
   timeLine: [] as BlogTimeLineObj[],
   blogsNum: 0,
-  likeList: [] as number[],
+  likeList: [] as string[],
   chosen: 0,
-  curEditId: 0,
+  curEditId: '',
   curBlogContent: '',
 };
 
@@ -84,7 +90,7 @@ const blogSlice = createSlice({
     initWriteContent: state => {
       state.writeContent = {
         title: '',
-        menuId: 0,
+        menuId: '',
         menuTitle: '',
         content: '',
       };

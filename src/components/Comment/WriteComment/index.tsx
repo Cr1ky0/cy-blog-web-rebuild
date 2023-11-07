@@ -24,7 +24,7 @@ import { addComment } from '@/apis/comment';
 import { BREAK_POINT } from '@/global';
 
 interface WriteCommentProps {
-  belongCommentId?: number;
+  belongCommentId?: string;
 }
 
 const WriteComment: React.FC<WriteCommentProps> = ({ belongCommentId }) => {

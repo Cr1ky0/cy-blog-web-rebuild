@@ -25,7 +25,7 @@ const SearchHistory: React.FC<SearchHistoryProps> = ({ closeBox }) => {
 
   const [isDragging, setIsDragging] = useState(false);
 
-  const handleClick = useCallback((id: number) => {
+  const handleClick = useCallback((id: string) => {
     if (!isDragging) {
       closeBox();
       if (id !== selectedId) {

@@ -4,7 +4,7 @@ import { RcFile } from 'antd/es/upload';
 // interface
 // init
 export const userInitState: User = {
-  userId: 0,
+  userId: '',
   username: '',
   nickname: '',
   brief: '',
@@ -46,7 +46,7 @@ interface LoginResult {
 }
 
 export interface User {
-  userId: number;
+  userId: string;
   username: string;
   nickname: string;
   brief: string;
@@ -68,9 +68,7 @@ export const login = async (data: LoginForm) => {
 };
 
 export const getAvatar = async () => {
-  return service.get('/api/user/avatar', {
-    responseType: 'arraybuffer',
-  });
+  return service.get('/api/user/avatar');
 };
 
 export const uploadAvatar = async (file: RcFile) => {
@@ -90,23 +88,19 @@ export const getCriiky0Info = async () => {
 };
 
 export const getCriiky0Avatar = async () => {
-  return service.get('/api/user/criiky0/avatar', {
-    responseType: 'arraybuffer',
-  });
+  return service.get('/api/user/criiky0/avatar');
 };
 
 export const updateUser = async (data: UpdateUserForm) => {
   return client.post<Result<UpdatedUser>>('/api/user/info', data);
 };
 
-export const getUserInfoById = async (userId: number) => {
+export const getUserInfoById = async (userId: string) => {
   return client.get<Result<GetUserRes>>(`/api/user/${userId}`);
 };
 
-export const getAvatarById = async (userId: number) => {
-  return service.get(`/api/user/avatar/${userId}`, {
-    responseType: 'arraybuffer',
-  });
+export const getAvatarById = async (userId: string) => {
+  return service.get(`/api/user/avatar/${userId}`);
 };
 
 export const updatePsw = async (data: UpdatePswForm) => {
@@ -119,4 +113,8 @@ export const sendCode = async (email: string) => {
 
 export const updateEmail = async (data: UpdateEmailForm) => {
   return client.patch<Result<GetUserRes>>('/api/user/email', data);
+};
+
+export const logout = async () => {
+  return client.delete('/api/user/logout');
 };

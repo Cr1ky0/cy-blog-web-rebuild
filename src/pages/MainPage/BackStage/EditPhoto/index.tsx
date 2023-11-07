@@ -22,7 +22,7 @@ import { delManyImage, delSingleImage, getImagePageOfUser, Image } from '@/apis/
 
 interface DataType {
   key: React.Key;
-  id: number;
+  id: string;
   filename: string;
   uploadAt: string;
   photoTime: string;
@@ -56,9 +56,9 @@ const EditCertain = () => {
   // state
   const [photos, setPhotos] = useState<Image[]>([]);
   const [count, setCount] = useState(0);
-  const [selectedList, setSelectedList] = useState<number[]>([]);
+  const [selectedList, setSelectedList] = useState<string[]>([]);
 
-  const handleDeleteSingle = async (id: number) => {
+  const handleDeleteSingle = async (id: string) => {
     try {
       await delSingleImage(id);
       await message.loadingSuccessAsync('删除中...', '删除成功!');

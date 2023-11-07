@@ -135,13 +135,14 @@ const Avatar = () => {
           </Dropdown>
         </>
       ) : (
-        <div
+        <img
           className={style.rightNavAvatar}
-          style={{ backgroundImage: `url(${avatar})` }}
+          src={avatar}
           onClick={() => {
             message.error('请先登录！');
           }}
-        ></div>
+          alt="avatar"
+        ></img>
       )}
     </>
   );

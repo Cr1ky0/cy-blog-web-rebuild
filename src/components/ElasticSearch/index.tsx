@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 // antd
 import { CloseOutlined } from '@ant-design/icons';
@@ -43,24 +43,29 @@ const ElasticSearch = () => {
   const [showResult, setShowResult] = useState(false);
 
   // 输入事件
-  const handleSearch = _.debounce((match: string) => {
-    if (!match) return;
-    setLoading(true);
-    searchDoc(match)
-      .then(
-        res => {
-          setSearchResult(res.data.result);
-          setResultContent(match);
-          setShowResult(true);
-        },
-        err => {
-          msg.error(err.message);
-        }
-      )
-      .finally(() => {
-        setLoading(false);
-      });
-  }, 1000);
+  const handleSearch = useCallback(
+    _.debounce((match: string) => {
+      if (!match) return;
+      setLoading(true);
+      searchDoc(match)
+        .then(
+          res => {
+            setSearchResult(res.data.result);
+            setResultContent(match);
+            setShowResult(true);
+          },
+          err => {
+            msg.error(err.message);
+          }
+        )
+        .finally(() => {
+          setTimeout(() => {
+            setLoading(false);
+          }, 300);
+        });
+    }, 1000),
+    []
+  );
 
   const deleteResult = () => {
     setSearchContent('');
@@ -69,7 +74,7 @@ const ElasticSearch = () => {
 
   const getContentPage = () => {
     if (showResult) {
-      if (searchResult) {
+      if (Object.keys(searchResult).length !== 0) {
         const nodes: React.ReactNode[] = [];
         for (const [key, value] of Object.entries(searchResult)) {
           nodes.push(

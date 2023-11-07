@@ -2,31 +2,24 @@ import React, { CSSProperties, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 // antd
-import { Menu, Modal } from 'antd';
+import { Menu } from 'antd';
 
 // css
 import style from './index.module.scss';
 
-// ui
-import LinkBtn2 from '@/components/Universal/LinkBtn2';
-
 // redux
-import { useAppSelector, useAppDispatch } from '@/redux';
-import { setSelectedId, setOpt } from '@/redux/slices/blogMenu';
+import { useAppDispatch, useAppSelector } from '@/redux';
+import { setOpt, setSelectedId } from '@/redux/slices/blogMenu';
 import { setJumpFlag } from '@/redux/slices/universal';
 
 // context
 import { useIcons } from '../ContextProvider/IconStore';
 
 // utils
-import { getAntdMenus, getSideMenuItem, getParentListOfBlog } from '@/utils';
+import { getAntdMenus, getMenuItem, getParentIdList } from '@/utils';
 
 // global
 import { ANIME_HIDE_TIME } from '@/global';
-import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
-
-// interface
-import { MenuBlog } from '@/apis/blog';
 
 interface SideMenuProps {
   styles?: CSSProperties;
@@ -44,21 +37,22 @@ const SideMenu: React.FC<SideMenuProps> = ({ styles, noEdit, page, closeMenu }) 
   const opt = useAppSelector(state => state.blogMenu.opt);
   const antdMenus = getAntdMenus(menus, icons);
   const parentKey = useMemo(() => {
-    const list = getParentListOfBlog(menus, icons, selectedId);
-    return list.map(id => {
-      return id.toString();
-    });
-  }, [menus, icons, selectedId]);
+    const list = getParentIdList(menus, selectedId);
+    list.pop();
+    return list;
+  }, [menus, selectedId]);
+  // openKeys
+  const [openKeys, setOpenKeys] = useState<string[]>([]);
 
-  const handleSelect = async (e: any) => {
-    const key = parseInt(e.key);
+  const handleSelect = (e: any) => {
+    const key = e.key;
     if (opt) {
       if (!noEdit) {
         dispatch(setSelectedId(key));
       } else {
         // 触发事件
-        const item = getSideMenuItem(menus, key);
-        if (item && !('blogId' in item) && key !== selectedId) {
+        const item = getMenuItem(menus, key);
+        if (item && 'blogId' in item && key !== selectedId) {
           // 操作标志置为false，不可继续操作
           dispatch(setOpt(false));
           dispatch(setJumpFlag(true));
@@ -74,6 +68,11 @@ const SideMenu: React.FC<SideMenuProps> = ({ styles, noEdit, page, closeMenu }) 
     }
   };
 
+  useEffect(() => {
+    const parentList = getParentIdList(menus, selectedId);
+    setOpenKeys([...openKeys, ...parentList]);
+  }, [selectedId]);
+
   return (
     <div className={style.wrapper} style={styles}>
       {/* 有tag则显示菜单，否则显示提示 */}
@@ -83,10 +82,13 @@ const SideMenu: React.FC<SideMenuProps> = ({ styles, noEdit, page, closeMenu }) 
           inlineIndent={12}
           style={{ borderRadius: '0 0 5px 5px', border: 'none' }}
           defaultOpenKeys={parentKey}
-          openKeys={parentKey}
+          openKeys={openKeys}
           mode="inline"
           items={antdMenus}
-          selectedKeys={[selectedId.toString()]}
+          selectedKeys={[selectedId]}
+          onOpenChange={(cur: any) => {
+            setOpenKeys(cur);
+          }}
           onClick={handleSelect}
         />
       ) : (

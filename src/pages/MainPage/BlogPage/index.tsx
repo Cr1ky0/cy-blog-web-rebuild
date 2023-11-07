@@ -24,6 +24,7 @@ import { ANIME_HIDE_TIME, BACKGROUND_COLOR_DARK } from '@/global';
 const BlogPage = () => {
   const { width } = useViewport();
   const dispatch = useAppDispatch();
+
   const selectedId = useAppSelector(state => state.blogMenu.selectedId);
   const curBlogContent = useAppSelector(state => state.blog.curBlogContent);
   const fadeOut = useAppSelector(state => state.progressbar.fadeOut);

@@ -28,11 +28,12 @@ interface BlogInfoProps {
   statistics: BlogTagBoxStatistic;
 }
 
-const isLiked = (likeList: number[], id: number) => {
+const isLiked = (likeList: string[], id: string) => {
   return likeList.some(likeId => likeId === id);
 };
 const BlogInfo: React.FC<BlogInfoProps> = ({ statistics }) => {
   const { blogUser, time, views, blogId: id, isCollected, likes } = statistics;
+
   const { width } = useViewport();
   const message = useGlobalMessage();
   const dispatch = useAppDispatch();
@@ -116,6 +117,7 @@ const BlogInfo: React.FC<BlogInfoProps> = ({ statistics }) => {
         </div>
       );
     }
+
     return (
       <div
         className={style.like}
@@ -127,7 +129,7 @@ const BlogInfo: React.FC<BlogInfoProps> = ({ statistics }) => {
         <span>{likesNum}</span>
       </div>
     );
-  }, [likeList, id]);
+  }, [likeList, likesNum, id]);
 
   const getUserCollectPage = useCallback(() => {
     if (user && user.userId === blogUser.userId && width > BREAK_POINT) {

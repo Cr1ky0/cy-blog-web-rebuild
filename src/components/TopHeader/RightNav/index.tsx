@@ -24,6 +24,7 @@ import { BREAK_POINT } from '@/global';
 import { useAppDispatch, useAppSelector } from '@/redux';
 import { setLoginFormOpen, setThemeMode } from '@/redux/slices/universal';
 import { setUser } from '@/redux/slices/user';
+import { logout } from '@/apis/user';
 
 const RightNav = () => {
   const message = useGlobalMessage();
@@ -37,9 +38,11 @@ const RightNav = () => {
 
   // handle log out
   const handleLogout = useCallback(async () => {
+    // 移除session
+    await logout();
+    await message.loadingSuccessAsync('登出中...', '成功退出登录！');
     // await可以让按钮进入加载状态
     dispatch(setUser(null));
-    await message.loadingSuccessAsync('登出中...', '成功退出登录！');
     navigate(0);
   }, []);
 

@@ -94,9 +94,9 @@ const LoginForm = () => {
           password: psw,
           verificationCode: code,
         });
-        // 获取用户信息存入redux
-        dispatch(setMyUser());
         await message.loadingSuccessAsync('登录中...', '登录成功');
+        // 获取用户信息存入redux
+        await dispatch(setMyUser());
         // 如果checked则保存一下账号密码到localStorage
         if (checked) {
           localStorage.setItem('login_info', userInfo);

@@ -2,15 +2,6 @@ import React, { ReactElement } from 'react';
 import { NotificationPlacement } from 'antd/es/notification/interface';
 import type { MenuProps } from 'antd/es/menu';
 
-/******** Ajax ********/
-
-export interface TextContentObj {
-  title: string;
-  menuId: number; // 所属分类Id
-  menuTitle: string;
-  content: string;
-}
-
 /******** SideMenu ********/
 export type MenuItem = Required<MenuProps>['items'][number];
 
@@ -37,7 +28,7 @@ export type noticeObj = {
 
 /********* BlogPage *********/
 export interface BreadCrumbObj {
-  menu_id: number;
+  id: string;
   icon?: React.ReactNode;
   title: string;
   color?: string;
@@ -48,5 +39,5 @@ export interface ClassificationInfoObj {
   title: string;
   color: string;
   blogNum: number;
-  id: number;
+  id: string;
 }

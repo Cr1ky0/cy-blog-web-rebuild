@@ -79,7 +79,7 @@ const IntroductionBox: React.FC<IntroductionBoxProps> = props => {
       style={isMobile ? Object.assign({ boxShadow: 'none' }, styles) : styles}
     >
       <div className={`${style.intro} clearfix`}>
-        <img className={style.avatar} src={avatar}></img>
+        <img className={style.avatar} src={avatar} alt="avatar"></img>
         <div className={style.username}>{user.nickname}</div>
         <div className={style.signature}>{user.brief ? getLimitString(limit, user.brief) : undefined}</div>
       </div>

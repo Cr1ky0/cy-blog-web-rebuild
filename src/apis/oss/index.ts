@@ -2,8 +2,8 @@ import { client, Result } from '@/utils/request';
 
 // interface
 // init
-export const OSSConfigInit = {
-  id: 0,
+export const OSSConfigInit: OSSConfig = {
+  id: '',
   endpoint: '',
   bucket: '',
   accessKeyId: '',
@@ -34,7 +34,7 @@ export interface OSSPolicy {
 }
 
 export interface OSSConfig {
-  id: number;
+  id: string;
   endpoint: string;
   bucket: string;
   accessKeyId: string;

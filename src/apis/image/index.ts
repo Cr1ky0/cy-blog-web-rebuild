@@ -9,7 +9,7 @@ interface AddImageForm {
 
 // response
 export interface Image {
-  imageId: number;
+  imageId: string;
   endpoint: string;
   fileName: string;
   bucket: string;
@@ -17,7 +17,7 @@ export interface Image {
   photoTime: string;
   version?: number;
   deleted?: number;
-  userId: number;
+  userId: string;
 }
 
 interface GetImageRes {
@@ -30,14 +30,14 @@ export const addImage = async (data: AddImageForm) => {
 
 export const getImagePageOfCriiky0 = async (data: RequestPageOptions) => {
   const { page, size } = data;
-  return client.get<Result<GetPageRequest<Image>>>(`/api/image/criiky0?page=${page}&size=${size}`);
+  return client.get<Result<GetPageRequest<Image>>>(`/api/image/criiky0?page=${page || ''}&size=${size || ''}`);
 };
 
-export const delSingleImage = async (imageId: number) => {
+export const delSingleImage = async (imageId: string) => {
   return client.delete<Result<void>>(`/api/image?image_id=${imageId}`);
 };
 
-export const delManyImage = async (idList: number[]) => {
+export const delManyImage = async (idList: string[]) => {
   return client.delete<Result<void>>('/api/image/many', {
     data: idList,
   });
@@ -45,5 +45,5 @@ export const delManyImage = async (idList: number[]) => {
 
 export const getImagePageOfUser = async (data: RequestPageOptions) => {
   const { page, size } = data;
-  return client.get<Result<GetPageRequest<Image>>>(`/api/image?page=${page}&size=${size}`);
+  return client.get<Result<GetPageRequest<Image>>>(`/api/image?page=${page || ''}&size=${size || ''}`);
 };
