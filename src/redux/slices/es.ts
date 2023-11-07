@@ -1,8 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { SearchHistoryObj } from '@/interface/es';
+import { BlogDoc } from '@/apis/es';
+
+interface SearchHistory {
+  blog: BlogDoc;
+  match: string;
+}
 
 interface ESInitialState {
-  history: SearchHistoryObj[];
+  history: SearchHistory[];
 }
 
 const initialState = {
@@ -14,12 +19,12 @@ const esSlice = createSlice({
   initialState,
   reducers: {
     addHistory: (state, action) => {
-      const has = state.history.find(history => history.blog.blog_id === action.payload.blog.blog_id);
+      const has = state.history.find(history => history.blog.id === action.payload.blog.id);
       if (!has) state.history = [action.payload, ...state.history];
     },
     delHistory: (state, action) => {
       state.history = state.history.filter(history => {
-        return history.blog.blog_id !== action.payload;
+        return history.blog.id !== action.payload;
       });
     },
   },
