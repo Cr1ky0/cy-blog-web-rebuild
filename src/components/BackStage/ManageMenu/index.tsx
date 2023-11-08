@@ -10,11 +10,7 @@ import {
   MailOutlined,
   PlusSquareOutlined,
   PictureOutlined,
-  StarOutlined,
-  PushpinOutlined,
-  FieldTimeOutlined,
   MenuOutlined,
-  FolderOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Menu } from 'antd';
@@ -41,7 +37,6 @@ const items: MenuItem[] = [
   getItem('添加照片', 'photo', <PlusSquareOutlined />),
   getItem('编辑照片', 'editPhoto', <PictureOutlined />),
   getItem('OSS设置', 'oss', <CloudDownloadOutlined />),
-  getItem('SMTP设置', 'smtp', <MailOutlined />),
 ];
 
 const ManageMenu = () => {

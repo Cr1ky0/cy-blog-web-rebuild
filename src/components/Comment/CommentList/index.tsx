@@ -10,7 +10,7 @@ import style from './index.module.scss';
 // comp
 import SingleComment from '@/components/Comment/CommentList/SingleComment';
 import LoadingComp from '@/components/Universal/LoadingComp';
-import ReplyList from '@/components/Comment/CommentList/ReplyList';
+import ReplyList from '@/components/Comment/ReplyList';
 
 // redux
 import { useAppDispatch, useAppSelector } from '@/redux';

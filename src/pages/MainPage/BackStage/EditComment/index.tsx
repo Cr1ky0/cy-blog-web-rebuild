@@ -19,7 +19,7 @@ import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
 
 // comp
 import SingleComment from '@/components/Comment/CommentList/SingleComment';
-import ReplyList from '@/components/Comment/CommentList/ReplyList';
+import ReplyList from '@/components/Comment/ReplyList';
 import { getBlogHasCommentOfUser } from '@/apis/blog';
 import { getMenu } from '@/apis/menu';
 import { getCommentPageOfBlog } from '@/apis/comment';

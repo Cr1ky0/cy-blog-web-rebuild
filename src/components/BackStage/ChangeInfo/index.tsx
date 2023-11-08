@@ -1,14 +1,18 @@
-import React, { RefObject, useCallback, useRef, useState } from 'react';
+import React, { RefObject, useCallback, useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router';
+
+// antd
+import { LoadingOutlined } from '@ant-design/icons';
+import { Spin } from 'antd';
 
 // css
 import style from './index.module.scss';
 
 // comp
-import ChangeFormBox from '@/components/TopHeader/ChangeInfo/ChangeFormBox';
-import UploadAvatar from '@/components/TopHeader/ChangeInfo/UploadAvatar';
+import ChangeFormBox from './ChangeFormBox';
+import UploadAvatar from './UploadAvatar';
 
 // ui
-import LinkBtn2 from '@/components/Universal/LinkBtn2';
 import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
 
 // api
@@ -27,12 +31,21 @@ import {
 import { useAppDispatch, useAppSelector } from '@/redux';
 import { setMyUser } from '@/redux/slices/user';
 
+// util
+import _ from 'lodash';
+import { setTimerOn } from '@/redux/slices/universal';
+
 const ChangeInfo = () => {
   const message = useGlobalMessage();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const [isOpen, setIsOpen] = useState([false, false, false, false]);
   const [isLoading, setIsLoading] = useState(false);
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [count, setCount] = useState(60);
+
+  const timerOn = useAppSelector(state => state.universal.timerOn);
   const user = useAppSelector(state => state.user.user);
   // ref
   // psw Ref
@@ -65,6 +78,20 @@ const ChangeInfo = () => {
     setIsOpen(newList);
   }, []);
 
+  // 如果计时器存在，则开启定时
+  useEffect(() => {
+    if (timerOn) {
+      const timer = setInterval(() => {
+        setCount(count => count - 1);
+      }, 1000);
+      setTimeout(() => {
+        dispatch(setTimerOn(false));
+        setCount(60);
+        clearTimeout(timer);
+      }, count * 1000);
+    }
+  }, []);
+
   // 获取表单内数据
   function getFormValues<T>(
     ref1: RefObject<HTMLInputElement>,
@@ -89,7 +116,8 @@ const ChangeInfo = () => {
     try {
       const data = getFormValues<UpdatePswForm>(oldPswRef, pswRef, pswCfmRef2);
       await updatePsw(data);
-      await message.loadingSuccessAsync('修改中...', '修改成功, 请重新登录!');
+      await message.loadingSuccessAsync('修改中...', '修改成功!');
+      navigate(0);
     } catch (data: any) {
       message.error(data.message);
     } finally {
@@ -98,25 +126,43 @@ const ChangeInfo = () => {
   };
 
   // 邮箱表单
-  const handleSendCode = async () => {
+  const handleSendCode = _.debounce(async () => {
+    setUpdateLoading(true);
     const ref = newEmailRef.current as HTMLInputElement;
     if (!isEmail(ref.value)) {
+      setUpdateLoading(false);
       message.error('请输入正确的邮箱！');
       return;
     }
-    // 向新邮箱发送验证码
-    await sendCode(ref.value);
-    message.success('验证码已发送到新邮箱，请前往邮箱查看！');
-    ref.disabled = true;
-  };
+    try {
+      // 向新邮箱发送验证码
+      await sendCode(ref.value);
+      message.success('验证码已发送到新邮箱，请前往邮箱查看！');
+      // 设定计时器
+      dispatch(setTimerOn(true));
+      const timer = setInterval(() => {
+        setCount(count => count - 1);
+      }, 1000);
+      setTimeout(() => {
+        dispatch(setTimerOn(false));
+        setCount(60);
+        clearTimeout(timer);
+      }, count * 1000);
+    } catch (data: any) {
+      message.error(data.message);
+    } finally {
+      setUpdateLoading(false);
+    }
+  }, 500);
 
   const handleEmailForm = async () => {
     setIsLoading(true);
     const data = getFormValues<UpdateEmailForm>(newEmailRef, codeRef);
     try {
       await updateEmail(data);
-      await message.loadingAsync('发送链接至新邮箱当中...', '链接已发送至新邮箱，请前往验证');
-      dispatch(setMyUser());
+      await message.loadingAsync('更新中...', '更新成功');
+      await dispatch(setMyUser());
+      navigate(0);
     } catch (data: any) {
       message.error(data.message);
     } finally {
@@ -131,7 +177,8 @@ const ChangeInfo = () => {
       const data = getFormValues<UpdateUserForm>(ref);
       await updateUser(data);
       await message.loadingSuccessAsync('更新中', '更新成功!');
-      dispatch(setMyUser());
+      await dispatch(setMyUser());
+      navigate(0);
     } catch (data: any) {
       message.error(data.message);
     } finally {
@@ -174,16 +221,27 @@ const ChangeInfo = () => {
               handleClose={openForm}
               isLoading={isLoading}
               handleSubmit={handleEmailForm}
+              ref={newEmailRef}
               type="text"
               seq={1}
               name="newEmail"
-              ref={newEmailRef}
             >
               <div>
                 <input type="text" placeholder="验证码" name="code" ref={codeRef} />
-                <LinkBtn2 styles={{ width: '110px' }} onClick={handleSendCode}>
-                  获取验证码
-                </LinkBtn2>
+                <div
+                  className={style.sendCodeBtn}
+                  onClick={() => {
+                    if (!timerOn) handleSendCode();
+                    else {
+                      message.error(`请于${count}s后再试`);
+                    }
+                  }}
+                >
+                  {updateLoading ? (
+                    <Spin indicator={<LoadingOutlined style={{ fontSize: 14, marginRight: 5 }} spin />} />
+                  ) : undefined}
+                  {timerOn ? `（${count}）` : '获取验证码'}
+                </div>
               </div>
             </ChangeFormBox>
           </div>

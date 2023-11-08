@@ -7,8 +7,6 @@ import { Menu, MenuResponse } from '@/apis/menu';
 interface blogMenuInitObj {
   menuList: Menu[];
   selectedId: string; // 选的博客id
-  deleteKey: string;
-  delKind: 'menu' | 'blog';
   opt: boolean;
 }
 
@@ -16,8 +14,6 @@ interface blogMenuInitObj {
 const initialState: blogMenuInitObj = {
   menuList: [] as Menu[],
   selectedId: '', // 选的博客id
-  deleteKey: '', // EditMenu中删除的id，可以是blog也可以是menu
-  delKind: 'menu', // EditMenu中删除的种类
   opt: true, // 可以点击menu标志（用来控制操作频率）
 };
 
@@ -32,14 +28,6 @@ const blogMenuSlice = createSlice({
   reducers: {
     setOpt: (state, action) => {
       state.opt = action.payload;
-    },
-    // deleteKey
-    setDeleteKey: (state, action) => {
-      state.deleteKey = action.payload;
-    },
-    // delKind
-    setDelKind: (state, action) => {
-      state.delKind = action.payload;
     },
     // selectedId
     setSelectedId: (state, action) => {
@@ -57,5 +45,5 @@ const blogMenuSlice = createSlice({
   },
 });
 
-export const { setOpt, setDeleteKey, setDelKind, setSelectedId } = blogMenuSlice.actions;
+export const { setOpt, setSelectedId } = blogMenuSlice.actions;
 export default blogMenuSlice.reducer;

@@ -99,7 +99,7 @@ const StarBlog = () => {
     );
   };
 
-  const getOptionPage = useCallback(() => {
+  const getOptionPage = () => {
     return choseList.map((choice, index) => {
       return (
         <div
@@ -114,7 +114,7 @@ const StarBlog = () => {
         </div>
       );
     });
-  }, []);
+  };
 
   return (
     <div className={`${style.wrapper} clearfix ${themeMode === 'dark' ? 'dark' : style.wrapperLight}`} ref={wrapper}>

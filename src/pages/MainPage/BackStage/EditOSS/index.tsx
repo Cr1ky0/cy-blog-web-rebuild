@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
 
 // antd
 import { Button, Form, Input } from 'antd';

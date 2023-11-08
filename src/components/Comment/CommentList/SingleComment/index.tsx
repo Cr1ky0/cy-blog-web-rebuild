@@ -41,12 +41,13 @@ export interface SingleCommentProps {
 
 // TODO:根据isReply来改写为Reply样式
 const SingleComment: React.FC<SingleCommentProps> = props => {
-  const { info, noLikes } = props;
-  const { content, username, brief, createAt, userId, likes: likeNum, commentId, belongCommentId } = info;
+  const { info, noLikes, isReply } = props;
+  const { content, username, brief, createAt, userId, likes: likeNum, commentId } = info;
   const modal = useGlobalModal();
   const message = useGlobalMessage();
   const dispatch = useAppDispatch();
   const { getAvatarById } = useAvatar();
+
   // 利用likeList判断当前评论的id是否在其中来记录点赞状态
   const likeList = useAppSelector(state => state.comments.likeList);
   const themeMode = useAppSelector(state => state.universal.themeMode);
@@ -85,7 +86,7 @@ const SingleComment: React.FC<SingleCommentProps> = props => {
       if (userId) {
         try {
           const res = await getAvatarById(userId);
-          setAvatar(res.data);
+          setAvatar(res);
           const userRes = await getUserInfoById(userId);
           setCommentUser(userRes.data.user);
         } catch (data: any) {
@@ -96,7 +97,7 @@ const SingleComment: React.FC<SingleCommentProps> = props => {
     getUserAvatarById();
   }, []);
 
-  const handleClick = async () => {
+  const handleLike = async () => {
     try {
       if (!isChosen) {
         const res = await updateCommentBrowse({
@@ -120,7 +121,7 @@ const SingleComment: React.FC<SingleCommentProps> = props => {
     }
   };
 
-  const getTagPage = useCallback(() => {
+  const getTagPage = () => {
     if (commentUser.role === 'admin') {
       return <Tag color="red">管理员</Tag>;
     } else if (commentUser.role === 'user') {
@@ -128,7 +129,7 @@ const SingleComment: React.FC<SingleCommentProps> = props => {
     } else {
       return <Tag color="green">游客</Tag>;
     }
-  }, [commentId]);
+  };
 
   return (
     <div className={`${style.wrapper} clearfix ${themeMode === 'dark' ? 'dark' : 'light'}`}>
@@ -137,10 +138,10 @@ const SingleComment: React.FC<SingleCommentProps> = props => {
           themeMode === 'dark' ? style.infoWrapperDark : style.infoWrapperLight
         }`}
       >
-        <div className={style.avatar} style={{ backgroundImage: `url(${avatar})` }}></div>
+        <img className={style.avatar} src={avatar} alt="avatar"></img>
         <div className={style.info}>
           <div className={style.infoBox}>
-            <div className={style.username}>{username}</div>
+            <div className={style.username}>{username || '匿名'}</div>
             <div className={style.tags}>{getTagPage()}</div>
             <div className={style.time}>{createAt}</div>
           </div>
@@ -153,34 +154,36 @@ const SingleComment: React.FC<SingleCommentProps> = props => {
             {noLikes ? undefined : (
               <div className={style.likesWrapper}>
                 {isChosen ? (
-                  <div className={`${style.likesOnChosen} iconfont`} onClick={handleClick}>
+                  <div className={`${style.likesOnChosen} iconfont`} onClick={handleLike}>
                     &#xeca2;
                   </div>
                 ) : (
-                  <div className={`${style.likes} iconfont`} onClick={handleClick}>
+                  <div className={`${style.likes} iconfont`} onClick={handleLike}>
                     &#xeca1;
                   </div>
                 )}
                 <span className={`${style.likesNum}`}>{likes}</span>
               </div>
             )}
-            <div
-              className={`${style.replyComment} iconfont`}
-              onClick={() => {
-                setReplyOpen(!replyOpen);
-              }}
-            >
-              &#xe82e;
-            </div>
+            {!isReply ? (
+              <div
+                className={`${style.replyComment} iconfont`}
+                onClick={() => {
+                  setReplyOpen(!replyOpen);
+                }}
+              >
+                &#xe82e;
+              </div>
+            ) : undefined}
           </div>
         </div>
-        <div className={style.signature}>{brief}</div>
+        <div className={style.signature}>{brief || '他很懒，没有个人简介！'}</div>
       </div>
       <div className={style.comment}>{content}</div>
       {/* reply */}
       {replyOpen ? (
         <div className={style.writeComment}>
-          <WriteComment belongCommentId={belongCommentId}></WriteComment>
+          <WriteComment belongCommentId={commentId}></WriteComment>
         </div>
       ) : undefined}
     </div>

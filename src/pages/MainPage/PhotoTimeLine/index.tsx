@@ -127,25 +127,29 @@ const TimeLine = () => {
       const cur = document.documentElement.scrollTop + window.innerHeight + 90;
       // 触发事件
       if (cur >= document.documentElement.scrollHeight) {
-        setPhotoLoad(true);
         getImagePageOfCriiky0({
           page: page + 1,
           size: 10,
-        }).then(
-          res => {
-            if (res.data.records.length) {
-              setTimeout(() => {
-                setPhotoLoad(false);
-                setPhotos([...photos, ...res.data.records]);
-                setPage(page + 1);
-              }, 500);
+        })
+          .then(
+            res => {
+              if (res.data.records.length) {
+                setPhotoLoad(true);
+                setTimeout(() => {
+                  setPhotos([...photos, ...res.data.records]);
+                  setPage(page + 1);
+                }, 500);
+              }
+            },
+            error => {
+              message.error(error.message);
             }
-          },
-          error => {
-            message.error(error.message);
-            setPhotoLoad(false);
-          }
-        );
+          )
+          .finally(() => {
+            setTimeout(() => {
+              setPhotoLoad(false);
+            }, 300);
+          });
       }
     }, 500);
     window.addEventListener('scroll', handleScroll);

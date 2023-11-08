@@ -29,7 +29,7 @@ const FilteredBlogs = () => {
   const [blogs, setBlogs] = useState([] as Blog[]);
   // 请求参数
   const options = [
-    { page: page, size: 10, sort: 'create_at', collected: true },
+    { page: page, size: 10, sort: 'create_at', collected: 1 },
     { page: page, size: 10, sort: 'likes' },
     { page: page, size: 10, sort: 'views' },
   ];
@@ -48,6 +48,7 @@ const FilteredBlogs = () => {
       }
     );
   }, [filter, page]);
+
   return <ShowBlogTagList blogs={blogs}></ShowBlogTagList>;
 };
 export default FilteredBlogs;

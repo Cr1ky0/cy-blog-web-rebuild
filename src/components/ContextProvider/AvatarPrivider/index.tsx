@@ -2,7 +2,7 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 
 // default.png
 import img from '@/assets/images/default.webp';
-import { getAvatar } from '@/apis/user';
+import { getAvatar, getAvatarByUserId } from '@/apis/user';
 import { useAppSelector } from '@/redux';
 
 interface avatarContextProps {
@@ -26,7 +26,7 @@ const AvatarProvider: React.FC<avatarContextProps> = ({ children }) => {
 
   const getAvatarById: AvatarContext['getAvatarById'] = useCallback(async (userId: string) => {
     try {
-      const res = await getAvatarById(userId);
+      const res = await getAvatarByUserId(userId);
       const type = res.headers['content-type'];
       const blob = new Blob([res.data], { type });
       // img src
@@ -41,14 +41,12 @@ const AvatarProvider: React.FC<avatarContextProps> = ({ children }) => {
       try {
         // 获取用户头像
         const res = await getAvatar();
-        console.log(1);
         const type = res.headers['content-type'];
         const blob = new Blob([res.data], { type });
         // img src
         const imageUrl = URL.createObjectURL(blob);
         setAvatar(imageUrl);
       } catch (data: any) {
-        console.log(data);
         // 没登录或没有设置头像则用默认头像
         setAvatar(img);
       }

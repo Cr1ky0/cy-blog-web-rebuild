@@ -8,7 +8,7 @@ import { useAppDispatch } from '@/redux';
 import { setSelectKey } from '@/redux/slices/backstage';
 
 // comp
-import ChangeInfo from '@/components/TopHeader/ChangeInfo';
+import ChangeInfo from '@/components/BackStage/ChangeInfo';
 
 const EditInfo = () => {
   const dispatch = useAppDispatch();
@@ -16,6 +16,7 @@ const EditInfo = () => {
   useEffect(() => {
     dispatch(setSelectKey('info'));
   }, []);
+
   return (
     <div className={style.wrapper}>
       <ChangeInfo></ChangeInfo>

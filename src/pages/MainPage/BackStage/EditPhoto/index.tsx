@@ -19,6 +19,8 @@ import { useGlobalModal } from '@/components/ContextProvider/ModalProvider';
 // global
 import { THEME_COLOR } from '@/global';
 import { delManyImage, delSingleImage, getImagePageOfUser, Image } from '@/apis/image';
+import { setSelectKey } from '@/redux/slices/backstage';
+import { useAppDispatch } from '@/redux';
 
 interface DataType {
   key: React.Key;
@@ -48,6 +50,7 @@ const EditCertain = () => {
   const modal = useGlobalModal();
   const message = useGlobalMessage();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   // nav params
   const [search] = useSearchParams();
@@ -57,6 +60,28 @@ const EditCertain = () => {
   const [photos, setPhotos] = useState<Image[]>([]);
   const [count, setCount] = useState(0);
   const [selectedList, setSelectedList] = useState<string[]>([]);
+
+  useEffect(() => {
+    dispatch(setSelectKey('editPhoto'));
+  }, []);
+
+  // 请求对应的数据
+  useEffect(() => {
+    getImagePageOfUser({
+      page: page ? parseInt(page) : 1,
+      size: 6,
+    }).then(
+      response => {
+        const p = page ? parseInt(page) : 1;
+        if (!response.data.records.length && p > 1) navigate(`/backstage/editPhoto?page=${p - 1}`);
+        setPhotos(response.data.records);
+        setCount(response.data.totalSize);
+      },
+      error => {
+        message.error(error.message);
+      }
+    );
+  }, [page]);
 
   const handleDeleteSingle = async (id: string) => {
     try {
@@ -140,24 +165,6 @@ const EditCertain = () => {
       },
     ];
   }, []);
-
-  // 请求对应的数据
-  useEffect(() => {
-    getImagePageOfUser({
-      page: page ? parseInt(page) : 1,
-      size: 6,
-    }).then(
-      response => {
-        const p = page ? parseInt(page) : 1;
-        if (!response.data.records.length && p > 1) navigate(`/backstage/editPhoto?page=${p - 1}`);
-        setPhotos(response.data.records);
-        setCount(response.data.totalSize);
-      },
-      error => {
-        message.error(error.message);
-      }
-    );
-  }, [page]);
 
   return (
     <div className={style.wrapper}>

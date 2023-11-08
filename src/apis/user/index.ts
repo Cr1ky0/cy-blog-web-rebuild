@@ -68,11 +68,19 @@ export const login = async (data: LoginForm) => {
 };
 
 export const getAvatar = async () => {
-  return service.get('/api/user/avatar');
+  return service.get('/api/user/avatar', {
+    responseType: 'arraybuffer',
+  });
 };
 
 export const uploadAvatar = async (file: RcFile) => {
-  return client.post('/api/user/avatar', { file });
+  return client.post(
+    '/api/user/avatar',
+    { file },
+    {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }
+  );
 };
 
 export const getVerificationCode = async () => {
@@ -88,19 +96,23 @@ export const getCriiky0Info = async () => {
 };
 
 export const getCriiky0Avatar = async () => {
-  return service.get('/api/user/criiky0/avatar');
+  return service.get('/api/user/criiky0/avatar', {
+    responseType: 'arraybuffer',
+  });
 };
 
 export const updateUser = async (data: UpdateUserForm) => {
-  return client.post<Result<UpdatedUser>>('/api/user/info', data);
+  return client.patch<Result<UpdatedUser>>('/api/user/info', data);
 };
 
 export const getUserInfoById = async (userId: string) => {
   return client.get<Result<GetUserRes>>(`/api/user/${userId}`);
 };
 
-export const getAvatarById = async (userId: string) => {
-  return service.get(`/api/user/avatar/${userId}`);
+export const getAvatarByUserId = async (userId: string) => {
+  return service.get(`/api/user/avatar/${userId}`, {
+    responseType: 'arraybuffer',
+  });
 };
 
 export const updatePsw = async (data: UpdatePswForm) => {

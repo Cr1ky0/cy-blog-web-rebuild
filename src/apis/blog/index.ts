@@ -135,7 +135,7 @@ export const getCriiky0TimeLine = async () => {
 export const getBlogPageOfCriiky0 = async (data: RequestPageOptions) => {
   const { page, size, sort, collected } = data;
   return client.get<Result<GetPageRequest<Blog>>>(
-    `/api/blog/criiky0?page=${page || ''}&size=${size || ''}&sort=${sort || ''}&collected=${collected || ''}`
+    `/api/blog/criiky0?page=${page || ''}&size=${size || ''}&sort=${sort || ''}&options=collected:${collected || ''}`
   );
 };
 

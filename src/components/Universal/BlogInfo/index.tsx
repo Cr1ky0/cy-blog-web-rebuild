@@ -83,7 +83,7 @@ const BlogInfo: React.FC<BlogInfoProps> = ({ statistics }) => {
     }
   };
 
-  const getTagPage = useCallback(() => {
+  const getTagPage = () => {
     if (width > BREAK_POINT) {
       return grandMenu.map((menu, index) => {
         return (
@@ -98,9 +98,9 @@ const BlogInfo: React.FC<BlogInfoProps> = ({ statistics }) => {
         {grandMenu.length ? grandMenu[grandMenu.length - 1].title : undefined}
       </Tag>
     );
-  }, [width, id]);
+  };
 
-  const getLikePage = useCallback(() => {
+  const getLikePage = () => {
     const flag = isLiked(likeList, id);
     if (flag) {
       return (
@@ -129,11 +129,11 @@ const BlogInfo: React.FC<BlogInfoProps> = ({ statistics }) => {
         <span>{likesNum}</span>
       </div>
     );
-  }, [likeList, likesNum, id]);
+  };
 
-  const getUserCollectPage = useCallback(() => {
+  const getUserCollectPage = () => {
     if (user && user.userId === blogUser.userId && width > BREAK_POINT) {
-      const getCollectPage = useCallback(() => {
+      const getCollectPage = () => {
         if (collected) {
           return (
             <>
@@ -150,7 +150,7 @@ const BlogInfo: React.FC<BlogInfoProps> = ({ statistics }) => {
             <span>收藏</span>
           </>
         );
-      }, []);
+      };
 
       return (
         <Tooltip title="收藏" trigger="hover" placement="bottom">
@@ -161,7 +161,7 @@ const BlogInfo: React.FC<BlogInfoProps> = ({ statistics }) => {
         </Tooltip>
       );
     }
-  }, [id, width]);
+  };
 
   return (
     <div className={`${style.wrapper} ${themeMode === 'dark' ? style.dark : style.light}`}>

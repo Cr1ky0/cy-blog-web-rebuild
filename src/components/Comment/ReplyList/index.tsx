@@ -8,6 +8,8 @@ import { Comment } from '@/apis/comment';
 
 // redux
 import { useAppSelector } from '@/redux';
+
+// comp
 import SingleComment from '@/components/Comment/CommentList/SingleComment';
 
 interface ReplyListProps {

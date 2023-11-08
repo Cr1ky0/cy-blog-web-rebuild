@@ -44,7 +44,7 @@ export const addComment = async (data: AddCommentForm) => {
 
 export const updateCommentBrowse = async (data: UpdateCommentBrowseForm) => {
   const { commentId, plus } = data;
-  return client.patch<Result<UpdateCommentRes>>(`/api/comment?comment_id=${commentId}&plus=${plus || ''}`);
+  return client.patch<Result<UpdateCommentRes>>(`/api/comment/browse?comment_id=${commentId}&plus=${plus || ''}`);
 };
 
 export const deleteCommentAjax = async (commentId: string) => {

@@ -22,6 +22,7 @@ import ManageMenu from '@/components/BackStage/ManageMenu';
 // redux
 import { setChosenList } from '@/redux/slices/chosenList';
 import { useAppDispatch } from '@/redux';
+import { setSelectKey } from '@/redux/slices/backstage';
 
 const BackStage: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -35,7 +36,6 @@ const BackStage: React.FC = () => {
     dispatch(setChosenList([false, false, false, false]));
   }, []);
 
-  // 设置初始高度
   useEffect(() => {
     const div = wrapper.current;
     div.style.height = window.innerHeight - 52 + 'px';

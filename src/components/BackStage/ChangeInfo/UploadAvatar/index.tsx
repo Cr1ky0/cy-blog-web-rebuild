@@ -12,19 +12,32 @@ import type { UploadFile } from 'antd/es/upload/interface';
 
 // context
 import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
+import { useAvatar } from '@/components/ContextProvider/AvatarPrivider';
 
 //api
 import { uploadAvatar } from '@/apis/user';
 
-const UploadAvatar = () => {
-  // state
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewImage, setPreviewImage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [fileList, setFileList] = useState<UploadFile[]>([]);
+// redux
+import { useAppSelector } from '@/redux';
 
+const UploadAvatar = () => {
   // context
   const message = useGlobalMessage();
+  const { avatar } = useAvatar();
+
+  // state
+  const user = useAppSelector(state => state.user.user);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImage, setPreviewImage] = useState(avatar);
+  const [isLoading, setIsLoading] = useState(false);
+  const [fileList, setFileList] = useState<UploadFile[]>([
+    {
+      uid: '-1',
+      name: `${user.avatar}`,
+      status: 'done',
+      url: avatar,
+    },
+  ]);
 
   // handler
   const handleCancel = () => setPreviewOpen(false);

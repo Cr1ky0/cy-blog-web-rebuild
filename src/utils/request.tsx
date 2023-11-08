@@ -1,5 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
 import { BASE_URL } from '@/global';
+import { useAppDispatch } from '@/redux';
+import { setUser } from '@/redux/slices/user';
 
 const service = axios.create({
   timeout: 5000,
@@ -18,7 +20,7 @@ export interface RequestPageOptions {
   page?: number;
   size?: number;
   sort?: string;
-  collected?: boolean;
+  collected?: number;
 }
 
 export interface GetPageRequest<T> {
@@ -46,8 +48,9 @@ service.interceptors.request.use(config => {
 service.interceptors.response.use(
   response => {
     const data = response.data;
-    if (response.status !== 200) {
-      return Promise.reject();
+    // arraybuffer放行
+    if (data instanceof ArrayBuffer) {
+      return Promise.resolve(response);
     }
     if ('code' in data && data.code !== 200) {
       return Promise.reject(data as Result);
@@ -55,6 +58,10 @@ service.interceptors.response.use(
     return Promise.resolve(response);
   },
   async error => {
+    if (error.response.status === 401) {
+      const dispatch = useAppDispatch();
+      dispatch(setUser(null));
+    }
     return Promise.reject(error.response);
   }
 );

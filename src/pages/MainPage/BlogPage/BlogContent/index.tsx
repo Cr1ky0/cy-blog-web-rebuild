@@ -51,7 +51,7 @@ const BlogContent = () => {
 
   // 获取面包屑列表
   const breadcrumbList = useMemo(() => {
-    const breadcrumbs: BreadCrumbObj[] = selectedId ? getBreadcrumbList(menus, selectedId, icons) : [];
+    const breadcrumbs: BreadCrumbObj[] = selectedId ? getBreadcrumbList(menus, selectedId, icons).reverse() : [];
     return breadcrumbs && breadcrumbs.length
       ? breadcrumbs.map(item => {
           return {
@@ -119,6 +119,7 @@ const BlogContent = () => {
       dispatch(setIsEdit(true));
       navigate('/backstage/blog');
     } catch (data: any) {
+      setDeleted(true);
       message.error(data.message);
     }
   };
@@ -228,7 +229,7 @@ const BlogContent = () => {
         </div>
       </div>
     );
-  }, [selectedId, deleted]);
+  }, [selectedId, deleted, curBlog, blogUser]);
 
   return (
     <>
