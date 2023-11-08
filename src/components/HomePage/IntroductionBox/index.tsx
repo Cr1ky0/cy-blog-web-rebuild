@@ -81,7 +81,9 @@ const IntroductionBox: React.FC<IntroductionBoxProps> = props => {
       <div className={`${style.intro} clearfix`}>
         <img className={style.avatar} src={avatar} alt="avatar"></img>
         <div className={style.username}>{user.nickname}</div>
-        <div className={style.signature}>{user.brief ? getLimitString(limit, user.brief) : undefined}</div>
+        <div className={style.signature}>
+          {user.brief ? getLimitString(limit, user.brief) : '这个人很懒，没有个性签名！'}
+        </div>
       </div>
       <div className={style.blogInfo}>
         <div

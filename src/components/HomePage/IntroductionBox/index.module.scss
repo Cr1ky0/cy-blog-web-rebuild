@@ -1,8 +1,8 @@
 @import '@/assets/css/index.scss';
 
 .wrapper {
-  @include boxShadow;
   @include transWithBoxShadow;
+  @include boxShadow;
   box-sizing: border-box;
   width: 100%;
 

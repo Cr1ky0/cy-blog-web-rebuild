@@ -12,7 +12,7 @@ const LeftNav = () => {
   return (
     <a className={style.leftNav} href="https://www.criiky0.top" target="_blank" rel="noreferrer">
       <div className={style.leftNavIcon}></div>
-      <div className={`${style.leftNavInfo} ${themeMode === 'dark' ? 'dark-font' : 'light-font'}`}>Gezelligheid</div>
+      <div className={`${style.leftNavInfo} ${themeMode === 'dark' ? 'dark-font' : 'light-font'}`}>Shiroko</div>
     </a>
   );
 };

@@ -112,19 +112,6 @@ const Avatar = () => {
       ),
       key: '7',
     },
-    {
-      label: (
-        <div
-          style={{ padding: '5px 10px' }}
-          onClick={() => {
-            navigate('/backstage/smtp');
-          }}
-        >
-          SMTP管理
-        </div>
-      ),
-      key: '8',
-    },
   ];
   return (
     <>

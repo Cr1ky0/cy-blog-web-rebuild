@@ -243,16 +243,15 @@ export const getClassificationInfo: (menus: Menu[]) => ClassificationInfoObj[] =
   return list;
 };
 
-// 从该菜单获取一个blogId，没有则返回false
-export const getOneBlogFromMenu: (menu: Menu) => string = menu => {
-  let id = '';
-  if (menu.blogs && menu.blogs.length) id = menu.blogs[0].blogId;
-  else if (menu.subMenu) {
+// 从该菜单获取一个blogId
+export const getOneBlogFromMenu: (menu: Menu, blogIdList: string[]) => void = (menu, blogIdList) => {
+  if (menu.blogs && menu.blogs.length) {
+    blogIdList.push(menu.blogs[0].blogId);
+  } else if (menu.subMenu) {
     menu.subMenu.forEach(child => {
-      if (child.blogs && child.blogs.length) id = child.blogs[0].blogId;
+      getOneBlogFromMenu(child, blogIdList);
     });
   }
-  return id;
 };
 
 /**************** 列表生成 *****************/

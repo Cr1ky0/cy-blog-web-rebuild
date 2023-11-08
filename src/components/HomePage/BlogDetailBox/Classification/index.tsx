@@ -23,9 +23,9 @@ import { ClassificationInfoObj } from '@/interface';
 const Classification = () => {
   const navigate = useNavigate();
   const message = useGlobalMessage();
+  const dispatch = useAppDispatch();
   const menus = useAppSelector(state => state.blogMenu.menuList);
   const themeMode = useAppSelector(state => state.universal.themeMode);
-  const dispatch = useAppDispatch();
   const classInfoList = getClassificationInfo(menus);
 
   useEffect(() => {
@@ -48,9 +48,10 @@ const Classification = () => {
     try {
       const res = await getMenu(info.id);
       const menu = res.data.menu;
-      const blogId = getOneBlogFromMenu(menu);
-      if (blogId) {
-        dispatch(setSelectedId(blogId));
+      const idList: string[] = [];
+      getOneBlogFromMenu(menu, idList);
+      if (idList.length) {
+        dispatch(setSelectedId(idList[0]));
         dispatch(setMobileMenuOpen(false));
         navigate('/blog');
       } else {

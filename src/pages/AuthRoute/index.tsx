@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation } from 'react-router';
-import Page403 from '@/components/ErrorPage/Page403';
+import Page403 from '@/components/ErrorPage/Page401';
 import { useAppSelector } from '@/redux';
 
 interface AuthRouteProps {

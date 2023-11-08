@@ -5,13 +5,17 @@ import style from './index.module.scss';
 
 // redux
 import { useAppDispatch, useAppSelector } from '@/redux';
-import { setSelectedId } from '@/redux/slices/blogMenu';
+import { setOpt, setSelectedId } from '@/redux/slices/blogMenu';
 import { setJumpFlag } from '@/redux/slices/universal';
 
 // global
 import { ANIME_HIDE_TIME } from '@/global';
+
+// api
 import { getMenu } from '@/apis/menu';
 import { getBlog, MenuBlog } from '@/apis/blog';
+
+// comp
 import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
 
 interface ContextObj {
@@ -87,6 +91,7 @@ const NextPage = () => {
 
   const handleClick = (id: string) => {
     dispatch(setJumpFlag(true));
+    dispatch(setOpt(false));
     setTimeout(async () => {
       await dispatch(setSelectedId(id));
     }, ANIME_HIDE_TIME);

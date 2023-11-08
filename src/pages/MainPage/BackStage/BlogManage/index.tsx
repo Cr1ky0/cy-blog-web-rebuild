@@ -133,6 +133,7 @@ const BlogManage = () => {
       }
       // 更新主页博客信息
       dispatch(initWriteContent());
+      dispatch(setMenuList());
     } catch (data: any) {
       message.error(data.message);
     } finally {
@@ -164,7 +165,7 @@ const BlogManage = () => {
   return (
     <div className={`${style.wrapper} clearfix`}>
       <div id="blog-manage-sider-wrapper" className={style.sider}>
-        <SideMenu page="manage"></SideMenu>
+        <SideMenu page="manage" isEdit></SideMenu>
       </div>
       <div id="blog-manage-content-wrapper" className={style.content}>
         <div className={style.editState}>

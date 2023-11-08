@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 // comp
@@ -30,11 +30,17 @@ import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
 
 // interface
 import { getMenu } from '@/apis/menu';
+import { BreadCrumbObj } from '@/interface';
+
 // global
 import { ANIME_SHOW_TIME } from '@/global';
+
+// api
 import { Blog, blogInitState, delBlog, getBlog, updateBlogBrowse } from '@/apis/blog';
 import { getUserInfoById, User, userInitState } from '@/apis/user';
-import { BreadCrumbObj } from '@/interface';
+
+// img
+import img from '@/assets/images/401.jpg';
 
 const BlogContent = () => {
   const icons = useIcons();
@@ -72,6 +78,7 @@ const BlogContent = () => {
   useEffect(() => {
     const getCurBlog = async () => {
       try {
+        setDeleted(false);
         const res = await getBlog(selectedId);
         const blog = res.data.blog;
         const userRes = await getUserInfoById(blog.userId);
@@ -128,17 +135,13 @@ const BlogContent = () => {
       await delBlog(selectedId);
       await message.loadingAsync('删除中...', '删除成功');
       dispatch(setMenuList());
-      setDeleted(deleted);
+      setDeleted(true);
     } catch (data: any) {
       message.error(data.message);
     }
   };
 
-  const getPageContent = useCallback(() => {
-    if (deleted) {
-      return <div>当前博客不存在或已被删除，请选择其他文章阅读！</div>;
-    }
-
+  const getPageContent = () => {
     const getEditPage = () => {
       if (user && user.userId === blogUser.userId) {
         return (
@@ -178,6 +181,16 @@ const BlogContent = () => {
       }
       return undefined;
     };
+
+    if (deleted) {
+      return (
+        <div className={style.deleted}>
+          <img src={img} alt="img" />
+          <div className={style.deletedCode}>404</div>
+          <div>当前博客不存在或已被删除，请选择其他文章阅读！</div>
+        </div>
+      );
+    }
 
     return (
       <div className={style.blog}>
@@ -229,7 +242,7 @@ const BlogContent = () => {
         </div>
       </div>
     );
-  }, [selectedId, deleted, curBlog, blogUser]);
+  };
 
   return (
     <>

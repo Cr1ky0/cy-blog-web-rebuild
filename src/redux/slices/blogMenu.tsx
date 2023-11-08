@@ -3,6 +3,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 // interface
 import { Menu, MenuResponse } from '@/apis/menu';
+import { getOneBlogFromMenu } from '@/utils';
 
 interface blogMenuInitObj {
   menuList: Menu[];
@@ -18,8 +19,7 @@ const initialState: blogMenuInitObj = {
 };
 
 export const setMenuList = createAsyncThunk('blogMenu/setMenuList', async () => {
-  const response = await client.get<Result<MenuResponse>>(`/api/menu/criiky0`);
-  return response.data.menus;
+  return client.get<Result<MenuResponse>>(`/api/menu/criiky0`);
 });
 
 const blogMenuSlice = createSlice({
@@ -37,7 +37,18 @@ const blogMenuSlice = createSlice({
   extraReducers(builder) {
     builder
       .addCase(setMenuList.fulfilled, (state, action) => {
-        state.menuList = action.payload;
+        const menus = action.payload.data.menus;
+        if (!state.selectedId) {
+          // 选择一个selectedId
+          const list: string[] = [];
+          menus.map(menu => {
+            getOneBlogFromMenu(menu, list);
+          });
+          if (list.length) {
+            state.selectedId = list[0];
+          }
+        }
+        state.menuList = menus;
       })
       .addCase(setMenuList.rejected, (state, action) => {
         console.log(action.error.message);

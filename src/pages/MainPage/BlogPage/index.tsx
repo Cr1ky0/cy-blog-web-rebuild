@@ -48,13 +48,6 @@ const BlogPage = () => {
     }, 50);
   }, []);
 
-  // TODO:如果当前select不存在则放一个提示不存在
-  // useEffect(() => {
-  //   if (!hasBlogOfId(menus, selectedId)) {
-  //     dispatch(setSelectedId(getOneBlogId(menus)));
-  //   }
-  // }, []);
-
   // 打开滚动条
   useEffect(() => {
     if (jumpFlag) {
@@ -73,7 +66,7 @@ const BlogPage = () => {
     <div className={`${style.wrapper} clearfix ${themeMode === 'dark' ? 'dark' : 'light'}`}>
       <div className={`${style.sider} showAnime`}>
         <div>
-          <SideMenu noEdit={true} page="blog"></SideMenu>
+          <SideMenu page="blog"></SideMenu>
         </div>
       </div>
       <div className={`${style.content} clearfix transBase ${fadeOut ? 'transHide' : ''}`}>
@@ -93,7 +86,6 @@ const BlogPage = () => {
         }}
       >
         <SideMenu
-          noEdit={true}
           page="blog"
           closeMenu={() => {
             dispatch(setMobileMenuOpen(false));

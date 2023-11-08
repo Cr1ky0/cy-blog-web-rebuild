@@ -8,9 +8,6 @@ import { Pagination } from 'antd';
 // css
 import style from './index.module.scss';
 
-// img
-import img2 from '@/assets/images/blog-icon.webp';
-
 // context
 import { useViewport } from '@/components/ContextProvider/ViewportProvider';
 
@@ -25,6 +22,7 @@ import BlogDetailBox from '@/components/HomePage/BlogDetailBox';
 import Footer from '@/components/Footer';
 import MobileTopBtn from '@/components/Universal/MobileTopBtn';
 import { setMobileMenuOpen } from '@/redux/slices/universal';
+import { BREAK_POINT } from '@/global';
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -63,6 +61,11 @@ const HomePage = () => {
     }, 50);
   }, []);
 
+  useEffect(() => {
+    // 设置photo大小
+    if (width > BREAK_POINT) homePhotoWrapper.current!.style.height = `${window.innerHeight - 50}px`;
+  }, [width]);
+
   const handleChange = (page: number) => {
     window.scrollTo({
       top: parseInt(window.getComputedStyle(homePhotoWrapper.current as HTMLDivElement).height) + 0.5,
@@ -90,7 +93,6 @@ const HomePage = () => {
           ref={homePhotoWrapper}
         >
           <div className={style.homeTagWrapper}>
-            <div className={style.homeTagIcon} style={{ backgroundImage: `url(${img2})` }}></div>
             <div className={style.homeTag}>𝓒𝓻𝓲𝓲𝓴𝔂𝓞</div>
             <div>Always Be Yourself and Never Compromise to the Life</div>
           </div>

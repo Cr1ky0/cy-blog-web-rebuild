@@ -23,12 +23,12 @@ import { ANIME_HIDE_TIME } from '@/global';
 
 interface SideMenuProps {
   styles?: CSSProperties;
-  noEdit?: boolean;
+  isEdit?: boolean;
   page: 'manage' | 'blog';
   closeMenu?: () => void;
 }
 
-const SideMenu: React.FC<SideMenuProps> = ({ styles, noEdit, page, closeMenu }) => {
+const SideMenu: React.FC<SideMenuProps> = ({ styles, isEdit, page, closeMenu }) => {
   const icons = useIcons();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -47,7 +47,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ styles, noEdit, page, closeMenu }) 
   const handleSelect = (e: any) => {
     const key = e.key;
     if (opt) {
-      if (!noEdit) {
+      if (isEdit) {
         dispatch(setSelectedId(key));
       } else {
         // 触发事件

@@ -49,6 +49,7 @@ const EditComment: React.FC = () => {
 
   const themeMode = useAppSelector(state => state.universal.themeMode);
   const user = useAppSelector(state => state.user.user);
+  const comments = useAppSelector(state => state.comments.commentList);
 
   const [blogList, setBlogList] = useState<DataType[]>([]);
   const [count, setCount] = useState(0);
@@ -59,8 +60,8 @@ const EditComment: React.FC = () => {
   const BackStageCommentList = (record: any) => {
     return (
       <div className={`${style.comments} ${themeMode === 'dark' ? 'dark' : 'light'}`}>
-        {record.comment.length
-          ? record.comment.map((comment: Comment) => {
+        {record.comments.length
+          ? record.comments.map((comment: Comment) => {
               return (
                 <div key={comment.commentId}>
                   <SingleComment info={comment} noLikes />
@@ -87,31 +88,44 @@ const EditComment: React.FC = () => {
           size: 8,
         });
         const blogs = res.data.records;
-        blogs.map(async blog => {
-          const menuRes = await getMenu(blog.menuId);
-          const commnetRes = await getCommentPageOfBlog({
-            id: blog.blogId,
-            sort: 'create_at',
-          });
-          setCount(commnetRes.data.totalSize);
-          setBlogList([
-            ...blogList,
-            {
+        setCount(res.data.totalSize);
+        const tempList: DataType[] = [];
+        // 多项请求
+        const requests = blogs.map(async blog => {
+          try {
+            const menuRes = await getMenu(blog.menuId);
+            const commnetRes = await getCommentPageOfBlog({
+              id: blog.blogId,
+              sort: 'create_at',
+            });
+            return {
               key: blog.blogId,
               belongingMenu: menuRes.data.menu.title,
               title: blog.title,
               author: user.nickname,
               commentCount: blog.commentCount,
               comments: commnetRes.data.records,
-            },
-          ]);
+            } as DataType;
+          } catch (data: any) {
+            msg.error(data.message);
+          }
         });
+        // 处理多项请求并生成列表后再setState
+        Promise.all(requests)
+          .then(responses => {
+            responses.map(res => {
+              if (res) tempList.push(res);
+            });
+          })
+          .then(() => {
+            setBlogList([...tempList]);
+          });
       } catch (data: any) {
         msg.error(data.message);
       }
     };
     getDataType();
-  }, [page]);
+  }, [page, comments]);
 
   // TODO:Table分页
   return (
@@ -121,6 +135,7 @@ const EditComment: React.FC = () => {
         expandable={{ expandedRowRender: BackStageCommentList }}
         dataSource={blogList}
         pagination={{
+          style: { padding: '30px 0' },
           position: ['bottomCenter'],
           pageSize: 8,
           total: count,

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 // img
-import img from '@/assets/images/blog-icon.webp';
+import img from '@/assets/images/blog-icon.png';
 
 // css
 import style from './index.module.scss';

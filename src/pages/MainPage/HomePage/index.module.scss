@@ -11,6 +11,8 @@
       position: relative;
       @include backgroundImgStyle(0);
       overflow: hidden;
+      display: flex;
+      align-items: center;
 
       .homeTagWrapper {
         //color: #D3F9FE;
@@ -21,18 +23,6 @@
         align-items: center;
         font: {
           family: $FONT_FAMILY_TITLE;
-        }
-
-        .homeTag {
-          margin: 10px 0;
-          font: {
-            size: 2.2vw;
-            weight: bolder;
-          }
-        }
-
-        > div:last-child {
-          font-size: 1.8vw;
         }
       }
 
@@ -92,16 +82,19 @@
   @include universal;
   .backgroundPhoto {
     height: 200px;
+  }
 
-    .homeTagWrapper {
-      .homeTagIcon {
-        margin-top: 5vh;
-        width: 50px;
-        height: 50px;
-        @include backgroundImgStyle(0);
-      }
+  .homeTagWrapper {
+    > div:first-child {
+      font-size: 16px;
+    }
+
+    > div:last-child {
+      padding: 10px 0;
+      font-size: 12px;
     }
   }
+
 
   .mobileMenu {
     @include mobileMenu(45px, 45px);
@@ -110,16 +103,14 @@
 
 @media (width > $BREAK_POINT) {
   @include universal;
-  .backgroundPhoto {
-    height: 95vh;
+  .homeTagWrapper {
+    > div:first-child {
+      font-size: 48px;
+    }
 
-    .homeTagWrapper {
-      .homeTagIcon {
-        margin-top: 25vh;
-        width: 10vw;
-        height: 10vw;
-        @include backgroundImgStyle(0);
-      }
+    > div:last-child {
+      padding: 20px 0;
+      font-size: 30px;
     }
   }
 

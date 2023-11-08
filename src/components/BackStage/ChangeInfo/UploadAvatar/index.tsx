@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router';
 
 // css
 import style from './index.module.scss';
@@ -24,6 +25,7 @@ const UploadAvatar = () => {
   // context
   const message = useGlobalMessage();
   const { avatar } = useAvatar();
+  const navigate = useNavigate();
 
   // state
   const user = useAppSelector(state => state.user.user);
@@ -77,16 +79,19 @@ const UploadAvatar = () => {
 
   // 提交
   const handleSubmit = async () => {
-    setIsLoading(true);
-    if (fileList[0]) {
+    if (fileList[0] && fileList[0].originFileObj) {
       try {
+        setIsLoading(true);
         await uploadAvatar(fileList[0].originFileObj as RcFile);
         message.success('上传成功');
+        navigate(0);
       } catch (data: any) {
         message.error(data.message);
       } finally {
         setIsLoading(false);
       }
+    } else {
+      message.error('请上传新图片！');
     }
   };
 

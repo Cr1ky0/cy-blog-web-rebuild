@@ -31,7 +31,7 @@ $BORDER_COLOR_DARK: #9e9e9e;
 
 @mixin transWithBoxShadow {
   @include trans();
-  transition-property: background-color, color, box-shadow;
+  transition-property: background-color, color, box-shadow !important;
 }
 
 // universal

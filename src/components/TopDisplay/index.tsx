@@ -19,7 +19,7 @@ const TopDisplay: React.FC<TopDisplayProps> = ({ img }) => {
         onPreview(img);
       }}
     >
-      <div>Photo Time Line</div>
+      {/*<div>Photo Time Line</div>*/}
     </div>
   );
 };

@@ -67,15 +67,19 @@ const SingleComment: React.FC<SingleCommentProps> = props => {
       title: '提示',
       content: '是否删除该评论？',
       onOk: async () => {
-        await deleteCommentAjax(commentId);
-        dispatch(
-          setComments({
-            id: selectedId,
-            page: curPage,
-          })
-        );
-        dispatch(setLength(selectedId));
-        message.success('删除成功');
+        try {
+          await deleteCommentAjax(commentId);
+          await dispatch(
+            setComments({
+              id: selectedId,
+              page: curPage,
+            })
+          );
+          dispatch(setLength(selectedId));
+          message.success('删除成功');
+        } catch (data: any) {
+          message.error(data.message);
+        }
       },
     });
   };
