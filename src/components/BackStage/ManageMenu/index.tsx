@@ -7,7 +7,6 @@ import {
   CommentOutlined,
   BookOutlined,
   CloudDownloadOutlined,
-  MailOutlined,
   PlusSquareOutlined,
   PictureOutlined,
   MenuOutlined,

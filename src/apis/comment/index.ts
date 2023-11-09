@@ -34,6 +34,10 @@ interface GetCommentRes {
   comment: Comment;
 }
 
+interface GetCommentsRes {
+  comments: Comment[];
+}
+
 interface UpdateCommentRes {
   updatedComment: Comment;
 }
@@ -60,4 +64,8 @@ export const getCommentPageOfBlog = async (data: RequestPageOptions) => {
   return client.get<Result<GetPageRequest<Comment>>>(
     `/api/comment/curblog?blog_id=${id}&page=${page || ''}&size=${size || ''}`
   );
+};
+
+export const getAllComments = async (blogId: string) => {
+  return client.get<Result<GetCommentsRes>>(`/api/comment/all?blog_id=${blogId}`);
 };

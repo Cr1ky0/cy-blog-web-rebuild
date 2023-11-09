@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Outlet } from 'react-router';
+import React, { useEffect, useState } from 'react';
+import { Outlet, useLocation } from 'react-router';
 
 // antd
 import { Layout } from 'antd';
@@ -22,13 +22,18 @@ import { setEmoji } from '@/redux/slices/emoji';
 import { setMenuList } from '@/redux/slices/blogMenu';
 import { setMyBlogsNum } from '@/redux/slices/blog';
 import { setLoginFormOpen } from '@/redux/slices/universal';
+import InitLoading from '@/components/Loading/InitLoading';
 
 // TODO:后续可以做一个类似笔记的功能，选中的文本可以做标记等等
 const MainPage = () => {
   const dispatch = useAppDispatch();
+  const location = useLocation();
 
   const themeMode = useAppSelector(state => state.universal.themeMode);
   const loginFormOpen = useAppSelector(state => state.universal.loginFormOpen);
+
+  const [open, setOpen] = useState(true);
+  const [isNavLoad, setIsNavLoad] = useState(false);
 
   useEffect(() => {
     // 加载后先把emoji请求回来，后面不再请求了
@@ -38,7 +43,20 @@ const MainPage = () => {
     // 获取我的博客数
     dispatch(setMyBlogsNum());
     dispatch(setLoginFormOpen(false));
+    // loading
+    setTimeout(() => {
+      setOpen(false);
+      setIsNavLoad(true);
+    }, 1000);
   }, []);
+
+  useEffect(() => {
+    setOpen(true);
+    setTimeout(() => {
+      setOpen(false);
+    }, 500);
+  }, [location.pathname]);
+
   return (
     <Layout>
       <TopHeader></TopHeader>
@@ -56,6 +74,8 @@ const MainPage = () => {
       <Layout>
         <Content>
           <React.StrictMode>
+            {/* Loading */}
+            <InitLoading open={open} isNavLoad={isNavLoad}></InitLoading>
             <BackToTopBtn></BackToTopBtn>
             <Outlet />
           </React.StrictMode>

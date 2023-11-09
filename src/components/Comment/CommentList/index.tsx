@@ -9,7 +9,7 @@ import style from './index.module.scss';
 
 // comp
 import SingleComment from '@/components/Comment/CommentList/SingleComment';
-import LoadingComp from '@/components/Universal/LoadingComp';
+import LoadingComp from '@/components/Loading/LoadingComp';
 import ReplyList from '@/components/Comment/ReplyList';
 
 // redux

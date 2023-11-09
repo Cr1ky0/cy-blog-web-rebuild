@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useSearchParams } from 'react-router-dom';
-import moment from 'moment';
 
 // antd
 import type { TableColumnsType } from 'antd';
@@ -22,7 +21,7 @@ import SingleComment from '@/components/Comment/CommentList/SingleComment';
 import ReplyList from '@/components/Comment/ReplyList';
 import { getBlogHasCommentOfUser } from '@/apis/blog';
 import { getMenu } from '@/apis/menu';
-import { getCommentPageOfBlog } from '@/apis/comment';
+import { getAllComments } from '@/apis/comment';
 import { Comment } from '@/apis/comment';
 
 interface DataType {
@@ -57,22 +56,25 @@ const EditComment: React.FC = () => {
   //nav
   const page = search.get('page');
 
-  const BackStageCommentList = (record: any) => {
-    return (
-      <div className={`${style.comments} ${themeMode === 'dark' ? 'dark' : 'light'}`}>
-        {record.comments.length
-          ? record.comments.map((comment: Comment) => {
-              return (
-                <div key={comment.commentId}>
-                  <SingleComment info={comment} noLikes />
-                  <ReplyList comment={comment} noLikes />
-                </div>
-              );
-            })
-          : undefined}
-      </div>
-    );
-  };
+  const BackStageCommentList = useCallback(
+    (record: any) => {
+      return (
+        <div className={`${style.comments} ${themeMode === 'dark' ? 'dark' : 'light'}`}>
+          {record.comments.length
+            ? record.comments.map((comment: Comment) => {
+                return (
+                  <div key={comment.commentId}>
+                    <SingleComment info={comment} noLikes />
+                    <ReplyList comment={comment} noLikes />
+                  </div>
+                );
+              })
+            : undefined}
+        </div>
+      );
+    },
+    [comments]
+  );
 
   // 初始化
   useEffect(() => {
@@ -94,17 +96,14 @@ const EditComment: React.FC = () => {
         const requests = blogs.map(async blog => {
           try {
             const menuRes = await getMenu(blog.menuId);
-            const commnetRes = await getCommentPageOfBlog({
-              id: blog.blogId,
-              sort: 'create_at',
-            });
+            const commnetRes = await getAllComments(blog.blogId);
             return {
               key: blog.blogId,
               belongingMenu: menuRes.data.menu.title,
               title: blog.title,
               author: user.nickname,
               commentCount: blog.commentCount,
-              comments: commnetRes.data.records,
+              comments: commnetRes.data.comments,
             } as DataType;
           } catch (data: any) {
             msg.error(data.message);

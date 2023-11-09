@@ -1,13 +1,8 @@
-import React, { useState } from 'react';
-import { useAvatar } from '@/components/ContextProvider/AvatarPrivider';
+import React from 'react';
 
 const TestPage = () => {
-  const { avatar } = useAvatar();
-  return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100vw', height: '100vh' }}>
-      <img src={avatar} alt="123" />
-    </div>
-  );
+  const styles = { display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100vw', height: '100vh' };
+  return <div></div>;
 };
 
 export default TestPage;

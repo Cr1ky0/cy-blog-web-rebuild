@@ -15,13 +15,15 @@ import { useViewport } from '@/components/ContextProvider/ViewportProvider';
 import { useAppDispatch, useAppSelector } from '@/redux';
 import { setChosenList } from '@/redux/slices/chosenList';
 import { setIsLoading } from '@/redux/slices/progressbar';
+import { setMobileMenuOpen } from '@/redux/slices/universal';
 
 // comp
 import IntroductionBox from '@/components/HomePage/IntroductionBox';
 import BlogDetailBox from '@/components/HomePage/BlogDetailBox';
 import Footer from '@/components/Footer';
 import MobileTopBtn from '@/components/Universal/MobileTopBtn';
-import { setMobileMenuOpen } from '@/redux/slices/universal';
+
+// global
 import { BREAK_POINT } from '@/global';
 
 const HomePage = () => {
@@ -41,7 +43,7 @@ const HomePage = () => {
 
   useEffect(() => {
     // 导入随机背景图片
-    const randomNumber = Math.floor(Math.random() * 11) + 1;
+    const randomNumber = Math.floor(Math.random() * 10) + 1;
     import(`@/assets/images/homephoto-${randomNumber}.png`).then(imageModule => {
       if (!backgroundImage) setBackgroundImage(imageModule.default);
     });

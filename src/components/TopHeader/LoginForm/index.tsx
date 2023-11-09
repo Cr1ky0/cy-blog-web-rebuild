@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 
 // img
 import img from '@/assets/images/blog-icon.png';
+import defaultImg from '@/assets/images/timeline.png';
 
 // css
 import style from './index.module.scss';
@@ -19,10 +20,10 @@ import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
 // redux
 import { useAppDispatch } from '@/redux';
 import { setLoginFormOpen } from '@/redux/slices/universal';
+import { setMyUser, setUser } from '@/redux/slices/user';
 
 // comp
-import Loading from '@/components/Universal/Loading';
-import { setMyUser, setUser } from '@/redux/slices/user';
+import LoadingIcon from '@/components/Loading/LoadingIcon';
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -30,7 +31,7 @@ const LoginForm = () => {
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [showPsw, setShowPsw] = useState(false);
-  const [codeImg, setCodeImg] = useState<string>('');
+  const [codeImg, setCodeImg] = useState<string>(defaultImg);
   const [checked, setChecked] = useState(false);
 
   // value
@@ -258,7 +259,7 @@ const LoginForm = () => {
             </label>
           </div>
           <div className={style.submit} onClick={handleLogin}>
-            <div className="iconfont">{isLoading ? <Loading></Loading> : <>&#xe73c;&nbsp;登录</>}</div>
+            <div className="iconfont">{isLoading ? <LoadingIcon></LoadingIcon> : <>&#xe73c;&nbsp;登录</>}</div>
           </div>
         </form>
       </div>

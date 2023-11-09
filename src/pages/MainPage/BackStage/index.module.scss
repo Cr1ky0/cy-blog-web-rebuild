@@ -11,6 +11,8 @@
     overflow-y: hidden;
 
     .sider {
+      box-sizing: border-box;
+      padding-left: 2vw;
       @include trans;
     }
 

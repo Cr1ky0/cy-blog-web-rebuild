@@ -148,7 +148,7 @@ const TimeLine = () => {
           .finally(() => {
             setTimeout(() => {
               setPhotoLoad(false);
-            }, 300);
+            }, 500);
           });
       }
     }, 500);

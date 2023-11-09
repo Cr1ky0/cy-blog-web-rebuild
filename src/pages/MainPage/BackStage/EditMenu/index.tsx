@@ -118,11 +118,8 @@ const BlogRow: React.FC<BlogRowProps> = ({ data, parentTitle: menuTitle, parentI
         menuId: id,
       });
       const blog = res1.data.updatedBlog;
-      const res = await getMenu(blog.menuId);
-      const menu = res.data.menu;
-      dispatch(setMenuList());
-      // setMenuIcon(menu.icon);
-      // setMenuTitle(menu.title);
+      await getMenu(blog.menuId);
+      await dispatch(setMenuList());
       message.success('更新成功');
     } catch (data: any) {
       message.error(data.message);
@@ -149,7 +146,7 @@ const BlogRow: React.FC<BlogRowProps> = ({ data, parentTitle: menuTitle, parentI
             placeholder="请选择分类"
             treeLine={true}
             treeData={antdMenus}
-            value={blogId}
+            value={menuTitle}
             onChange={handleUpdateBelong}
             onBlur={() => {
               setShowEdit(false);
@@ -314,6 +311,8 @@ const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle: pTitle, parentId: 
         setIconValue(beforeIcon);
         msg.error(data.message);
       }
+      setShowIconEdit(false);
+    } else {
       setShowIconEdit(false);
     }
   };
