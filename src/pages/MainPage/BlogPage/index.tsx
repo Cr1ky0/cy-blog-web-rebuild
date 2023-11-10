@@ -5,6 +5,7 @@ import { Outlet } from 'react-router';
 import SideMenu from '@/components/SideMenu';
 import BlogToc from '@/components/BlogPage/BlogToc';
 import MobileTopBtn from '@/components/Universal/MobileTopBtn';
+import NotFound from '@/components/ErrorPage/NotFound';
 
 // css
 import style from './index.module.scss';
@@ -71,7 +72,7 @@ const BlogPage = () => {
       </div>
       <div className={`${style.content} clearfix transBase ${fadeOut ? 'transHide' : ''}`}>
         {/* 选中状态 */}
-        {selectedId ? <Outlet /> : <div style={{ fontSize: '24px' }}>当前没有博客，请添加博客后访问！</div>}
+        {selectedId ? <Outlet /> : <NotFound detail="当前没有博客，去别处转转吧~" />}
       </div>
       <div className={`${style.toc} showAnime`} style={width > 1100 ? undefined : { display: 'none' }}>
         {selectedId ? <BlogToc text={curBlogContent}></BlogToc> : undefined}

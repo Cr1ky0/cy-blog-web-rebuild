@@ -34,6 +34,8 @@ import { colorChoseList } from '@/global';
 import { addMenu, deleteMenu, getMenu, Menu, sortMenu, updateMenu } from '@/apis/menu';
 import { delBlog, getBlog, MenuBlog, sortBlog, updateBlog } from '@/apis/blog';
 
+// TODO:还有bug要修
+
 interface MenuRowProps extends React.HTMLAttributes<HTMLTableRowElement> {
   data: Menu;
   parentIcon?: string;
@@ -251,70 +253,56 @@ const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle: pTitle, parentId: 
 
   // title编辑部分
   const [showTitleEdit, setShowTitleEdit] = useState<boolean>(false);
-  const [beforeTitle, setBeforeTitle] = useState<string>(title);
   const [titleValue, setTitleValue] = useState<string>(title);
 
   const onTitleInputBlur = async () => {
-    if (titleValue !== beforeTitle) {
-      try {
-        await updateMenu({
-          menuId,
-          title: titleValue,
-        });
-        msg.success('修改成功！');
-        setBeforeTitle(titleValue);
-      } catch (data: any) {
-        setTitleValue(beforeTitle);
-        msg.error(data.message);
-      }
+    try {
+      await updateMenu({
+        menuId,
+        title: titleValue,
+      });
+      msg.success('修改成功！');
+      dispatch(setMenuList());
+    } catch (data: any) {
+      msg.error(data.message);
     }
     setShowTitleEdit(false);
   };
 
   // color部分
   const [showColorEdit, setShowColorEdit] = useState<boolean>(false);
-  const [beforeColor, setBeforeColor] = useState<string>(color);
   const [colorValue, setColorValue] = useState<string>(color);
 
   const onColorSelectBlur = async () => {
-    if (colorValue !== beforeColor) {
-      try {
-        await updateMenu({
-          menuId,
-          color: colorValue,
-        });
-        msg.success('修改成功！');
-        setBeforeColor(colorValue);
-      } catch (data: any) {
-        setColorValue(beforeColor);
-        msg.error(data.message);
-      }
+    try {
+      await updateMenu({
+        menuId,
+        color: colorValue,
+      });
+      msg.success('修改成功！');
+      dispatch(setMenuList());
+    } catch (data: any) {
+      msg.error(data.message);
     }
     setShowColorEdit(false);
   };
 
   // Icon部分
   const [showIconEdit, setShowIconEdit] = useState<boolean>(false);
-  const [beforeIcon, setBeforeIcon] = useState<string>(icon);
   const [iconValue, setIconValue] = useState<string>(icon);
 
   const onIconSelectBlur = async () => {
-    if (iconValue !== beforeIcon) {
-      try {
-        await updateMenu({
-          menuId,
-          color: iconValue,
-        });
-        msg.success('修改成功！');
-        setBeforeIcon(iconValue);
-      } catch (data: any) {
-        setIconValue(beforeIcon);
-        msg.error(data.message);
-      }
-      setShowIconEdit(false);
-    } else {
-      setShowIconEdit(false);
+    try {
+      await updateMenu({
+        menuId,
+        icon: iconValue,
+      });
+      msg.success('修改成功！');
+      dispatch(setMenuList());
+    } catch (data: any) {
+      msg.error(data.message);
     }
+    setShowIconEdit(false);
   };
 
   // BelongMenu部分
@@ -407,7 +395,7 @@ const MenuRow: React.FC<MenuRowProps> = ({ data, parentTitle: pTitle, parentId: 
       if (value === '主菜单') {
         await updateMenu({
           menuId,
-          belongMenuId: '',
+          belongMenuId: '0',
         });
       } else {
         await updateMenu({

@@ -39,7 +39,6 @@ export interface SingleCommentProps {
   isReply?: boolean;
 }
 
-// TODO:根据isReply来改写为Reply样式
 const SingleComment: React.FC<SingleCommentProps> = props => {
   const { info, noLikes, isReply } = props;
   const { content, username, brief, createAt, userId, likes: likeNum, commentId } = info;

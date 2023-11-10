@@ -53,7 +53,7 @@ const BlogTimeLine = () => {
           dot: <div className={`${style.dot} ${themeMode === 'dark' ? 'dark-3-onforce' : ''}`}></div>,
           children: (
             <div
-              id={item.blogId.toString()}
+              id={item.blogId}
               key={item.blogId}
               className={style.itemWrapper}
               // 鼠标移入修改dot颜色

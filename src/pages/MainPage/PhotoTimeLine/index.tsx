@@ -31,6 +31,7 @@ import { getImagePageOfCriiky0, Image } from '@/apis/image';
 
 // util
 import _ from 'lodash';
+import NotFound from '@/components/ErrorPage/NotFound';
 
 const TimeLine = () => {
   const dispatch = useAppDispatch();
@@ -77,7 +78,7 @@ const TimeLine = () => {
           dot: <div className={`${style.dot} ${themeMode === 'dark' ? 'dark-3-onforce' : ''}`}></div>,
           children: (
             <div
-              id={item.imageId.toString()}
+              id={item.imageId}
               key={item.imageId}
               className={`${style.itemWrapper} showAnime`}
               // click
@@ -181,7 +182,7 @@ const TimeLine = () => {
           {photos.length ? (
             <Timeline mode="alternate" items={generateTimeLine(photos, handlePreview)} />
           ) : (
-            <div className={style.noTimeLine}>当前没有相片轴~</div>
+            <NotFound detail="当前没有相片，去别处看看吧~" />
           )}
         </div>
         <div className={photoLoad ? style.load : style.loadHide}>

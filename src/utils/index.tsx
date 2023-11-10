@@ -280,7 +280,7 @@ export const getAntdMenus: (menus: Menu[], icons: AntdIcon[]) => MenuItem[] = (m
     }
     return getItem(
       menu.title,
-      menu.menuId.toString(),
+      menu.menuId,
       icon ? icon : undefined,
       (menu.subMenu && menu.subMenu.length) || (menu.blogs && menu.blogs.length)
         ? ([...newList, ...getAntdMenus(menu.subMenu ? menu.subMenu : [], icons)] as MenuItem[])

@@ -40,7 +40,7 @@ import { Blog, blogInitState, delBlog, getBlog, updateBlogBrowse } from '@/apis/
 import { getUserInfoById, User, userInitState } from '@/apis/user';
 
 // img
-import img from '@/assets/images/401.jpg';
+import img from '@/assets/images/401.png';
 
 const BlogContent = () => {
   const icons = useIcons();

@@ -1,11 +1,11 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import { BASE_URL } from '@/global';
 import { useAppDispatch } from '@/redux';
 import { setUser } from '@/redux/slices/user';
 
 const service = axios.create({
   timeout: 5000,
-  baseURL: BASE_URL,
+  // baseURL: 'http://localhost:8080',
+  baseURL: 'https://www.criiky0.top',
 });
 
 // Result接口
@@ -58,7 +58,7 @@ service.interceptors.response.use(
     return Promise.resolve(response);
   },
   async error => {
-    if (error.response.status === 401) {
+    if (error.status === 401) {
       const dispatch = useAppDispatch();
       dispatch(setUser(null));
     }

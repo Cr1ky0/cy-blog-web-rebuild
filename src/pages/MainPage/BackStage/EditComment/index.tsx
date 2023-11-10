@@ -126,7 +126,6 @@ const EditComment: React.FC = () => {
     getDataType();
   }, [page, comments]);
 
-  // TODO:Table分页
   return (
     <div className={`${style.wrapper} ${themeMode === 'dark' ? 'dark' : 'light'}`}>
       <Table

@@ -91,9 +91,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ styles, isEdit, page, closeMenu }) 
           }}
           onClick={handleSelect}
         />
-      ) : (
-        <div className={style.noneMenu}>当前还没有分类，快去添加吧！</div>
-      )}
+      ) : undefined}
     </div>
   );
 };

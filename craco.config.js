@@ -9,6 +9,9 @@ module.exports = {
     alias: {
       '@': resolve('src'),
     },
+    output: {
+      publicPath: '/',
+    },
     // configure: webpackConfig => {
     //   webpackConfig.plugins.push(new BundleAnalyzerPlugin());
     //   return webpackConfig;

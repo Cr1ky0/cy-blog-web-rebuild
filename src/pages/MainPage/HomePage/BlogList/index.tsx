@@ -3,12 +3,15 @@ import { useSearchParams } from 'react-router-dom';
 
 // comp
 import ShowBlogTagList from '@/components/Universal/ShowBlogTagList';
+import NotFound from '@/components/ErrorPage/NotFound';
 
 // context
 import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
 
 // utils
 import { filterLT } from '@/utils';
+
+// api
 import { Blog, getBlogPageOfCriiky0 } from '@/apis/blog';
 
 const BlogList = () => {
@@ -38,7 +41,15 @@ const BlogList = () => {
     getPage();
   }, [page]);
 
-  return <ShowBlogTagList blogs={blogs}></ShowBlogTagList>;
+  return (
+    <>
+      {blogs.length ? (
+        <ShowBlogTagList blogs={blogs}></ShowBlogTagList>
+      ) : (
+        <NotFound detail="当前没有博客，去别处逛逛吧~" />
+      )}
+    </>
+  );
 };
 
 export default BlogList;

@@ -1,0 +1,29 @@
+@import "@/assets/css/index.scss";
+
+.deleted {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  padding-top: 10vh;
+  @include unSelectable;
+
+  > img {
+    display: block;
+    margin: 50px 0;
+    width: 500px;
+    height: 350px;
+  }
+
+  > .deletedCode {
+    color: $FONT-COLOR;
+    font-size: 40px;
+  }
+
+  > div:last-child {
+    color: $FONT-COLOR;
+    font-size: 24px;
+  }
+}

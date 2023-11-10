@@ -19,13 +19,15 @@ import { useAvatar } from '@/components/ContextProvider/AvatarPrivider';
 import { uploadAvatar } from '@/apis/user';
 
 // redux
-import { useAppSelector } from '@/redux';
+import { useAppDispatch, useAppSelector } from '@/redux';
+import { setMyUser } from '@/redux/slices/user';
 
 const UploadAvatar = () => {
   // context
   const message = useGlobalMessage();
   const { avatar } = useAvatar();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   // state
   const user = useAppSelector(state => state.user.user);
@@ -83,7 +85,8 @@ const UploadAvatar = () => {
       try {
         setIsLoading(true);
         await uploadAvatar(fileList[0].originFileObj as RcFile);
-        message.success('上传成功');
+        await message.success('上传成功');
+        dispatch(setMyUser());
         navigate(0);
       } catch (data: any) {
         message.error(data.message);

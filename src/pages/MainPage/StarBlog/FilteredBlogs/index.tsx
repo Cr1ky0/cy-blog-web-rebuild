@@ -15,6 +15,7 @@ import { useAppSelector } from '@/redux';
 
 // api
 import { Blog, getBlogPageOfCriiky0 } from '@/apis/blog';
+import NotFound from '@/components/ErrorPage/NotFound';
 
 const FilteredBlogs = () => {
   const message = useGlobalMessage();
@@ -49,6 +50,14 @@ const FilteredBlogs = () => {
     );
   }, [filter, page]);
 
-  return <ShowBlogTagList blogs={blogs}></ShowBlogTagList>;
+  return (
+    <>
+      {blogs.length ? (
+        <ShowBlogTagList blogs={blogs}></ShowBlogTagList>
+      ) : (
+        <NotFound detail="当前没有博客，去别处逛逛吧~" />
+      )}
+    </>
+  );
 };
 export default FilteredBlogs;

@@ -53,14 +53,17 @@ const IntroductionBox: React.FC<IntroductionBoxProps> = props => {
         try {
           // 获取用户信息
           const res = await getCriiky0Info();
-          setUser(res.data.user);
-          // 获取头像
-          const res1 = await getCriiky0Avatar();
-          const type = res1.headers['content-type'];
-          const blob = new Blob([res1.data], { type });
-          // img src
-          const imageUrl = URL.createObjectURL(blob);
-          setAvatar(imageUrl);
+          const user = res.data.user;
+          setUser(user);
+          if (user.avatar) {
+            // 获取头像
+            const res1 = await getCriiky0Avatar();
+            const type = res1.headers['content-type'];
+            const blob = new Blob([res1.data], { type });
+            // img src
+            const imageUrl = URL.createObjectURL(blob);
+            setAvatar(imageUrl);
+          }
         } catch (data: any) {
           message.error(data.message);
         }

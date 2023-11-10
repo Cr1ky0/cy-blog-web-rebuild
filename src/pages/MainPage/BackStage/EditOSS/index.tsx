@@ -65,6 +65,7 @@ const EditOSS = () => {
   const handleSubmit = async (values: AddOSSConfigForm) => {
     try {
       const res = await setOSSConfig(values);
+      msg.success('保存成功！');
       refreshConfig();
       setConfig(res.data.config);
     } catch (data: any) {
