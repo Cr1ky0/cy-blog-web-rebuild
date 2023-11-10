@@ -1,4 +1,4 @@
-# 简介
+# Criik-Blog-Web-Rebuild
 * criik-blog前端重构，原项目地址：https://github.com/Creekyu/criik-blog
 * 目前仅作为个人博客使用，支持markdown语法、支持数学公式Latex、支持收藏（个人）、分类、时间轴以及博客管理等功能、支持个人信息修改。
 * 提供了user的api，后续可能会开放注册。
