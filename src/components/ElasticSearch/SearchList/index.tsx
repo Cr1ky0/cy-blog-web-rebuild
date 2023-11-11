@@ -61,7 +61,7 @@ const SearchList: React.FC<SearchListProps> = ({ docs, match, closeBox }) => {
           <div className="iconfont">&#xe774;</div>
           <div className={style.info}>
             <div className={style.title}>{getRenderNode(blog.title, match)}</div>
-            <div className={style.text}>{getRenderNode(blog.content, match)}</div>
+            <div className={style.text}>{getRenderNode(blog.content, match)}...</div>
           </div>
           <div className="iconfont">&#xe852;</div>
         </div>

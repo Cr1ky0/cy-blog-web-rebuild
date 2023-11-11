@@ -58,7 +58,7 @@ const SearchHistory: React.FC<SearchHistoryProps> = ({ closeBox }) => {
           <div className="iconfont">&#xe7bb;</div>
           <div className={style.info}>
             <div className={style.title}>{blog.title}</div>
-            <div className={style.text}>{blog.content}</div>
+            <div className={style.text}>{blog.content}...</div>
           </div>
           <div className={`iconfont ${style.delHistory}`}>
             <div

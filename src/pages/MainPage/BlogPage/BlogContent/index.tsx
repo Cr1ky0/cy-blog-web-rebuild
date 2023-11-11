@@ -82,11 +82,12 @@ const BlogContent = () => {
         const userRes = await getUserInfoById(blog.userId);
         setBlogUser(userRes.data.user);
         // 热度加一
-        await updateBlogBrowse({
+        const updateRes = await updateBlogBrowse({
           blogId: blog.blogId,
           like: false,
           plus: true,
         });
+        blog.views = updateRes.data.updatedBlog.views;
         // 处理Title
         const contents = filterTitle(blog.content);
         const newBlog = Object.assign({}, blog, { contents });
@@ -100,7 +101,6 @@ const BlogContent = () => {
         }, ANIME_SHOW_TIME + 150);
       } catch (data: any) {
         setDeleted(true);
-        // message.error(data.message);
       }
     };
     getCurBlog();
@@ -128,6 +128,7 @@ const BlogContent = () => {
       message.error(data.message);
     }
   };
+
   const handleDelete = async () => {
     try {
       await delBlog(selectedId);
@@ -139,47 +140,63 @@ const BlogContent = () => {
     }
   };
 
-  const getPageContent = () => {
-    const getEditPage = () => {
-      if (hasUser(user) && user.userId === blogUser.userId) {
-        return (
-          <div>
-            <div
-              onClick={() => {
-                modal.confirm({
-                  title: '提示',
-                  content: '编辑此页会覆盖正在编辑的博客，确定要这么做吗？',
-                  onOk: () => {
-                    handleEdit();
-                  },
-                });
-              }}
-            >
-              <span className={`${style.editPageBtn} iconfont`}>&#xe624;</span>
-              &nbsp;
-              <span>编辑此页</span>
-            </div>
-            <div
-              onClick={() => {
-                modal.confirm({
-                  title: '提示',
-                  content: '是否删除当前博客？',
-                  onOk: () => {
-                    handleDelete();
-                  },
-                });
-              }}
-            >
-              <span className={`${style.delPageBtn} iconfont`}>&#xe604;</span>
-              &nbsp;
-              <span>删除博客</span>
-            </div>
+  const getEditPage = () => {
+    if (hasUser(user) && user.userId === blogUser.userId) {
+      return (
+        <div>
+          <div
+            onClick={() => {
+              modal.confirm({
+                title: '提示',
+                content: '编辑此页会覆盖正在编辑的博客，确定要这么做吗？',
+                onOk: () => {
+                  handleEdit();
+                },
+              });
+            }}
+          >
+            <span className={`${style.editPageBtn} iconfont`}>&#xe624;</span>
+            &nbsp;
+            <span>编辑此页</span>
           </div>
-        );
-      }
-      return undefined;
-    };
+          <div
+            onClick={() => {
+              modal.confirm({
+                title: '提示',
+                content: '是否删除当前博客？',
+                onOk: () => {
+                  handleDelete();
+                },
+              });
+            }}
+          >
+            <span className={`${style.delPageBtn} iconfont`}>&#xe604;</span>
+            &nbsp;
+            <span>删除博客</span>
+          </div>
+        </div>
+      );
+    }
+    return undefined;
+  };
 
+  const blogInfoPage = useMemo(() => {
+    return (
+      <BlogInfo
+        statistics={{
+          blogId: curBlog.blogId,
+          blogUser,
+          time: curBlog.createAt,
+          views: curBlog.views,
+          likes: curBlog.likes,
+          belongingMenu: curBlog.menuId,
+          isCollected: curBlog.collected,
+        }}
+      ></BlogInfo>
+    );
+  }, [curBlog, blogUser]);
+
+  const getPageContent = () => {
     if (deleted) {
       return <NotFound detail="当前博客不存在或已被删除，去别处看看吧~" />;
     }
@@ -194,19 +211,7 @@ const BlogContent = () => {
             <span className="iconfont">&#xe627;</span>
             {curBlog.title}
           </div>
-          <div className={style.blogInfo}>
-            <BlogInfo
-              statistics={{
-                blogId: curBlog.blogId,
-                blogUser,
-                time: curBlog.createAt,
-                views: curBlog.views,
-                likes: curBlog.likes,
-                belongingMenu: curBlog.menuId,
-                isCollected: curBlog.collected,
-              }}
-            ></BlogInfo>
-          </div>
+          <div className={style.blogInfo}>{blogInfoPage}</div>
         </div>
         <div className={style.blogContent}>
           <div className={style.text}>

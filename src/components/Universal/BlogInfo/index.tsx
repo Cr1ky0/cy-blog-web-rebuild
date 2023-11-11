@@ -31,22 +31,27 @@ interface BlogInfoProps {
 const isLiked = (likeList: string[], id: string) => {
   return likeList.some(likeId => likeId === id);
 };
+
 const BlogInfo: React.FC<BlogInfoProps> = ({ statistics }) => {
   const { blogUser, time, views, blogId: id, isCollected, likes } = statistics;
-
+  console.log(statistics);
   const { width } = useViewport();
   const message = useGlobalMessage();
   const dispatch = useAppDispatch();
   const icons = useIcons();
+
   // state
   const menus = useAppSelector(state => state.blogMenu.menuList);
   const themeMode = useAppSelector(state => state.universal.themeMode);
   const user = useAppSelector(state => state.user.user);
+
   // 点赞状态（游客也可以点赞，用redux管理（与评论类似））
   const likeList = useAppSelector(state => state.blog.likeList);
+
   // 收藏状态
   const [collected, setCollected] = useState(isCollected);
   const [likesNum, setLikesNum] = useState(likes);
+
   const grandMenu: BreadCrumbObj[] = useMemo(() => {
     const breadcrums = getBreadcrumbList(menus, id, icons) || [];
     if (breadcrums.length) breadcrums.shift();
@@ -202,4 +207,6 @@ const BlogInfo: React.FC<BlogInfoProps> = ({ statistics }) => {
   );
 };
 
-export default BlogInfo;
+export default function BlogInfoPage({ statistics }: BlogInfoProps) {
+  return <BlogInfo key={statistics.blogId} statistics={statistics}></BlogInfo>;
+}
