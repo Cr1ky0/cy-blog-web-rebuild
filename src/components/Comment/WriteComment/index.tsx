@@ -22,6 +22,7 @@ import { addComment } from '@/apis/comment';
 
 // global
 import { BREAK_POINT } from '@/global';
+import { hasUser } from '@/utils';
 
 interface WriteCommentProps {
   belongCommentId?: string;
@@ -67,9 +68,9 @@ const WriteComment: React.FC<WriteCommentProps> = ({ belongCommentId }) => {
           blogId: selectedId,
           belongCommentId,
           content: comment.value,
-          userId: user ? user.userId : undefined,
-          brief: user ? user.brief : brief.value ? brief.value : undefined,
-          username: user ? user.username : username.value ? username.value : undefined,
+          userId: hasUser(user) ? user.userId : undefined,
+          brief: hasUser(user) ? user.brief : brief.value ? brief.value : undefined,
+          username: hasUser(user) ? user.username : username.value ? username.value : undefined,
         });
         await message.loadingAsync('提交中...', '提交成功');
         comment.value = '';
@@ -88,9 +89,9 @@ const WriteComment: React.FC<WriteCommentProps> = ({ belongCommentId }) => {
         await addComment({
           blogId: selectedId,
           content: comment.value,
-          userId: user ? user.userId : undefined,
-          brief: user ? user.brief : brief.value ? brief.value : undefined,
-          username: user ? user.username : username.value ? username.value : undefined,
+          userId: hasUser(user) ? user.userId : undefined,
+          brief: hasUser(user) ? user.brief : brief.value ? brief.value : undefined,
+          username: hasUser(user) ? user.username : username.value ? username.value : undefined,
         });
         await message.loadingAsync('提交中...', '提交成功');
         comment.value = '';

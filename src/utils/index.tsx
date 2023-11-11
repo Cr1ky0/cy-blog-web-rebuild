@@ -8,6 +8,15 @@ import { MenuBlog } from '@/apis/blog';
 
 // antd
 import type { DataNode } from 'antd/es/tree';
+import { User } from '@/apis/user';
+
+// 判断user是否存在
+export const hasUser = (user: User | null) => {
+  if (user === null) {
+    return false;
+  }
+  return Object.keys(user).length !== 0;
+};
 
 // 获取某个博客的父菜单
 export const getParentOfBlog: (menus: Menu[], blogId: string) => string | undefined = (menus, blogId) => {

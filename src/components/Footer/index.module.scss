@@ -3,11 +3,10 @@
 
 @mixin universal() {
   .footer {
-    height: $TOP_HEADER_H;
     @include unSelectable;
+    height: $TOP_HEADER_H;
     display: flex;
     justify-content: space-evenly;
-
     a {
       color: $THEME_COLOR;
       display: block;

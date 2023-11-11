@@ -1,7 +1,7 @@
 @import "@/assets/css/index.scss";
 
 .wrapper {
-  width: 100%;
+  width: 100vw;
   height: 100vh;
   display: flex;
   justify-content: center;
@@ -14,9 +14,9 @@
   transition: opacity .3s;
 
   // 亚克力（注意backdrop-filter只作用于其后的内容）
-  backdrop-filter: saturate(2) blur(5px); /* 背景模糊效果，需要浏览器支持 */
-  -webkit-backdrop-filter: saturate(2) blur(5px); /* WebKit 浏览器兼容性 */
-  background-color: rgba(255, 255, 255, .6);
+  backdrop-filter: saturate(2) blur(8px); /* 背景模糊效果，需要浏览器支持 */
+  -webkit-backdrop-filter: saturate(2) blur(8px); /* WebKit 浏览器兼容性 */
+  background-color: rgba(255, 255, 255, .8);
 
   .anime {
     display: flex;

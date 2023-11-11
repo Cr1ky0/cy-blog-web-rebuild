@@ -7,6 +7,7 @@ import ReactMarkdownRender from '@/components/ReactMarkdownRender';
 import Comment from '@/components/Comment';
 import Footer from '@/components/Footer';
 import NextPage from '@/components/BlogPage/NextPage';
+import NotFound from '@/components/ErrorPage/NotFound';
 
 // antd
 import { Breadcrumb } from 'antd';
@@ -21,7 +22,7 @@ import { setAllContent, setCurBlogContent, setCurEditId, setIsEdit } from '@/red
 import { setFadeOut } from '@/redux/slices/progressbar';
 
 // utils
-import { filterLT, filterTitle, getBreadcrumbList } from '@/utils';
+import { filterLT, filterTitle, getBreadcrumbList, hasUser } from '@/utils';
 
 // context
 import { useIcons } from '@/components/ContextProvider/IconStore';
@@ -38,9 +39,6 @@ import { ANIME_SHOW_TIME } from '@/global';
 // api
 import { Blog, blogInitState, delBlog, getBlog, updateBlogBrowse } from '@/apis/blog';
 import { getUserInfoById, User, userInitState } from '@/apis/user';
-
-// img
-import img from '@/assets/images/401.png';
 
 const BlogContent = () => {
   const icons = useIcons();
@@ -143,7 +141,7 @@ const BlogContent = () => {
 
   const getPageContent = () => {
     const getEditPage = () => {
-      if (user && user.userId === blogUser.userId) {
+      if (hasUser(user) && user.userId === blogUser.userId) {
         return (
           <div>
             <div
@@ -183,13 +181,7 @@ const BlogContent = () => {
     };
 
     if (deleted) {
-      return (
-        <div className={style.deleted}>
-          <img src={img} alt="img" />
-          <div className={style.deletedCode}>404</div>
-          <div>当前博客不存在或已被删除，请选择其他文章阅读！</div>
-        </div>
-      );
+      return <NotFound detail="当前博客不存在或已被删除，去别处看看吧~" />;
     }
 
     return (

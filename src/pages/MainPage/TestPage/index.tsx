@@ -1,13 +1,8 @@
-import React from 'react';
-import NotFound from '@/components/ErrorPage/NotFound';
+import React, { useEffect } from 'react';
 
 const TestPage = () => {
   const styles = { display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100vw', height: '100vh' };
-  return (
-    <div>
-      <NotFound detail="NotFound"></NotFound>
-    </div>
-  );
+  return <div></div>;
 };
 
 export default TestPage;

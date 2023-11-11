@@ -15,6 +15,7 @@ import TopHeader from '@/components/TopHeader';
 import ProgressBar from '@/components/ProgressBar';
 import BackToTopBtn from '@/components/Universal/BackToTopBtn';
 import LoginForm from '@/components/TopHeader/LoginForm';
+import InitLoading from '@/components/Loading/InitLoading';
 
 // redux
 import { useAppDispatch, useAppSelector } from '@/redux';
@@ -22,7 +23,6 @@ import { setEmoji } from '@/redux/slices/emoji';
 import { setMenuList } from '@/redux/slices/blogMenu';
 import { setMyBlogsNum } from '@/redux/slices/blog';
 import { setLoginFormOpen } from '@/redux/slices/universal';
-import InitLoading from '@/components/Loading/InitLoading';
 
 // TODO:后续可以做一个类似笔记的功能，选中的文本可以做标记等等
 const MainPage = () => {
@@ -51,10 +51,12 @@ const MainPage = () => {
   }, []);
 
   useEffect(() => {
-    setOpen(true);
-    setTimeout(() => {
-      setOpen(false);
-    }, 500);
+    if (!open) {
+      setOpen(true);
+      setTimeout(() => {
+        setOpen(false);
+      }, 500);
+    }
   }, [location.pathname]);
 
   return (

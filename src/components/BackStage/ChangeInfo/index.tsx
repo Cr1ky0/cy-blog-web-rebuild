@@ -30,10 +30,11 @@ import {
 // redux
 import { useAppDispatch, useAppSelector } from '@/redux';
 import { setMyUser } from '@/redux/slices/user';
+import { setTimerOn } from '@/redux/slices/universal';
 
 // util
+import { hasUser } from '@/utils';
 import _ from 'lodash';
-import { setTimerOn } from '@/redux/slices/universal';
 
 const ChangeInfo = () => {
   const message = useGlobalMessage();
@@ -47,6 +48,7 @@ const ChangeInfo = () => {
 
   const timerOn = useAppSelector(state => state.universal.timerOn);
   const user = useAppSelector(state => state.user.user);
+
   // ref
   // psw Ref
   const oldPswRef = useRef<HTMLInputElement>(null);
@@ -188,7 +190,7 @@ const ChangeInfo = () => {
 
   return (
     <>
-      {user ? (
+      {hasUser(user) ? (
         <div className={style.wrapper}>
           <div className={style.accountSecurity}>
             <div className={style.title}>

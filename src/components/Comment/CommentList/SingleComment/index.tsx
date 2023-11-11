@@ -22,7 +22,7 @@ import { useAppDispatch, useAppSelector } from '@/redux';
 import { addLikeId, delLikeId, setComments, setLength } from '@/redux/slices/comments';
 
 // util
-import { isLike } from '@/utils';
+import { hasUser, isLike } from '@/utils';
 
 //api
 import { deleteCommentAjax } from '@/apis/comment';
@@ -149,7 +149,7 @@ const SingleComment: React.FC<SingleCommentProps> = props => {
             <div className={style.time}>{createAt}</div>
           </div>
           <div className={style.rightFuncBox}>
-            {user && user.role === 'admin' ? (
+            {hasUser(user) && user.role === 'admin' ? (
               <div className={`${style.delComment} iconfont`} onClick={handleDel}>
                 &#xe604;
               </div>

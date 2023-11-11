@@ -12,18 +12,50 @@
 
   > img {
     display: block;
-    margin: 50px 0;
-    width: 500px;
-    height: 350px;
   }
 
   > .deletedCode {
     color: $FONT-COLOR;
-    font-size: 40px;
   }
 
   > div:last-child {
     color: $FONT-COLOR;
-    font-size: 24px;
+  }
+}
+
+@media (width >= $BREAK_POINT) {
+  .deleted {
+    > img {
+      margin: 50px 0;
+      width: 500px;
+      height: 350px;
+    }
+
+    > .deletedCode {
+      font-size: 40px;
+    }
+
+    > div:last-child {
+      font-size: 24px;
+    }
+  }
+
+}
+
+@media (width < $BREAK_POINT) {
+  .deleted {
+    > img {
+      margin: 50px 0;
+      width: 250px;
+      height: 180px;
+    }
+
+    > .deletedCode {
+      font-size: 30px;
+    }
+
+    > div:last-child {
+      font-size: 20px;
+    }
   }
 }

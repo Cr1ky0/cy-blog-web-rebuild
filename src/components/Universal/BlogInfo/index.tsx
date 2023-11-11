@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 // css
 import style from './index.module.scss';
@@ -14,7 +14,7 @@ import { useAppDispatch, useAppSelector } from '@/redux';
 import { addLikeList, removeLikeList } from '@/redux/slices/blog';
 
 // util
-import { getBreadcrumbList } from '@/utils';
+import { getBreadcrumbList, hasUser } from '@/utils';
 
 // provider
 import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
@@ -47,10 +47,11 @@ const BlogInfo: React.FC<BlogInfoProps> = ({ statistics }) => {
   // 收藏状态
   const [collected, setCollected] = useState(isCollected);
   const [likesNum, setLikesNum] = useState(likes);
-  const grandMenu: BreadCrumbObj[] = getBreadcrumbList(menus, id, icons) || [];
-  if (grandMenu) {
-    grandMenu.pop();
-  }
+  const grandMenu: BreadCrumbObj[] = useMemo(() => {
+    const breadcrums = getBreadcrumbList(menus, id, icons) || [];
+    if (breadcrums.length) breadcrums.shift();
+    return breadcrums;
+  }, [menus, id]);
 
   // 收藏
   const handleCollect = async () => {
@@ -132,7 +133,7 @@ const BlogInfo: React.FC<BlogInfoProps> = ({ statistics }) => {
   };
 
   const getUserCollectPage = () => {
-    if (user && user.userId === blogUser.userId && width > BREAK_POINT) {
+    if (hasUser(user) && user.userId === blogUser.userId && width > BREAK_POINT) {
       const getCollectPage = () => {
         if (collected) {
           return (

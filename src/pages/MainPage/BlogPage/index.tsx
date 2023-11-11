@@ -6,6 +6,7 @@ import SideMenu from '@/components/SideMenu';
 import BlogToc from '@/components/BlogPage/BlogToc';
 import MobileTopBtn from '@/components/Universal/MobileTopBtn';
 import NotFound from '@/components/ErrorPage/NotFound';
+import Footer from '@/components/Footer';
 
 // css
 import style from './index.module.scss';
@@ -72,7 +73,14 @@ const BlogPage = () => {
       </div>
       <div className={`${style.content} clearfix transBase ${fadeOut ? 'transHide' : ''}`}>
         {/* 选中状态 */}
-        {selectedId ? <Outlet /> : <NotFound detail="当前没有博客，去别处转转吧~" />}
+        {selectedId ? (
+          <Outlet />
+        ) : (
+          <>
+            <NotFound detail="当前没有博客，去别处转转吧~" />
+            <Footer />
+          </>
+        )}
       </div>
       <div className={`${style.toc} showAnime`} style={width > 1100 ? undefined : { display: 'none' }}>
         {selectedId ? <BlogToc text={curBlogContent}></BlogToc> : undefined}

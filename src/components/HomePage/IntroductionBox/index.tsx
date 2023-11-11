@@ -4,7 +4,7 @@ import React, { CSSProperties, useEffect, useState } from 'react';
 import style from './index.module.scss';
 
 // util
-import { getClassificationInfo, getLimitString } from '@/utils';
+import { getClassificationInfo, getLimitString, hasUser } from '@/utils';
 
 // comp
 import LinkIcon from './LinkIcon';
@@ -17,7 +17,7 @@ import { useAvatar } from '@/components/ContextProvider/AvatarPrivider';
 import { useAppDispatch, useAppSelector } from '@/redux';
 import { setTimeLine } from '@/redux/slices/blog';
 import { useNavigate } from 'react-router';
-import { getCriiky0Avatar, getCriiky0Info, GetUserRes } from '@/apis/user';
+import { getAvatar, getCriiky0Avatar, getCriiky0Info, GetUserRes } from '@/apis/user';
 
 // interface
 export interface IntroductionBoxProps {
@@ -47,10 +47,10 @@ const IntroductionBox: React.FC<IntroductionBoxProps> = props => {
   }, []);
 
   useEffect(() => {
-    if (!loginUser) {
-      // 没有登录用户就请求我的个人信息
-      const getInfo = async () => {
-        try {
+    const getInfo = async () => {
+      // 没有登录用户就请求Criiky0个人信息
+      try {
+        if (!hasUser(loginUser)) {
           // 获取用户信息
           const res = await getCriiky0Info();
           const user = res.data.user;
@@ -60,21 +60,23 @@ const IntroductionBox: React.FC<IntroductionBoxProps> = props => {
             const res1 = await getCriiky0Avatar();
             const type = res1.headers['content-type'];
             const blob = new Blob([res1.data], { type });
-            // img src
             const imageUrl = URL.createObjectURL(blob);
             setAvatar(imageUrl);
           }
-        } catch (data: any) {
-          message.error(data.message);
+        } else {
+          const res = await getAvatar();
+          const type = res.headers['content-type'];
+          const blob = new Blob([res.data], { type });
+          const imageUrl = URL.createObjectURL(blob);
+          setAvatar(imageUrl);
+          setUser(loginUser);
         }
-      };
-      getInfo().catch(err => {
-        message.error(err.message);
-      });
-    } else {
-      setUser(user);
-    }
-  }, []);
+      } catch (data: any) {
+        message.error(data.message);
+      }
+    };
+    getInfo();
+  }, [loginUser]);
 
   return (
     <div

@@ -25,6 +25,7 @@ import { useAppDispatch, useAppSelector } from '@/redux';
 import { setLoginFormOpen, setThemeMode } from '@/redux/slices/universal';
 import { setUser } from '@/redux/slices/user';
 import { logout } from '@/apis/user';
+import { hasUser } from '@/utils';
 
 const RightNav = () => {
   const message = useGlobalMessage();
@@ -67,7 +68,7 @@ const RightNav = () => {
       ) : undefined}
 
       {/* 是否登录判断 */}
-      {user ? (
+      {hasUser(user) ? (
         <>
           {/* 登录了显示logout */}
           <Popconfirm

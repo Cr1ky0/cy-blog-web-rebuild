@@ -20,12 +20,12 @@ const Page403: React.FC = () => {
     <div className={`${style.wrapper} clearfix ${themeMode === 'dark' ? 'dark' : 'light'}`}>
       <div>
         <div className={style.photo} style={{ backgroundImage: `url(${img})` }}></div>
-        <div className={style.tips}>没有权限访问~ 403</div>
+        <div className={style.tips}>没有权限访问~ 401</div>
         <div className={style.btn}>
           <Button
             type="primary"
             onClick={() => {
-              navigate(-1);
+              navigate('/');
             }}
           >
             返回

@@ -144,6 +144,14 @@ const IconStore: React.FC<IconStoreProps> = props => {
       ),
     },
     {
+      name: 'Spring',
+      icon: (
+        <span className="iconfont" style={{ fontSize: '16px' }}>
+          &#xe6fe;
+        </span>
+      ),
+    },
+    {
       name: 'Git',
       icon: (
         <span className="iconfont" style={{ fontSize: '16px' }}>

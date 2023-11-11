@@ -25,7 +25,7 @@ const Page404: React.FC = () => {
           <Button
             type="primary"
             onClick={() => {
-              navigate(-1);
+              navigate('/');
             }}
           >
             返回

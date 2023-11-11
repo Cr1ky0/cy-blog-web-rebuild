@@ -20,15 +20,16 @@ import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
 // redux
 import { useAppDispatch } from '@/redux';
 import { setLoginFormOpen } from '@/redux/slices/universal';
-import { setMyUser, setUser } from '@/redux/slices/user';
+import { setMyUser } from '@/redux/slices/user';
 
 // comp
 import LoadingIcon from '@/components/Loading/LoadingIcon';
 
 const LoginForm = () => {
-  const navigate = useNavigate();
   const message = useGlobalMessage();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   const [isLoading, setIsLoading] = useState(false);
   const [showPsw, setShowPsw] = useState(false);
   const [codeImg, setCodeImg] = useState<string>(defaultImg);
@@ -90,7 +91,7 @@ const LoginForm = () => {
     if (!isLoading) {
       setIsLoading(true);
       try {
-        const res = await login({
+        await login({
           userinfo: userInfo,
           password: psw,
           verificationCode: code,
@@ -103,15 +104,16 @@ const LoginForm = () => {
           localStorage.setItem('login_info', userInfo);
           localStorage.setItem('login_psw', psw);
         }
-        // 开启定时器，在token到期后清除redux内user
-        const expireTime = res.data.expireTime;
-        setTimeout(() => {
-          dispatch(setUser(null));
-          message.error('用户登录信息过期，请重新登录！');
-          navigate(0);
-        }, expireTime - Date.now());
-        // 刷新
         navigate(0);
+        // 开启定时器，在token到期后清除redux内user
+        // const expireTime = res.data.expireTime;
+        // const timeout = expireTime - Date.now();
+        // // 确保不会丢失timer
+        // const timer = setTimeout(() => {
+        //   dispatch(setUser(null));
+        //   message.error('用户登录信息过期，请重新登录！');
+        //   navigate(0);
+        // }, timeout);
       } catch (data: any) {
         message.error(data.message);
       } finally {
