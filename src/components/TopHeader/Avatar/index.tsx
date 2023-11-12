@@ -104,13 +104,26 @@ const Avatar = () => {
         <div
           style={{ padding: '5px 10px' }}
           onClick={() => {
+            navigate('/backstage/announce');
+          }}
+        >
+          发布公告
+        </div>
+      ),
+      key: '7',
+    },
+    {
+      label: (
+        <div
+          style={{ padding: '5px 10px' }}
+          onClick={() => {
             navigate('/backstage/oss');
           }}
         >
           OSS管理
         </div>
       ),
-      key: '7',
+      key: '8',
     },
   ];
   return (

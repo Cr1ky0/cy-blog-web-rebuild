@@ -80,6 +80,10 @@ const router: Routes[] = [
             element: lazy(() => import('@/pages/MainPage/BackStage/EditOSS')),
           },
           {
+            path: 'announce',
+            element: lazy(() => import('@/pages/MainPage/BackStage/EditAnnounce')),
+          },
+          {
             path: 'editmenu',
             element: lazy(() => import('@/pages/MainPage/BackStage/EditMenu')),
           },

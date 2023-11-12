@@ -16,6 +16,7 @@ import ProgressBar from '@/components/ProgressBar';
 import BackToTopBtn from '@/components/Universal/BackToTopBtn';
 import LoginForm from '@/components/TopHeader/LoginForm';
 import InitLoading from '@/components/Loading/InitLoading';
+import Announcement from '@/components/Announcement';
 
 // redux
 import { useAppDispatch, useAppSelector } from '@/redux';
@@ -33,6 +34,7 @@ const MainPage = () => {
   const loginFormOpen = useAppSelector(state => state.universal.loginFormOpen);
 
   const [open, setOpen] = useState(true);
+  const [announceOpen, setAnnounceOpen] = useState(false);
   const [isNavLoad, setIsNavLoad] = useState(false);
 
   useEffect(() => {
@@ -47,6 +49,9 @@ const MainPage = () => {
     setTimeout(() => {
       setOpen(false);
       setIsNavLoad(true);
+      setTimeout(() => {
+        setAnnounceOpen(true);
+      }, 300);
     }, 1000);
   }, []);
 
@@ -62,6 +67,12 @@ const MainPage = () => {
   return (
     <Layout>
       <TopHeader></TopHeader>
+      <Announcement
+        open={announceOpen}
+        setOpen={flag => {
+          setAnnounceOpen(flag);
+        }}
+      />
       {/* Login界面，这里放这是因为css的backdrop-filter在使用了position:fixed以后只对其父元素生效 */}
       {loginFormOpen ? <LoginForm></LoginForm> : undefined}
       <div

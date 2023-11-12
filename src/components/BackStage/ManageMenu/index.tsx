@@ -10,6 +10,7 @@ import {
   PlusSquareOutlined,
   PictureOutlined,
   MenuOutlined,
+  BellOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Menu } from 'antd';
@@ -35,6 +36,7 @@ const items: MenuItem[] = [
   getItem('菜单管理', 'editmenu', <MenuOutlined />),
   getItem('添加照片', 'photo', <PlusSquareOutlined />),
   getItem('编辑照片', 'editPhoto', <PictureOutlined />),
+  getItem('发布公告', 'announce', <BellOutlined />),
   getItem('OSS设置', 'oss', <CloudDownloadOutlined />),
 ];
 

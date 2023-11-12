@@ -6,10 +6,8 @@ interface UniInitState {
   loginFormOpen: boolean;
   starBlogPage: number;
   moblieMenuOpen: boolean;
-
   timerOn: boolean;
-
-  allowJump: boolean;
+  showAnnouncement: boolean;
 }
 
 const initialState = {
@@ -19,7 +17,7 @@ const initialState = {
   starBlogPage: 1, // starBlog页面分页的当前页
   moblieMenuOpen: false, // mobileMenu
   timerOn: false, // 计时器开始标志
-  allowJump: false, // topnav可跳转标志
+  showAnnouncement: true, // 公共展示与否
 } as UniInitState;
 
 const uniSlice = createSlice({
@@ -44,11 +42,18 @@ const uniSlice = createSlice({
     setTimerOn: (state, action) => {
       state.timerOn = action.payload;
     },
-    setAllowJump: (state, action) => {
-      state.allowJump = action.payload;
+    setShowAnnouncement: (state, action) => {
+      state.showAnnouncement = action.payload;
     },
   },
 });
-export const { setMobileMenuOpen, setThemeMode, setJumpFlag, setLoginFormOpen, setStarBlogPage, setTimerOn } =
-  uniSlice.actions;
+export const {
+  setMobileMenuOpen,
+  setThemeMode,
+  setJumpFlag,
+  setLoginFormOpen,
+  setStarBlogPage,
+  setTimerOn,
+  setShowAnnouncement,
+} = uniSlice.actions;
 export default uniSlice.reducer;

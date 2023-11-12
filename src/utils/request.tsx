@@ -1,11 +1,9 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import { useAppDispatch } from '@/redux';
-import { setUser } from '@/redux/slices/user';
 
 const service = axios.create({
   timeout: 5000,
-  baseURL: 'http://localhost:8080',
-  // baseURL: 'https://www.criiky0.top',
+  // baseURL: 'http://localhost:8080',
+  baseURL: 'https://www.criiky0.top',
 });
 
 // Result接口
@@ -53,16 +51,14 @@ service.interceptors.response.use(
       return Promise.resolve(response);
     }
     if ('code' in data && data.code !== 200) {
-      return Promise.reject(data as Result);
+      console.log(response);
+      return Promise.reject(data);
     } // catch的就是data
     return Promise.resolve(response);
   },
   async error => {
-    if (error.status === 401) {
-      const dispatch = useAppDispatch();
-      dispatch(setUser(null));
-    }
-    return Promise.reject(error.response);
+    if (error.response.data) return Promise.reject(error.response.data);
+    else return Promise.reject(error.response);
   }
 );
 

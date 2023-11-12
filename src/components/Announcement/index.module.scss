@@ -1,0 +1,64 @@
+@import "@/assets/css/index.scss";
+
+.wrapper {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, .5);
+  top: 0;
+  left: 0;
+  z-index: $GRADE_GOD;
+
+  .announcement {
+    width: 350px;
+    height: 200px;
+    background-color: #FFF;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .tag {
+      background-repeat: no-repeat;
+      background-size: cover;
+      height: 70%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: #FFF;
+      @include unSelectable;
+
+
+      > div {
+        padding: 10px 0;
+      }
+
+      > div:first-child {
+        font-size: 30px;
+        font-weight: 700;
+      }
+
+      > div:last-child {
+        font-size: 20px;
+      }
+    }
+
+    .content {
+      color: $FONT_COLOR;
+      height: 30%;
+      padding: 10px;
+      display: flex;
+      text-align: center;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}
+
+.close{
+  display: none;
+}

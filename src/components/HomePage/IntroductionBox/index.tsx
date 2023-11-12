@@ -49,8 +49,8 @@ const IntroductionBox: React.FC<IntroductionBoxProps> = props => {
   useEffect(() => {
     const getInfo = async () => {
       // 没有登录用户就请求Criiky0个人信息
-      try {
-        if (!hasUser(loginUser)) {
+      if (!hasUser(loginUser)) {
+        try {
           // 获取用户信息
           const res = await getCriiky0Info();
           const user = res.data.user;
@@ -63,18 +63,23 @@ const IntroductionBox: React.FC<IntroductionBoxProps> = props => {
             const imageUrl = URL.createObjectURL(blob);
             setAvatar(imageUrl);
           }
-        } else {
+        } catch (data: any) {
+          message.error(data.message);
+        }
+      } else {
+        try {
           const res = await getAvatar();
           const type = res.headers['content-type'];
           const blob = new Blob([res.data], { type });
           const imageUrl = URL.createObjectURL(blob);
           setAvatar(imageUrl);
           setUser(loginUser);
+        } catch (data: any) {
+          message.error('未登录或用户凭证过期，请登录后再试！');
         }
-      } catch (data: any) {
-        message.error(data.message);
       }
     };
+
     getInfo();
   }, [loginUser]);
 
