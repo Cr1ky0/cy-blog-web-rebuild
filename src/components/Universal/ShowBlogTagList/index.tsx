@@ -32,27 +32,31 @@ const ShowBlogTagList: React.FC<ShowBlogTagListProps> = ({ blogs }) => {
 
   const getBlogsPage = useCallback(() => {
     if (blogs && blogs.length) {
-      return blogs.map(blog => {
-        const { blogId, title, content, createAt, views, menuId, collected, likes } = blog;
-        return (
-          <div key={blogId} style={{ paddingBottom: '20px' }}>
-            <BlogTagBox
-              title={title}
-              statistic={{
-                blogUser,
-                time: createAt,
-                views: views,
-                likes: likes,
-                blogId,
-                belongingMenu: menuId,
-                isCollected: collected,
-              }}
-            >
-              {content}
-            </BlogTagBox>
-          </div>
-        );
-      });
+      return (
+        <div style={{ minHeight: '100vh' }}>
+          {blogs.map(blog => {
+            const { blogId, title, content, createAt, views, menuId, collected, likes } = blog;
+            return (
+              <div key={blogId} style={{ paddingBottom: '20px' }}>
+                <BlogTagBox
+                  title={title}
+                  statistic={{
+                    blogUser,
+                    time: createAt,
+                    views: views,
+                    likes: likes,
+                    blogId,
+                    belongingMenu: menuId,
+                    isCollected: collected,
+                  }}
+                >
+                  {content}
+                </BlogTagBox>
+              </div>
+            );
+          })}
+        </div>
+      );
     }
     return undefined;
   }, [blogs, blogUser]);

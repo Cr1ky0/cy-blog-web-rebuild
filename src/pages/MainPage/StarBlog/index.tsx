@@ -14,11 +14,14 @@ import Footer from '@/components/Footer';
 import { useAppDispatch, useAppSelector } from '@/redux';
 import { setChosenList } from '@/redux/slices/chosenList';
 import { setChosen } from '@/redux/slices/blog';
+import { setIsLoading } from '@/redux/slices/progressbar';
+import { setStarBlogPage } from '@/redux/slices/universal';
 
 // api
-import { setStarBlogPage } from '@/redux/slices/universal';
-import { ANIME_HIDE_TIME } from '@/global';
 import { getBlogCountOfCriiky0 } from '@/apis/blog';
+
+// global
+import { ANIME_HIDE_TIME } from '@/global';
 
 const choseList = ['收藏', '最多点赞', '最多浏览'];
 const StarBlog = () => {
@@ -31,7 +34,7 @@ const StarBlog = () => {
   const curPage = useAppSelector(state => state.universal.starBlogPage);
 
   const [collectNum, setCollectNum] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   // 可操作标志
   const [isOpt, setIsOpt] = useState<boolean>();
 
@@ -44,6 +47,11 @@ const StarBlog = () => {
       top: 0,
       behavior: 'smooth',
     });
+    // 如果先前打开了滚动条要先关闭
+    dispatch(setIsLoading(false));
+    setTimeout(() => {
+      dispatch(setIsLoading(true));
+    }, 50);
     setIsOpt(true);
     // 设置初始选中状态
     dispatch(setChosenList([false, false, true, false]));
@@ -62,7 +70,7 @@ const StarBlog = () => {
     if (isOpt) {
       setIsOpt(false);
       if (chosen !== index) {
-        setIsLoading(true);
+        setLoading(true);
         setTimeout(() => {
           setIsOpt(true);
         }, 1200);
@@ -73,7 +81,7 @@ const StarBlog = () => {
         last.classList.remove(style.optionsOnChosen);
         // 跳转
         setTimeout(async () => {
-          await setIsLoading(false);
+          await setLoading(false);
           await dispatch(setChosen(index));
           await dispatch(setStarBlogPage(1));
           navigate(`/stars?filter=${index}`);
@@ -88,10 +96,10 @@ const StarBlog = () => {
       behavior: 'smooth',
     });
     if (timer) clearTimeout(timer);
-    setIsLoading(true);
+    setLoading(true);
     setTimer(
       setTimeout(async () => {
-        await setIsLoading(false);
+        await setLoading(false);
         await dispatch(setStarBlogPage(page));
         // 点击跳转
         navigate(`?filter=${chosen}`);
@@ -120,7 +128,7 @@ const StarBlog = () => {
     <div className={`${style.wrapper} clearfix ${themeMode === 'dark' ? 'dark' : style.wrapperLight}`} ref={wrapper}>
       <div className="showAnime">
         <div className={style.options}>{getOptionPage()}</div>
-        <div className={`${style.blogs} transBase ${isLoading ? 'transHide' : ''}`}>
+        <div className={`${style.blogs} transBase ${loading ? 'transHide' : ''}`}>
           <Outlet />
         </div>
       </div>

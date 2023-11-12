@@ -90,7 +90,7 @@ const BlogContent = () => {
         blog.views = updateRes.data.updatedBlog.views;
         // 处理Title
         const contents = filterTitle(blog.content);
-        const newBlog = Object.assign({}, blog, { contents });
+        const newBlog = Object.assign({}, blog, { content: contents });
         setCurBlog(newBlog);
         // 更新完毕后关闭FadeOut并打开Opt标志
         dispatch(setCurBlogContent(contents));

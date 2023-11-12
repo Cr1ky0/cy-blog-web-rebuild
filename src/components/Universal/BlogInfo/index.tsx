@@ -34,7 +34,7 @@ const isLiked = (likeList: string[], id: string) => {
 
 const BlogInfo: React.FC<BlogInfoProps> = ({ statistics }) => {
   const { blogUser, time, views, blogId: id, isCollected, likes } = statistics;
-  console.log(statistics);
+
   const { width } = useViewport();
   const message = useGlobalMessage();
   const dispatch = useAppDispatch();
