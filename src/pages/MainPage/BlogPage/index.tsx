@@ -72,6 +72,7 @@ const BlogPage = () => {
         </div>
       </div>
       <div className={`${style.content} clearfix transBase ${fadeOut ? 'transHide' : ''}`}>
+        {/*<div className={`${style.content} clearfix`}>*/}
         {/* 选中状态 */}
         {selectedId ? (
           <Outlet />

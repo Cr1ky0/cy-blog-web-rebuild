@@ -19,7 +19,7 @@ const Announcement: React.FC<AnnouncementProps> = ({ open, setOpen }) => {
   const show = useAppSelector(state => state.universal.showAnnouncement);
   const handleClick = () => {
     setOpen(false);
-    // dispatch(setShowAnnouncement(false));
+    dispatch(setShowAnnouncement(false));
   };
 
   useEffect(() => {
@@ -49,8 +49,8 @@ const Announcement: React.FC<AnnouncementProps> = ({ open, setOpen }) => {
   }, []);
 
   return (
-    <div className={`${open ? style.wrapper : style.close}`} onClick={handleClick}>
-      {/*<div className={`${open ? style.wrapper : style.close}  ${show ? '' : style.close}`} onClick={handleClick}>*/}
+    // <div className={`${open ? style.wrapper : style.close}`} onClick={handleClick}>
+    <div className={`${open ? style.wrapper : style.close}  ${show ? '' : style.close}`} onClick={handleClick}>
       <div className={`${style.announcement} animate__animated animate__zoomIn`}>
         <div className={style.tag} style={{ backgroundImage: `url(${img})` }}>
           <div className="iconfont">&#xe61f;</div>

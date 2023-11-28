@@ -73,7 +73,7 @@ const TimeLine = () => {
             });
           }
         }
-        const host = `http://${item.bucket}.${item.endpoint}/${item.fileName}`;
+        const host = `https://${item.bucket}.${item.endpoint}/${item.fileName}`;
         list.push({
           label: moment(item.photoTime).format('M/DD'),
           dot: <div className={`${style.dot} ${themeMode === 'dark' ? 'dark-3-onforce' : ''}`}></div>,

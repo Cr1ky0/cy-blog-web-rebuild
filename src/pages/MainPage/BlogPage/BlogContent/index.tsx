@@ -40,6 +40,9 @@ import { ANIME_SHOW_TIME } from '@/global';
 import { Blog, blogInitState, delBlog, getBlog, updateBlogBrowse } from '@/apis/blog';
 import { getUserInfoById, User, userInitState } from '@/apis/user';
 
+// animate
+// import { animated, useTransition } from '@react-spring/web';
+
 const BlogContent = () => {
   const icons = useIcons();
   const message = useGlobalMessage();
@@ -180,7 +183,7 @@ const BlogContent = () => {
     return undefined;
   };
 
-  const blogInfoPage = useMemo(() => {
+  const blogInfoPage = () => {
     return (
       <BlogInfo
         statistics={{
@@ -194,13 +197,9 @@ const BlogContent = () => {
         }}
       ></BlogInfo>
     );
-  }, [curBlog, blogUser]);
+  };
 
   const getPageContent = () => {
-    if (deleted) {
-      return <NotFound detail="当前博客不存在或已被删除，去别处看看吧~" />;
-    }
-
     return (
       <div className={style.blog}>
         <div className={style.breadCrumb}>
@@ -211,7 +210,7 @@ const BlogContent = () => {
             <span className="iconfont">&#xe627;</span>
             {curBlog.title}
           </div>
-          <div className={style.blogInfo}>{blogInfoPage}</div>
+          <div className={style.blogInfo}>{blogInfoPage()}</div>
         </div>
         <div className={style.blogContent}>
           <div className={style.text}>
@@ -241,10 +240,38 @@ const BlogContent = () => {
     );
   };
 
+  // ***
+  // const config = {
+  //   mass: 2,
+  //   duration: 500,
+  // };
+  // const transitions = useTransition(
+  //   { curBlog, blogUser },
+  //   {
+  //     from: { opacity: 0, y: 100 },
+  //     enter: { opacity: 1, y: 0 },
+  //     leave: { opacity: 0, y: 100 },
+  //     exitBeforeEnter: true,
+  //     config,
+  //   }
+  // );
+
+  // const changeAnimePage = () => {
+  //   return transitions((props, item) => {
+  //     return (
+  //       <animated.div style={props} className={style.blog}>
+  //         {getPageContent()}
+  //       </animated.div>
+  //     );
+  //   });
+  // };
+
   return (
     <>
       <div className={`${style.main} showAnime`}>
-        <div className="clearfix">{getPageContent()}</div>
+        <div className="clearfix">
+          {deleted ? <NotFound detail="当前博客不存在或已被删除，去别处看看吧~" /> : getPageContent()}
+        </div>
         <Footer></Footer>
       </div>
     </>

@@ -32,7 +32,7 @@ const SearchList: React.FC<SearchListProps> = ({ docs, match, closeBox }) => {
   const selectedId = useAppSelector(state => state.blogMenu.selectedId);
   const menuTitle = docs.length ? docs[0].menuTitle : '';
 
-  const handleClick = useCallback((id: string, blog: BlogDoc) => {
+  const handleClick = (id: string, blog: BlogDoc) => {
     closeBox();
     if (blog.id !== selectedId) {
       if (location.pathname === '/blog') {
@@ -44,11 +44,11 @@ const SearchList: React.FC<SearchListProps> = ({ docs, match, closeBox }) => {
         dispatch(setSelectedId(blog.id));
       }
       dispatch(addHistory({ blog, match }));
-      navigate('/blog');
     }
-  }, []);
+    navigate('/blog');
+  };
 
-  const getPage = useCallback(() => {
+  const getPage = () => {
     return docs.map(blog => {
       return (
         <div
@@ -67,7 +67,7 @@ const SearchList: React.FC<SearchListProps> = ({ docs, match, closeBox }) => {
         </div>
       );
     });
-  }, [docs]);
+  };
 
   return (
     <div className={style.wrapper}>

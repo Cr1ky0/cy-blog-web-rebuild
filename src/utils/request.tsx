@@ -51,7 +51,6 @@ service.interceptors.response.use(
       return Promise.resolve(response);
     }
     if ('code' in data && data.code !== 200) {
-      console.log(response);
       return Promise.reject(data);
     } // catch的就是data
     return Promise.resolve(response);

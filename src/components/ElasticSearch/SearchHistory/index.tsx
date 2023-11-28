@@ -25,7 +25,7 @@ const SearchHistory: React.FC<SearchHistoryProps> = ({ closeBox }) => {
 
   const [isDragging, setIsDragging] = useState(false);
 
-  const handleClick = useCallback((id: string) => {
+  const handleClick = (id: string) => {
     if (!isDragging) {
       closeBox();
       if (id !== selectedId) {
@@ -37,12 +37,12 @@ const SearchHistory: React.FC<SearchHistoryProps> = ({ closeBox }) => {
         } else {
           dispatch(setSelectedId(id));
         }
-        navigate('/blog');
       }
+      navigate('/blog');
     }
-  }, []);
+  };
 
-  const getPage = useCallback(() => {
+  const getPage = () => {
     return searchHistory.map(history => {
       const { blog } = history;
       return (
@@ -79,7 +79,7 @@ const SearchHistory: React.FC<SearchHistoryProps> = ({ closeBox }) => {
         </div>
       );
     });
-  }, [searchHistory]);
+  };
 
   return (
     <div className={style.wrapper}>

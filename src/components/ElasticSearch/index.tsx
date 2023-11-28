@@ -194,7 +194,7 @@ const ElasticSearch = () => {
             {getContentPage()}
           </div>
           <div className={style.footer}>
-            <div>搜索提供者</div>
+            <div>Powered By</div>
             <div>
               <span className="iconfont">&#xeb84;</span>&nbsp;
               <span>ElasticSearch</span>

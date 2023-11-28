@@ -1,6 +1,7 @@
 import React, { Suspense, lazy } from 'react';
 import { RouteObject } from 'react-router';
 import AuthRoute from '@/pages/AuthRoute';
+import InitLoading from '@/components/Loading/InitLoading';
 
 export type Routes = {
   path: string;
@@ -107,8 +108,8 @@ const syncRouter = (table: Routes[]): RouteObject[] => {
     routeTable.push({
       path: route.path,
       element: (
-        // <Suspense fallback={<LoadingPage></LoadingPage>}>
         <Suspense fallback={<></>}>
+          {/*<Suspense fallback={<InitLoading></InitLoading>}>*/}
           <AuthRoute>
             <route.element />
           </AuthRoute>
