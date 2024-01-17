@@ -13,7 +13,7 @@ import './index.scss';
 import { useAppDispatch, useAppSelector } from '@/redux';
 
 // img
-import img from '@/assets/images/timeline.png';
+import img from '@/assets/images/timeline.webp';
 
 // provider
 import { useGlobalMessage } from '@/components/ContextProvider/MessageProvider';
@@ -59,20 +59,6 @@ const TimeLine = () => {
     if (timeline && timeline.length) {
       const list = [];
       timeline.map((item, index) => {
-        if (index < timeline.length - 1) {
-          const year1 = moment(item.photoTime).format('YYYY');
-          const year2 = moment(timeline[index + 1].photoTime).format('YYYY');
-          if (year1 !== year2) {
-            list.push({
-              dot: (
-                <div style={{ marginTop: '15px', marginLeft: '4px' }}>
-                  <ClockCircleOutlined style={{ fontSize: '14px' }} />
-                </div>
-              ),
-              children: <div className={style.year}>{year2}</div>,
-            });
-          }
-        }
         const host = `https://${item.bucket}.${item.endpoint}/${item.fileName}`;
         list.push({
           label: moment(item.photoTime).format('M/DD'),
@@ -92,6 +78,20 @@ const TimeLine = () => {
           ),
           color: 'gray',
         });
+        if (index < timeline.length - 1) {
+          const year1 = moment(item.photoTime).format('YYYY');
+          const year2 = moment(timeline[index + 1].photoTime).format('YYYY');
+          if (year1 !== year2) {
+            list.push({
+              dot: (
+                <div style={{ marginTop: '15px', marginLeft: '4px' }}>
+                  <ClockCircleOutlined style={{ fontSize: '14px' }} />
+                </div>
+              ),
+              children: <div className={style.year}>{year2}</div>,
+            });
+          }
+        }
       });
       list.unshift({
         dot: (

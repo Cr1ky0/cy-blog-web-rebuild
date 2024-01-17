@@ -44,7 +44,7 @@ const HomePage = () => {
   useEffect(() => {
     // 导入随机背景图片
     const randomNumber = Math.floor(Math.random() * 10) + 1;
-    import(`@/assets/images/homephoto-${randomNumber}.png`).then(imageModule => {
+    import(`@/assets/images/homephoto-${randomNumber}.webp`).then(imageModule => {
       if (!backgroundImage) setBackgroundImage(imageModule.default);
     });
     // 重置mobile open

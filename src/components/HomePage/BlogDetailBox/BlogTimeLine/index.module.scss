@@ -36,20 +36,33 @@
     }
 
     .time {
-      padding-top: 2px;
-      min-width: 35px;
       margin-right: 10px;
       display: flex;
     }
 
     .title {
       width: 80%;
-      font-size: 16px;
       display: block;
       float: left;
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
+    }
+  }
+}
+
+@media (width>$BREAK_POINT) {
+  .time {
+    padding-top: 2px;
+    min-width: 35px;
+  }
+}
+
+@media (width<=$BREAK_POINT) {
+  .itemWrapper {
+
+    .time {
+      min-width: 45px;
     }
   }
 }

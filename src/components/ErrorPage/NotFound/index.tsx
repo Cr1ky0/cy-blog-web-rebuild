@@ -4,7 +4,7 @@ import React, { CSSProperties } from 'react';
 import style from './index.module.scss';
 
 // img
-import img from '@/assets/images/401.png';
+import img from '@/assets/images/401.webp';
 
 interface NotFoundProps {
   detail: string;

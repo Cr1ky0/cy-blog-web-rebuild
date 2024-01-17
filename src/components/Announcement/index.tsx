@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import style from './index.module.scss';
-import img from '@/assets/images/annouce.png';
+import img from '@/assets/images/annouce.webp';
 import { useAppDispatch, useAppSelector } from '@/redux';
 import { setShowAnnouncement } from '@/redux/slices/universal';
 import { getAnnounce } from '@/apis/announce';
@@ -49,8 +49,8 @@ const Announcement: React.FC<AnnouncementProps> = ({ open, setOpen }) => {
   }, []);
 
   return (
-    // <div className={`${open ? style.wrapper : style.close}`} onClick={handleClick}>
-    <div className={`${open ? style.wrapper : style.close}  ${show ? '' : style.close}`} onClick={handleClick}>
+    <div className={`${open ? style.wrapper : style.close}`} onClick={handleClick}>
+      {/*<div className={`${open ? style.wrapper : style.close}  ${show ? '' : style.close}`} onClick={handleClick}>*/}
       <div className={`${style.announcement} animate__animated animate__zoomIn`}>
         <div className={style.tag} style={{ backgroundImage: `url(${img})` }}>
           <div className="iconfont">&#xe61f;</div>

@@ -27,3 +27,12 @@
     }
   }
 }
+@media (width<=$BREAK_POINT) {
+  .blogTitle {
+    >span:last-child{
+      font: {
+        size: 16px;
+      }
+    }
+  }
+}

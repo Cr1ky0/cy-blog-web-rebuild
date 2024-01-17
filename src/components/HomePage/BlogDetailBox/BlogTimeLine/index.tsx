@@ -30,25 +30,6 @@ const BlogTimeLine = () => {
     if (timeline && timeline.length) {
       const list = [];
       timeline.map((item, index) => {
-        if (index < timeline.length - 1) {
-          const year1 = moment(item.createAt).format('YYYY');
-          const year2 = moment(timeline[index + 1].createAt).format('YYYY');
-          if (year1 !== year2) {
-            list.push({
-              dot: (
-                <div
-                  style={{
-                    marginTop: '15px',
-                    marginLeft: '4px',
-                  }}
-                >
-                  <ClockCircleOutlined style={{ fontSize: '14px' }} />
-                </div>
-              ),
-              children: <div className={style.year}>{year2}</div>,
-            });
-          }
-        }
         list.push({
           dot: <div className={`${style.dot} ${themeMode === 'dark' ? 'dark-3-onforce' : ''}`}></div>,
           children: (
@@ -76,6 +57,25 @@ const BlogTimeLine = () => {
           ),
           color: 'gray',
         });
+        if (index < timeline.length - 1) {
+          const year1 = moment(item.createAt).format('YYYY');
+          const year2 = moment(timeline[index + 1].createAt).format('YYYY');
+          if (year1 !== year2) {
+            list.push({
+              dot: (
+                <div
+                  style={{
+                    marginTop: '15px',
+                    marginLeft: '4px',
+                  }}
+                >
+                  <ClockCircleOutlined style={{ fontSize: '14px' }} />
+                </div>
+              ),
+              children: <div className={style.year}>{year2}</div>,
+            });
+          }
+        }
       });
       list.unshift({
         dot: (

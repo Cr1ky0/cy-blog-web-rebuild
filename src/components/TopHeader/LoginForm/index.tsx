@@ -2,8 +2,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 
 // img
-import img from '@/assets/images/blog-icon.png';
-import defaultImg from '@/assets/images/timeline.png';
+import img from '@/assets/images/blog-icon.webp';
+import defaultImg from '@/assets/images/timeline.webp';
 
 // css
 import style from './index.module.scss';

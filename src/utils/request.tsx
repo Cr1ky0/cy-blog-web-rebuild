@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from 'axios';
 
 const service = axios.create({
-  timeout: 5000,
+  timeout: 10000,
   // baseURL: 'http://localhost:8080',
   baseURL: 'https://www.criiky0.top',
 });

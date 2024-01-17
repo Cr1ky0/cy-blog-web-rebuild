@@ -8,7 +8,7 @@ import { Button } from 'antd';
 import style from '../index.module.scss';
 
 // img
-import img from '@/assets/images/404.jpg';
+import img from '@/assets/images/404.webp';
 
 // redux
 import { useAppSelector } from '@/redux';

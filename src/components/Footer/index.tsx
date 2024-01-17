@@ -4,7 +4,7 @@ import React from 'react';
 import style from './index.module.scss';
 
 // img
-import img from '@/assets/images/备案图标.png';
+import img from '@/assets/images/备案图标.webp';
 
 // redux
 import { useAppSelector } from '@/redux';
